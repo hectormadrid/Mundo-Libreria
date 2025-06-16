@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" href="../assets/logo.ico">
+  <link rel="icon" href="../assets/MUNDO-WEB.ico">
   <title>Mundo Libreria</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -22,24 +22,83 @@
     }
   </script>
 </head>
+
 <body class="bg-gray-50 text-gray-800 font-sans">
   
   <!-- Header se cargará aquí -->
   <div id="header-placeholder"></div>
 
   <!-- Banner Principal -->
-  <section class="mt-2 container mx-auto px-4">
-    <div class="bg-gradient-to-r from-lib-blue to-lib-red h-72 rounded-lg flex items-center justify-center text-center relative overflow-hidden">
-      <div class="absolute inset-0 bg-black opacity-20"></div>
-      <div class="relative z-10 px-4 text-white">
-        <h2 class="text-4xl font-bold mb-4">Explora mundos <span class="text-lib-yellow">infinitos</span></h2>
-        <p class="text-xl mb-6">Encuentra bestsellers, clásicos y joyas literarias</p>
-        <button class="bg-lib-yellow text-lib-blue px-8 py-3 rounded-full font-bold hover:scale-105 transition-transform">
-          Ver Novedades
-        </button>
+<section class="mt-2 container mx-auto px-4">
+  <!-- Contenedor del Carousel -->
+  <div class="relative h-72 rounded-lg overflow-hidden">
+    <!-- Slides Container -->
+    <div id="slides-container" class="flex h-full transition-transform duration-500 ease-in-out">
+      <!-- Slide 1 -->
+      <div class="min-w-full h-full relative">
+        <div class="bg-gradient-to-r from-lib-blue to-lib-red h-full flex items-center justify-center text-center">
+          <div class="absolute inset-0 bg-black opacity-20"></div>
+          <div class="relative z-10 px-4 text-white">
+            
+            <img src="assets/banner2.jpg" alt="Oferta especial" class="w-full h-full object-cover">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Slide 2 (Ejemplo con imagen) -->
+      <div class="min-w-full h-full relative">
+        <img src="assets/banner2.jpg" alt="Oferta especial" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-black opacity-30"></div>
+        <div class="relative z-10 h-full flex items-center justify-center text-center text-white px-4">
+          <div>
+            <h2 class="text-4xl font-bold mb-4">Ofertas <span class="text-lib-yellow">Exclusivas</span></h2>
+            <p class="text-xl mb-6">Hasta 50% de descuento en libros seleccionados</p>
+            <button class="bg-lib-yellow text-lib-blue px-8 py-3 rounded-full font-bold hover:scale-105 transition-transform">
+              Ver Ofertas
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Slide 3 (Otro ejemplo) -->
+      <div class="min-w-full h-full relative">
+        <img src="assets/banner3.jpg" alt="Nueva colección" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-black opacity-30"></div>
+        <div class="relative z-10 h-full flex items-center justify-center text-center text-white px-4">
+          <div>
+            <h2 class="text-4xl font-bold mb-4">Nueva <span class="text-lib-yellow">Colección</span></h2>
+            <p class="text-xl mb-6">Descubre los lanzamientos de este mes</p>
+            <button class="bg-lib-yellow text-lib-blue px-8 py-3 rounded-full font-bold hover:scale-105 transition-transform">
+              Ver Colección
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
+    
+    <!-- Controles de navegación -->
+    <button id="prev-slide" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/30 text-white p-2 rounded-full hover:bg-white/50 z-20">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+    <button id="next-slide" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/30 text-white p-2 rounded-full hover:bg-white/50 z-20">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+    
+    <!-- Indicadores de paginación -->
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-20">
+      <button class="slide-indicator w-3 h-3 rounded-full bg-white/50 hover:bg-white"></button>
+      <button class="slide-indicator w-3 h-3 rounded-full bg-white/50 hover:bg-white"></button>
+      <button class="slide-indicator w-3 h-3 rounded-full bg-white/50 hover:bg-white"></button>
+    </div>
+  </div>
+</section>
+
+
+
 
   <!-- Productos Destacados -->
   <main class="mt-12 container mx-auto px-4">
@@ -266,9 +325,11 @@
   <div id="footer-placeholder"></div>
 
   <!-- Scripts -->
+  <script src="../js/carousel.js"></script>
   <script src="../js/components.js"></script>
   <script src="../js/footer.js"></script>
   <script src="../js/header.js"></script>
-
+  
+<script src="../js/auth_modal.js"></script>
 </body>
 </html>

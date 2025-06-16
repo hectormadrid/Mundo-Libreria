@@ -21,25 +21,7 @@ const loadHeader = () => {
             </button>
           </div>
           
-          <!-- Botón Iniciar Sesión -->
-          <button class="bg-lib-yellow text-lib-blue px-4 py-2 rounded-full hover:bg-yellow-400 transition font-medium flex items-center space-x-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            <span class="hidden md:inline">Iniciar Sesión</span>
-          </button>
           
-          <!-- Botón Carrito -->
-          <button class="bg-lib-red px-4 py-2 rounded-full hover:bg-red-700 transition relative flex items-center space-x-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01" />
-            </svg>
-            <span class="hidden md:inline">Carrito</span>
-            <!-- Contador de items -->
-            <span class="absolute -top-2 -right-2 bg-lib-yellow text-lib-blue text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold" id="cart-count">0</span>
-          </button>
-        </div>
-      </div>
     </header>
 
    <nav class="bg-lib-yellow border-b border-lib-blue">

@@ -20,8 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (loginBtn) {
         loginBtn.addEventListener('click', () => {
           // Aquí puedes agregar la lógica para iniciar sesión
-          alert('Función de iniciar sesión - Por implementar');
-          // window.location.href = '../pages/login.html';
+          window.location.href = '../pages/login.html';
         });
       }
       
