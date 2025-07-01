@@ -42,7 +42,7 @@
             type="text"
             placeholder="Buscar Producto..."
             class="px-4 py-2 rounded-l-full text-sm focus:outline-none text-gray-800 w-48 md:w-64">
-          <button class="bg-lib-red px-4 py-1.5 rounded-r-full hover:bg-red-700 transition">
+          <button class="bg-lib-yellow px-4 py-1.5 rounded-r-full hover:bg-yellow-300 transition">
             🔍
           </button>
         </div>
