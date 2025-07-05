@@ -22,8 +22,15 @@ CREATE TABLE productos (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 insert into Administrador values (null,'ingrid', '1234');
-select * from usuario;
-select * from Administrador;
+INSERT INTO productos (nombre, descripcion, precio, estado)
+VALUES (
+    'Cuaderno Universitario',
+    'Cuaderno de 100 hojas, tamaño carta, con espiral metálico , cara dura',
+    2490.00,
+    'activo'
+);
 
+select * from usuario;
+select * from productos;
 show tables;
 -- drop database Mundo_Libreria;
