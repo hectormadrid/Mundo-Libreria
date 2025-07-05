@@ -1,6 +1,7 @@
     <?php
     session_start();
 
+
     ?>
     <!DOCTYPE html>
     <html lang="es">
@@ -13,15 +14,23 @@
 
         <!-- Tailwind CSS -->
         <link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
         <!-- DataTables CSS -->
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
         <!-- DataTables Tailwind CSS -->
+<<<<<<< Updated upstream
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.13.7/datatables.min.css"/>
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.min.css">
 
 
+=======
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.13.7/datatables.min.css" />
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.min.css">
+>>>>>>> Stashed changes
         <!-- Tu CSS personalizado -->
         <link rel="stylesheet" href="../style/Menu.css">
         <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
@@ -62,7 +71,7 @@
                             <div class="profile_name  ">
 
                             </div>
-                            <a href="../Inicio_sesion.php" class='inline-block bg-[#3664E4] hover:bg-red-800 text-white font-bold py-2 px-4 rounded mb-4  bx bx-log-out '> </a>
+                            <a href="login_admin.php" class='inline-block bg-[#3664E4] hover:bg-red-800 text-white font-bold py-2 px-4 rounded mb-4  bx bx-log-out '> </a>
                         </div>
                 </li>
             </ul>
@@ -77,7 +86,6 @@
                 <h1 class="  text-4xl md:text-5xl text-center font-serif font-bold text-black-500 mb-6 mt-6">
                     Bienvenido Administrador
                 </h1>
-
                 <!-- Botón Agregar Productos -->
                 <div class="mb-4">
                     <button id="btnAgregarProducto" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -85,6 +93,16 @@
                     </button>
                 </div>
 
+<<<<<<< Updated upstream
+                <!-- Botón Agregar Productos -->
+                <div class="mb-4">
+                    <button id="btnAgregarProducto" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Agregar Productos
+                    </button>
+                </div>
+
+=======
+>>>>>>> Stashed changes
                 <!-- Contenedor de la Tabla -->
                 <div class="bg-white shadow-md rounded my-6">
                     <table id="productosTable" class="min-w-max w-full table-auto">
@@ -127,10 +145,15 @@
                     </table>
                 </div>
             </div> <!-- Cierre de container mx-auto px-4 -->
+<<<<<<< Updated upstream
 
         </section>
         <script src="../js/menu_admin.js"></script>
 
+=======
+        </section>
+        <script src="../js/menu_admin.js"></script>
+>>>>>>> Stashed changes
         <!-- DataTables JS -->
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
@@ -172,7 +195,10 @@
                 });
             });
         </script>
+<<<<<<< Updated upstream
         
+=======
+>>>>>>> Stashed changes
     </body>
 
     </html>
