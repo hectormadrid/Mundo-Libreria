@@ -85,49 +85,9 @@
                 </h1>
                 <!-- Botón Agregar Productos -->
                 <div class="mb-4">
-                    <button id="btnAbrirModalAgregarProducto" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    <button id="btnAgregarProducto" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                         Agregar Productos
                     </button>
-                </div>
-
-                <!-- Modal para Agregar Producto -->
-                <div id="modalAgregarProducto" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-                    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                        <div class="mt-3 text-center">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900">Agregar Nuevo Producto</h3>
-                            <form id="formAgregarProducto" class="mt-2">
-                                <div class="mb-4">
-                                    <label for="nombre" class="block text-sm font-medium text-gray-700 text-left">Nombre</label>
-                                    <input type="text" name="nombre" id="nombre" class="mt-1 p-2 w-full border-gray-300 rounded-md shadow-sm" required>
-                                </div>
-                                <div class="mb-4">
-                                    <label for="descripcion" class="block text-sm font-medium text-gray-700 text-left">Descripción</label>
-                                    <textarea name="descripcion" id="descripcion" rows="3" class="mt-1 p-2 w-full border-gray-300 rounded-md shadow-sm"></textarea>
-                                </div>
-                                <div class="mb-4">
-                                    <label for="precio" class="block text-sm font-medium text-gray-700 text-left">Precio</label>
-                                    <input type="number" name="precio" id="precio" step="0.01" class="mt-1 p-2 w-full border-gray-300 rounded-md shadow-sm" required>
-                                </div>
-                                <div class="mb-4">
-                                    <label for="estado" class="block text-sm font-medium text-gray-700 text-left">Estado</label>
-                                    <select name="estado" id="estado" class="mt-1 p-2 w-full border-gray-300 rounded-md shadow-sm">
-                                        <option value="activo">Activo</option>
-                                        <option value="inactivo">Inactivo</option>
-                                    </select>
-                                </div>
-                                <div class="items-center px-4 py-3">
-                                    <button id="btnGuardarProducto" type="submit" class="px-4 py-2 bg-green-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-green-700">
-                                        Guardar Producto
-                                    </button>
-                                </div>
-                            </form>
-                            <div class="items-center px-4 py-3">
-                                <button id="btnCerrarModal" class="px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400">
-                                    Cancelar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Contenedor de la Tabla -->
@@ -168,9 +128,6 @@
                                 <td class="py-3 px-6 text-center"><span class="bg-red-200 text-red-600 py-1 px-3 rounded-full text-xs">Inactivo</span></td>
                                 <td class="py-3 px-6 text-center">2023-10-24</td>
                             </tr>
-                        </thead>
-                        <tbody class="text-gray-600 text-sm font-light">
-                            <!-- Los datos se cargarán aquí por DataTables vía AJAX -->
                         </tbody>
                     </table>
                 </div>
@@ -192,23 +149,15 @@
 
         <script>
             $(document).ready(function() {
-                var table = $('#productosTable').DataTable({
-                    "ajax": {
-                        "url": "obtener_productos.php", // Script PHP que devuelve los datos en JSON
-                        "type": "GET", // o POST, según cómo esté configurado tu script PHP
-                        "dataSrc": "data" // Nombre de la propiedad en el JSON que contiene los datos de la tabla
-                    },
-                    "columns": [ // Definir las columnas para que DataTables sepa cómo mapear los datos
-                        { "data": 0 }, // ID
-                        { "data": 1 }, // Nombre
-                        { "data": 2 }, // Precio
-                        { "data": 3 }, // Descripción
-                        { "data": 4 }, // Estado
-                        { "data": 5 }  // Fecha de Creación
-                    ],
+                $('#productosTable').DataTable({
+                    // Configuración adicional de DataTables puede ir aquí
+                    // Por ejemplo, para habilitar la integración con Tailwind:
+                    // "renderer": "tailwindcss" // Esto puede variar según la versión y el adaptador
+                    // Sin embargo, al incluir dataTables.tailwindcss.min.js y su CSS,
+                    // DataTables debería usar estilos de Tailwind automáticamente.
                     language: {
                         "decimal": "",
-                        "emptyTable": "No hay productos registrados o no se pudieron cargar.",
+                        "emptyTable": "No hay información",
                         "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
                         "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
                         "infoFiltered": "(Filtrado de _MAX_ total entradas)",
@@ -226,68 +175,6 @@
                             "previous": "Anterior"
                         }
                     },
-                });
-
-                // Manejo del modal
-                const modal = $('#modalAgregarProducto');
-                const btnAbrirModal = $('#btnAbrirModalAgregarProducto');
-                const btnCerrarModal = $('#btnCerrarModal');
-                const formAgregarProducto = $('#formAgregarProducto');
-
-                btnAbrirModal.click(function() {
-                    modal.removeClass('hidden');
-                });
-
-                btnCerrarModal.click(function() {
-                    modal.addClass('hidden');
-                    formAgregarProducto[0].reset(); // Resetea el formulario al cerrar
-                });
-
-                // Cierra el modal si se hace clic fuera de él
-                $(window).click(function(event) {
-                    if (modal.length && event.target == modal[0]) { // Asegurarse que el modal existe
-                        modal.addClass('hidden');
-                        formAgregarProducto[0].reset(); // Resetea el formulario al cerrar
-                    }
-                });
-
-                // Enviar formulario de agregar producto con AJAX
-                formAgregarProducto.submit(function(e) {
-                    e.preventDefault(); // Evitar el envío tradicional del formulario
-
-                    $.ajax({
-                        url: 'guardar_producto.php', // Ruta al script PHP que guarda en BD
-                        type: 'POST',
-                        data: $(this).serialize(), // Envía los datos del formulario
-                        dataType: 'json', // Espera una respuesta JSON del servidor
-                        success: function(response) {
-                            if (response.success) {
-                                modal.addClass('hidden'); // Ocultar el modal
-                                formAgregarProducto[0].reset(); // Limpiar el formulario
-                                alert(response.message); // Mostrar mensaje de éxito (o usar una notificación más elegante)
-
-                                // Actualizar DataTables:
-                                // Si estás cargando datos vía AJAX desde el servidor, simplemente recarga:
-                                table.ajax.reload();
-                                // Si los datos de ejemplo están hardcodeados y quieres añadir dinámicamente (menos común con BD):
-                                // table.row.add([
-                                //    response.id_producto, // Suponiendo que tu script PHP devuelve el nuevo ID
-                                //    $('#nombre').val(),
-                                //    $('#precio').val(),
-                                //    $('#descripcion').val(),
-                                //    $('#estado').val(),
-                                //    new Date().toISOString().slice(0, 10) // Fecha actual como ejemplo
-                                // ]).draw(false);
-
-                            } else {
-                                alert('Error: ' + response.message); // Mostrar mensaje de error
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            // Manejar errores de conexión o del servidor
-                            alert('Error al conectar con el servidor: ' + error + '\nRespuesta: ' + xhr.responseText);
-                        }
-                    });
                 });
             });
         </script>
