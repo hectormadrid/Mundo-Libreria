@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = new FormData(this);
 
-        fetch('agregar_producto.php', {
+        fetch('../pages/agregar_productos.php', {
             method: 'POST',
             body: formData
         })
