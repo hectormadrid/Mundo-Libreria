@@ -5,7 +5,7 @@ require_once __DIR__.'/../db/Conexion.php';
 
 try {
    
-    $query = "SELECT id, nombre, precio, descripcion, imagen FROM productos WHERE estado = 'Activo' LIMIT 8";
+    $query = "SELECT id, nombre,imagen, precio, descripcion, categoria  FROM productos WHERE estado = 'Activo' LIMIT 8";
     $result = $conexion->query($query);
     
     $productos = [];

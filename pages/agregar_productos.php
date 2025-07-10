@@ -12,7 +12,7 @@ try {
     include("../db/Conexion.php");
     
     // Validar campos obligatorios
-    $requiredFields = ['nombre', 'precio', 'descripcion', 'estado'];
+    $requiredFields = ['nombre', 'precio', 'descripcion','categoria', 'estado'];
     foreach ($requiredFields as $field) {
         if (!isset($_POST[$field])) { // Verificar si existe primero
             throw new Exception("El campo $field es requerido");
@@ -59,7 +59,7 @@ try {
     }
 
     // Insertar en la base de datos
-    $query = "INSERT INTO productos (nombre, precio, descripcion, estado, imagen) VALUES (?, ?, ?, ?, ?)";
+    $query = "INSERT INTO productos (nombre, precio, descripcion, categoria, estado, imagen) VALUES (?, ?, ?, ?,?, ?)";
     $stmt = $conexion->prepare($query);
     
     if (!$stmt) {
@@ -70,9 +70,10 @@ try {
     $nombre = trim($_POST['nombre']);
     $precio = (float)$_POST['precio'];
     $descripcion = trim($_POST['descripcion']);
+    $categoria = trim($_POST['categoria']);
     $estado = in_array($_POST['estado'], ['Activo', 'Inactivo']) ? $_POST['estado'] : 'Activo';
 
-    $stmt->bind_param("sdsss", $nombre, $precio, $descripcion, $estado, $nombreImagen);
+    $stmt->bind_param("sdssss", $nombre, $precio, $descripcion, $categoria, $estado, $nombreImagen);
     
     if ($stmt->execute()) {
         $response = [
@@ -84,6 +85,7 @@ try {
                 'nombre' => $nombre,
                 'precio' => $precio,
                 'descripcion' => $descripcion,
+                'categoria'=> $categoria,
                 'estado' => $estado,
                 'imagen' => $nombreImagen
             ]

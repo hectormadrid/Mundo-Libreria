@@ -16,19 +16,16 @@ CREATE TABLE Administrador (
 CREATE TABLE productos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    descripcion TEXT,
+    imagen VARCHAR(255) DEFAULT NULL,
+    escripcion TEXT,
+    categoria VARCHAR (50),
     precio DECIMAL(10,2) NOT NULL,
     estado ENUM('activo', 'inactivo') DEFAULT 'activo',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 insert into Administrador values (null,'ingrid', '1234');
 INSERT INTO productos (nombre, descripcion, precio, estado)
-VALUES (
-    'Cuaderno Universitario',
-    'Cuaderno de 100 hojas, tamaño carta, con espiral metálico , cara dura',
-    2490.00,
-    'activo'
-);
+
 
 select * from usuario;
 select * from productos;
