@@ -60,15 +60,18 @@
                     </li>
 
 
-                    <li>
-                        <div class="profile-details">
-                            <div class="name-job  text-wrap overflow-hidden ">
-                                <div class="profile_name  ">
-
-                                </div>
-                                <a href="login_admin.php" class='inline-block bg-[#3664E4] hover:bg-red-800 text-white font-bold py-2 px-4 rounded mb-4  bx bx-log-out '> </a>
-                            </div>
-                    </li>
+               <li>
+    <div class="profile-details">
+        <div class="name-job text-wrap overflow-hidden">
+            <div class="profile_name">
+                <?php echo isset($_SESSION['nombre']) ? htmlspecialchars($_SESSION['nombre']) : 'Administrador'; ?>
+            </div>
+            <a href="../db/cerrar_sesion.php" 
+               class="inline-block bg-[#3664E4] hover:bg-red-800 text-white font-bold py-2 px-4 rounded mb-4 bx bx-log-out">
+            </a>
+        </div>
+    </div>
+</li>
                 </ul>
             </div>
             <section class="home-section  overflow-y-auto ">
@@ -98,6 +101,7 @@
                                     <th class="py-3 px-6 text-center">Precio</th>
                                     <th class="py-3 px-6 text-center">Descripción</th>
                                     <th class="py-3 px-6 text-center">Estado</th>
+                                     <th class="py-3 px-6 text-center">Imagen</th>
                                     <th class="py-3 px-6 text-center">Fecha de Creación</th>
                                 </tr>
                             </thead>
@@ -109,7 +113,8 @@
 
 
             <script src="../js/menu_admin.js"></script>
-            <script src="../js/agregar_productos.js"></script>
+            <script src="../js/agregarProductos.js"></script>
+            <script src="../js/tablaAdmin.js"></script>
 
             <!-- DataTables JS -->
             <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
@@ -121,62 +126,7 @@
             <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
             <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/dataTables.tailwindcss.min.js"></script>
 
-            <script>
-                $(document).ready(function() {
-                    $('#productosTable').DataTable({
-                        ajax: {
-                            url: 'obtener_productos.php', // Ruta al archivo PHP
-                            dataSrc: '' // Indica que los datos están en el array raíz del JSON
-                        },
-                        columns: [{
-                                data: 'id'
-                            }, // Asegúrate de que coincidan con los nombres de tus columnas en la BD
-                            {
-                                data: 'nombre'
-                            },
-                            {
-                                data: 'precio'
-                            },
-                            {
-                                data: 'descripcion',
-                            },
-                            {
-                                data: 'estado',
-                                render: function(data, type, row) {
-                                    const color = data === 'Activo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-                                    return `<span class="px-2 py-1 rounded-full ${color}">${data}</span>`;
-                                }
-                            },
-                            {
-                                data: 'fecha_creacion'
-                            }
-                        ],
-                        responsive: true, // Opcional: Para dispositivos pequeños
-                        language: {
-                            "decimal": "",
-                            "emptyTable": "No hay información",
-                            "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
-                            "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
-                            "infoFiltered": "(Filtrado de _MAX_ total entradas)",
-                            "infoPostFix": "",
-                            "thousands": ",",
-                            "lengthMenu": "Mostrar _MENU_ Entradas",
-                            "loadingRecords": "Cargando...",
-                            "processing": "Procesando...",
-                            "search": "Buscar:",
-                            "zeroRecords": "Sin resultados encontrados",
-                            "paginate": {
-                                "first": "Primero",
-                                "last": "Ultimo",
-                                "next": "Siguiente",
-                                "previous": "Anterior"
-                            }
-                        },
-                    });
-
-                });
-            </script>
-
+          
 
             <!-- Modal para agregar productos (oculto por defecto) -->
             <div id="modalAgregar" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4">
@@ -187,6 +137,11 @@
                             <div class="mb-4">
                                 <label class="block text-gray-700 mb-2">Nombre</label>
                                 <input type="text" name="nombre" class="w-full px-3 py-2 border rounded">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Imagen del producto</label>
+                                <input type="file" name="imagen" accept="image/*" class="w-full px-3 py-2 border rounded">
+                                <p class="text-xs text-gray-500">Formatos: JPG, PNG, WEBP (Máx. 2MB)</p>
                             </div>
                             <div class="mb-4">
                                 <label class="block text-gray-700 mb-2">Precio</label>

@@ -1,0 +1,84 @@
+// Función para formatear precio
+const formatPrice = (price) => {
+    return '$' + parseFloat(price).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
+// Función para generar el HTML de cada producto
+const createProductCard = (producto) => {
+    return `
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+        <div class="relative overflow-hidden">
+            <div class="aspect-[4/5] flex items-center justify-center">
+                <img src="${producto.imagen_url}"
+                    alt="${producto.nombre}"
+                    class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy">
+            </div>
+            <button class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm p-2 rounded-full hover:bg-lib-red hover:text-white transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-4 border-t border-gray-100">
+            <div class="mb-3">
+                <h3 class="font-bold text-gray-900 line-clamp-1">${producto.nombre}</h3>
+                <p class="text-gray-600 text-sm mt-1 line-clamp-2">${producto.descripcion || ''}</p>
+            </div>
+
+            <div class="flex items-center mb-3">
+                <div class="flex text-amber-400">
+                    ${'<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>'.repeat(4)}
+                    <svg class="w-4 h-4 fill-current text-gray-300" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+                </div>
+                <span class="text-gray-500 text-xs ml-2">(24 reseñas)</span>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-lg font-bold text-lib-blue">${formatPrice(producto.precio)}</p>
+                </div>
+                <button class="bg-lib-yellow hover:bg-yellow-500 text-lib-blue px-3 py-2 rounded-lg font-medium flex items-center gap-1 transition-colors shadow-sm hover:shadow-md">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    <span class="text-sm">Agregar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    `;
+};
+
+// Función principal para cargar productos
+const loadProducts = async () => {
+    try {
+        const response = await fetch('../pages/obtener_prductos_user.php');
+        const data = await response.json();
+        
+        if(!response.ok) throw new Error(data.error || 'Error al cargar productos');
+        
+        const container = document.getElementById('productos-container');
+        
+        if(data.success && data.data.length > 0) {
+            container.innerHTML = data.data.map(createProductCard).join('');
+        } else {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-10">
+                    <p class="text-gray-500">No hay productos disponibles</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('productos-container').innerHTML = `
+            <div class="col-span-full text-center py-10">
+                <p class="text-red-500">Error al cargar productos. Por favor intenta más tarde.</p>
+            </div>
+        `;
+    }
+};
+
+// Cargar productos cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', loadProducts);

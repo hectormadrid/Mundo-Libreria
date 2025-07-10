@@ -94,7 +94,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 class="w-full bg-yellow-400 text-gray-800 py-2 rounded-lg font-bold hover:bg-yellow-500 transition">
                 Ingresar
             </button>
+            <div class="mt-6">
+    <a href="index.php" 
+       class="flex items-center justify-center w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-lg font-bold hover:bg-gray-300 transition">
+        <i class="fas fa-arrow-left mr-2"></i>
+        Volver al Inicio
+    </a>
+</div>
         </form>
+        
 
         <?php if (!empty($error)): ?>
             <p class="mt-4 text-red-500 text-center"><?php echo htmlspecialchars($error); ?></p>

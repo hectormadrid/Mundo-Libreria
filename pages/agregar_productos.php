@@ -1,47 +1,101 @@
 <?php
-header('Content-Type: application/json'); // Esta línea es CRUCIAL
+header('Content-Type: application/json');
+
+// Configuración para subida de imágenes
+$uploadDir = __DIR__ . '/../uploads/productos/'; // Ruta corregida
+$allowedTypes = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+$maxSize = 2 * 1024 * 1024; // 2MB
+
+
 
 try {
     include("../db/Conexion.php");
     
-    // Validar datos recibidos
-    if (!isset($_POST['nombre'], $_POST['precio'], $_POST['descripcion'], $_POST['estado'])) {
-        throw new Exception('Faltan campos obligatorios');
+    // Validar campos obligatorios
+    $requiredFields = ['nombre', 'precio', 'descripcion', 'estado'];
+    foreach ($requiredFields as $field) {
+        if (!isset($_POST[$field])) { // Verificar si existe primero
+            throw new Exception("El campo $field es requerido");
+        }
+        if (empty(trim($_POST[$field]))) { // Validar que no esté vacío
+            throw new Exception("El campo $field no puede estar vacío");
+        }
     }
 
-    $nombre = $_POST['nombre'];
-    $precio = $_POST['precio'];
-    $descripcion = $_POST['descripcion'];
-    $estado = $_POST['estado'];
+    // Procesar la imagen si fue enviada
+    $nombreImagen = null;
+    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+        
+        // Validar tipo de archivo
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $_FILES['imagen']['tmp_name']);
+        finfo_close($finfo);
 
-    // Validar estado
-    if (!in_array($estado, ['Activo', 'Inactivo'])) {
-        throw new Exception('Estado no válido');
+        if (!array_key_exists($mimeType, $allowedTypes)) {
+            throw new Exception("Tipo de archivo no permitido. Use JPG, PNG o WEBP");
+        }
+
+        // Validar tamaño
+        if ($_FILES['imagen']['size'] > $maxSize) {
+            throw new Exception("El tamaño excede el límite de 2MB");
+        }
+
+        // Crear directorio si no existe
+        if (!file_exists($uploadDir)) {
+            if (!mkdir($uploadDir, 0755, true)) {
+                throw new Exception("No se pudo crear el directorio de uploads");
+            }
+        }
+
+        // Generar nombre único
+        $extension = $allowedTypes[$mimeType];
+        $nombreImagen = 'producto_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
+        $uploadPath = $uploadDir . $nombreImagen;
+
+        // Mover archivo
+        if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $uploadPath)) {
+            throw new Exception("Error al guardar la imagen en el servidor");
+        }
     }
 
-    $query = "INSERT INTO productos (nombre, precio, descripcion, estado) VALUES (?, ?, ?, ?)";
+    // Insertar en la base de datos
+    $query = "INSERT INTO productos (nombre, precio, descripcion, estado, imagen) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conexion->prepare($query);
     
     if (!$stmt) {
         throw new Exception('Error al preparar la consulta: ' . $conexion->error);
     }
 
-    $stmt->bind_param("sdss", $nombre, $precio, $descripcion, $estado);
+    // Sanitizar valores
+    $nombre = trim($_POST['nombre']);
+    $precio = (float)$_POST['precio'];
+    $descripcion = trim($_POST['descripcion']);
+    $estado = in_array($_POST['estado'], ['Activo', 'Inactivo']) ? $_POST['estado'] : 'Activo';
+
+    $stmt->bind_param("sdsss", $nombre, $precio, $descripcion, $estado, $nombreImagen);
     
     if ($stmt->execute()) {
-        echo json_encode([
+        $response = [
             'success' => true,
-            'message' => 'Producto agregado correctamente'
-        ]);
+            'message' => 'Producto agregado correctamente',
+            'imagen' => $nombreImagen,
+            'data' => [ // Estructura que DataTables espera para actualización
+                'id' => $stmt->insert_id,
+                'nombre' => $nombre,
+                'precio' => $precio,
+                'descripcion' => $descripcion,
+                'estado' => $estado,
+                'imagen' => $nombreImagen
+            ]
+        ];
+        echo json_encode($response);
     } else {
-        throw new Exception('Error al ejecutar: ' . $stmt->error);
+        // Si hay error en la BD, eliminar la imagen subida (si existe)
+        if ($nombreImagen && file_exists($uploadPath)) {
+            unlink($uploadPath);
+        }
+        throw new Exception('Error al ejecutar la consulta: ' . $stmt->error);
     }
-} catch (Exception $e) {
-    http_response_code(400); // Bad Request
-    echo json_encode([
-        'success' => false,
-        'error' => $e->getMessage()
-    ]);
 } finally {
     if (isset($stmt)) $stmt->close();
     if (isset($conexion)) $conexion->close();
