@@ -9,7 +9,7 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <link rel="icon" href="../../componentes/logo pestaña.ico">
             <title>Mundo Libreria</title>
-
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             <!-- Tailwind CSS -->
             <link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 

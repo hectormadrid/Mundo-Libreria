@@ -1,4 +1,4 @@
-// Función para formatear precio
+// Función para formatear precio 
 const formatPrice = (price) => {
     return '$' + parseFloat(price).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
@@ -53,12 +53,11 @@ const createProductCard = (producto) => {
 
 // Función principal para cargar productos
 const loadProducts = async (categoria = '') => {
-    console.log('Cargando productos de categoría:', categoria); // <-- depuración
+    console.log('Cargando productos de categoría:', categoria);
 
     try {
         const response = await fetch(`../pages/obtener_prductos_user.php?categoria=${encodeURIComponent(categoria)}`);
         const data = await response.json();
-
         const container = document.getElementById('productos-container');
 
         if (!response.ok) throw new Error(data.error || 'Error al cargar productos');
@@ -81,6 +80,8 @@ const loadProducts = async (categoria = '') => {
         `;
     }
 };
+
+
 document.addEventListener('DOMContentLoaded', () => {
     loadProducts(); // carga inicial
 
@@ -88,28 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', e => {
             e.preventDefault();
             const categoria = link.getAttribute('data-category');
-
-            // Si es "all", pasar string vacío para que PHP cargue todo
-            if (categoria === 'all') {
-                loadProducts('');
-            } else {
-                loadProducts(categoria);
-            }
+            loadProducts(categoria === 'all' ? '' : categoria);
         });
     });
 });
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadProducts(); // carga inicial
-
-    // Activar filtros por categoría
-    document.querySelectorAll('.category-link').forEach(link => {
-        link.addEventListener('click', e => {
-            e.preventDefault();
-            const categoria = link.getAttribute('data-category');
-            loadProducts(categoria);
-        });
-    });
-});
-// Cargar productos cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', loadProducts);

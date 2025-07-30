@@ -7,28 +7,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.querySelector('input[name="imagen"]');
     const submitBtn = formProducto.querySelector('button[type="submit"]');
 
-    // Verificar elementos
     if (!btnAgregar || !btnCancelar || !formProducto || !modal || !fileInput) {
         console.error('Error: Elementos del formulario no encontrados');
         return;
     }
 
-    // Abrir modal
     btnAgregar.addEventListener('click', () => modal.classList.remove('hidden'));
 
-    // Cerrar modal
     btnCancelar.addEventListener('click', () => {
         modal.classList.add('hidden');
         formProducto.reset();
     });
 
-    // Validar imagen antes de enviar
     fileInput.addEventListener('change', function() {
         const file = this.files[0];
         if (file) {
             const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            const maxSize = 2 * 1024 * 1024; // 2MB
-            
+            const maxSize = 2 * 1024 * 1024;
+
             if (!validTypes.includes(file.type)) {
                 alert('Formato no válido. Use JPG, PNG o WEBP');
                 this.value = '';
@@ -39,24 +35,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Enviar formulario
     formProducto.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
-        // Validación adicional
+
+        const requiredFields = formProducto.querySelectorAll('input[required], textarea[required], select[required]');
+        for (let field of requiredFields) {
+            if (!field.value.trim()) {
+                await Swal.fire({
+                    icon: 'warning',
+                    title: 'Campo requerido',
+                    text: `Por favor completa el campo: ${field.name}`,
+                    confirmButtonColor: '#d33'
+                });
+                field.focus();
+                return;
+            }
+        }
+
         const estado = document.querySelector('select[name="estado"]').value;
         if (!['Activo', 'Inactivo'].includes(estado)) {
-            alert('Selecciona un estado válido');
+            await Swal.fire({
+                icon: 'warning',
+                title: 'Estado inválido',
+                text: 'Selecciona un estado válido',
+                confirmButtonColor: '#d33'
+            });
             return;
         }
 
-        // Deshabilitar botón durante el envío
         submitBtn.disabled = true;
         submitBtn.innerHTML = 'Enviando... <i class="bx bx-loader-alt animate-spin"></i>';
 
         try {
             const formData = new FormData(this);
-            
+
             const response = await fetch('agregar_productos.php', {
                 method: 'POST',
                 body: formData
@@ -67,7 +79,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) throw new Error(data.error || 'Error en el servidor');
 
             if (data.success) {
-                alert('Producto agregado correctamente');
+                await Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'Producto agregado correctamente',
+                    confirmButtonColor: '#3085d6'
+                });
                 $('#productosTable').DataTable().ajax.reload();
                 modal.classList.add('hidden');
                 formProducto.reset();
@@ -76,7 +93,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Error:', error);
-            alert(`Error: ${error.message}`);
+            await Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Complete todos los campos correctamente',
+                confirmButtonColor: '#d33'
+            });
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = 'Guardar';
