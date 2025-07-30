@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                  $_SESSION['password'] = $usuario['password'];
             
 
-                header("Location: admin.php");
+                header("Location: Admin/admin.php");
                 exit();
             } else {
                 $error = "Contraseña incorrecta.";

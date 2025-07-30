@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const formData = new FormData(this);
             
-            const response = await fetch('../pages/agregar_productos.php', {
+            const response = await fetch('agregar_productos.php', {
                 method: 'POST',
                 body: formData
             });

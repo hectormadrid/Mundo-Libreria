@@ -1,15 +1,20 @@
 <?php
 header('Content-Type: application/json');
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['success' => false, 'error' => 'Método no permitido']);
+    exit;
+}
+
 // Configuración para subida de imágenes
-$uploadDir = __DIR__ . '/../uploads/productos/'; // Ruta corregida
+$uploadDir = __DIR__ . '/../../uploads/productos/'; 
 $allowedTypes = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
 $maxSize = 2 * 1024 * 1024; // 2MB
 
 
 
 try {
-    include("../db/Conexion.php");
+   require_once(__DIR__ . '/../../db/Conexion.php');
     
     // Validar campos obligatorios
     $requiredFields = ['nombre', 'precio', 'descripcion','categoria', 'estado'];

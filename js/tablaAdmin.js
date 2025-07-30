@@ -8,11 +8,11 @@ class ProductosDataTable {
   init() {
     this.dataTable = this.table.DataTable({
       ajax: {
-        url: "../pages/obtener_productos.php",
+        url: "obtener_productos.php",
         type: "GET",
         dataSrc: "data",
         error: function (xhr, error, thrown) {
-          console.error("Error en AJAX:", xhr.responseText);
+          console.error("Error en AJAX:", xhr.responseText,error);
           alert("Error al cargar los datos. Ver consola para detalles.");
         },
       },

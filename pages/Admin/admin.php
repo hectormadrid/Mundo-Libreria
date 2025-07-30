@@ -29,7 +29,7 @@
             <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.min.css">
 
             <!-- Tu CSS personalizado -->
-            <link rel="stylesheet" href="../style/Menu.css">
+            <link rel="stylesheet" href="../../style/Menu.css">
             <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
             <!-- jQuery -->
             <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -68,7 +68,7 @@
                                 <div class="profile_name">
                                     <?php echo isset($_SESSION['nombre']) ? htmlspecialchars($_SESSION['nombre']) : 'Administrador'; ?>
                                 </div>
-                                <a href="../db/cerrar_sesion.php"
+                                <a href="../../db/cerrar_sesion.php"
                                     class="inline-block bg-[#3664E4] hover:bg-red-800 text-white font-bold py-2 px-4 rounded mb-4 bx bx-log-out">
                                 </a>
                             </div>
@@ -116,10 +116,10 @@
             </section>
 
 
-            <script src="../js/menu_admin.js"></script>
-            <script src="../js/agregarProductos.js"></script>
-            <script src="../js/tablaAdmin.js"></script>
-            <script src="../js/editarProductos.js"></script>
+            <script src="../../js/menu_admin.js"></script>
+            <script src="../../js/agregarProductos.js"></script>
+            <script src="../../js/tablaAdmin.js"></script>
+            <script src="../../js/editarProductos.js"></script>
 
             <!-- DataTables JS -->
             <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
@@ -138,7 +138,7 @@
                 <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
                     <div class="p-6">
                         <h2 class="text-2xl font-bold mb-4">Agregar Producto</h2>
-                        <form id="formAgregarProducto">
+                        <form id="formAgregarProducto" enctype="multipart/form-data" method="POST">
                             <div class="mb-4">
                                 <label class="block text-gray-700 mb-2">Nombre</label>
                                 <input type="text" name="nombre" class="w-full px-3 py-2 border rounded">

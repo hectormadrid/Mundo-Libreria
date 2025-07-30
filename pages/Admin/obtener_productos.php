@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *"); // Solo para desarrollo
 
 try {
-    require_once __DIR__.'/../db/Conexion.php';
+    require_once __DIR__.'/../../db/Conexion.php';
     
   
     $query = "SELECT * FROM productos";

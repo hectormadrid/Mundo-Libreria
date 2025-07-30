@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require_once '../db/Conexion.php'; // Ajusta esta ruta según tu estructura
+require_once '/../../db/Conexion.php'; // Ajusta esta ruta según tu estructura
 $categoriasPermitidas = ['Libreria', 'Oficina', 'Papeleria'];
 $categoria = $_POST['categoria'] ?? '';
 // Obtener datos del formulario

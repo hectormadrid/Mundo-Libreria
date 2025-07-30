@@ -52,16 +52,18 @@ const createProductCard = (producto) => {
 };
 
 // Función principal para cargar productos
-const loadProducts = async () => {
+const loadProducts = async (categoria = '') => {
+    console.log('Cargando productos de categoría:', categoria); // <-- depuración
+
     try {
-        const response = await fetch('../pages/obtener_prductos_user.php');
+        const response = await fetch(`../pages/obtener_prductos_user.php?categoria=${encodeURIComponent(categoria)}`);
         const data = await response.json();
-        
-        if(!response.ok) throw new Error(data.error || 'Error al cargar productos');
-        
+
         const container = document.getElementById('productos-container');
-        
-        if(data.success && data.data.length > 0) {
+
+        if (!response.ok) throw new Error(data.error || 'Error al cargar productos');
+
+        if (data.success && data.data.length > 0) {
             container.innerHTML = data.data.map(createProductCard).join('');
         } else {
             container.innerHTML = `
@@ -79,6 +81,35 @@ const loadProducts = async () => {
         `;
     }
 };
+document.addEventListener('DOMContentLoaded', () => {
+    loadProducts(); // carga inicial
 
+    document.querySelectorAll('.category-link').forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            const categoria = link.getAttribute('data-category');
+
+            // Si es "all", pasar string vacío para que PHP cargue todo
+            if (categoria === 'all') {
+                loadProducts('');
+            } else {
+                loadProducts(categoria);
+            }
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadProducts(); // carga inicial
+
+    // Activar filtros por categoría
+    document.querySelectorAll('.category-link').forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            const categoria = link.getAttribute('data-category');
+            loadProducts(categoria);
+        });
+    });
+});
 // Cargar productos cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', loadProducts);

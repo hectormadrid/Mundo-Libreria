@@ -71,13 +71,10 @@
     <div class="container mx-auto px-4 py-2">
       <div class="flex flex-wrap justify-center gap-4 text-sm">
         <!-- Inicio -->
-        <a href="../pages/index.php" class="px-3 py-1 rounded-full hover:bg-blue-50  text-lib-blue font-medium">Inicio</a>
-
-     <a href="#" class="px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Librería</a>
-
-        <!-- Resto de enlaces -->
-        <a href="#" class="px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Papelería</a>
-        <a href="#" class="px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Oficina</a>
+        <a href="../pages/index.php" data-category="all" class=" category-link px-3 py-1 rounded-full hover:bg-blue-50  text-lib-blue font-medium">Inicio</a>
+        <a  data-category="libreria" class="category-link px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Librería</a>
+        <a  data-category="papeleria" class="category-link px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Papelería</a>
+        <a  data-category="oficina" class="category-link px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Oficina</a>
         <a href="../pages/contact.html" class="px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Contacto</a>
       </div>
     </div>
@@ -153,46 +150,44 @@
   </section>
 
 
-
-
   <main class="mt-12 container mx-auto px-4">
     <div class="flex justify-between items-center mb-8">
-        <h2 class="text-3xl font-bold text-lib-blue">Productos Destacados</h2>
-        <a href="productos.php" class="text-lib-red hover:underline font-medium">Ver todos →</a>
+      <h2 class="text-3xl font-bold text-lib-blue">Productos Destacados</h2>
+      <a href="productos.php" class="text-lib-red hover:underline font-medium">Ver todos →</a>
     </div>
 
     <!-- Grid de Productos -->
     <div id="productos-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <!-- Los productos se cargarán aquí dinámicamente -->
+      <!-- Los productos se cargarán aquí dinámicamente -->
     </div>
-</main>
+  </main>
 
   <!-- Footer se cargará aquí -->
-<footer class="bg-lib-blue text-white mt-16 py-10">
-      <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div>
-          <h3 class="font-bold text-xl mb-4 flex items-center">
-            <img src="../assets/logo.ico" alt="Logo" class="h-6 mr-2"> Mundo Librería
-          </h3>
-        </div>
-        <div>
-          <h3 class="font-bold text-lg mb-4">Horario</h3>
-          <p>Lunes a Viernes: 9:00 - 20:00</p>
-          <p>Sábados: 10:00 - 18:00</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-lg mb-4">Síguenos</h3>
-          <div class="flex space-x-4">
-            <a href="#" class="bg-white text-lib-blue p-2 rounded-full hover:bg-lib-yellow">📘</a>
-            <a href="#" class="bg-white text-lib-blue p-2 rounded-full hover:bg-lib-yellow">📸</a>
-            <a href="#" class="bg-white text-lib-blue p-2 rounded-full hover:bg-lib-yellow">🐦</a>
-          </div>
+  <footer class="bg-lib-blue text-white mt-16 py-10">
+    <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div>
+        <h3 class="font-bold text-xl mb-4 flex items-center">
+          <img src="../assets/logo.ico" alt="Logo" class="h-6 mr-2"> Mundo Librería
+        </h3>
+      </div>
+      <div>
+        <h3 class="font-bold text-lg mb-4">Horario</h3>
+        <p>Lunes a Viernes: 9:00 - 20:00</p>
+        <p>Sábados: 10:00 - 18:00</p>
+      </div>
+      <div>
+        <h3 class="font-bold text-lg mb-4">Síguenos</h3>
+        <div class="flex space-x-4">
+          <a href="#" class="bg-white text-lib-blue p-2 rounded-full hover:bg-lib-yellow">📘</a>
+          <a href="#" class="bg-white text-lib-blue p-2 rounded-full hover:bg-lib-yellow">📸</a>
+          <a href="#" class="bg-white text-lib-blue p-2 rounded-full hover:bg-lib-yellow">🐦</a>
         </div>
       </div>
-      <div class="border-t border-blue-300 mt-8 pt-6 text-center text-sm">
-        <p>© 2025 Mundo Librería. Todos los derechos reservados.</p>
-      </div>
-    </footer>
+    </div>
+    <div class="border-t border-blue-300 mt-8 pt-6 text-center text-sm">
+      <p>© 2025 Mundo Librería. Todos los derechos reservados.</p>
+    </div>
+  </footer>
 
   <!-- Scripts -->
   <script src="../js/carousel.js"></script>
