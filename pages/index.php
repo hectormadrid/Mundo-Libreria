@@ -75,7 +75,7 @@
         <a  data-category="libreria" class="category-link px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Librería</a>
         <a  data-category="papeleria" class="category-link px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Papelería</a>
         <a  data-category="oficina" class="category-link px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Oficina</a>
-        <a href="../pages/contact.html" class="px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Contacto</a>
+        <a id="contacto-link" class="px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Contacto</a>
       </div>
     </div>
   </nav>
@@ -152,15 +152,19 @@
 
   <main class="mt-12 container mx-auto px-4">
     <div class="flex justify-between items-center mb-8">
-      <h2 class="text-3xl font-bold text-lib-blue">Productos Destacados</h2>
-      <a href="productos.php" class="text-lib-red hover:underline font-medium">Ver todos →</a>
+      <h2 class="text-3xl font-bold text-lib-blue">Productos</h2>
+     
     </div>
 
     <!-- Grid de Productos -->
     <div id="productos-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <!-- Los productos se cargarán aquí dinámicamente -->
     </div>
+    
   </main>
+<div id="productos-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  <!-- productos aquí -->
+</div>
 
   <!-- Footer se cargará aquí -->
   <footer class="bg-lib-blue text-white mt-16 py-10">
@@ -193,6 +197,7 @@
   <script src="../js/carousel.js"></script>
   <script src="../js/components.js"></script>
   <script src="../js/cargarProductosUser.js"></script>
+  <script src="../js/contacto.js"></script>
 
 
 
