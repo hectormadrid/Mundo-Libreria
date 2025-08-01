@@ -122,63 +122,7 @@ class ProductosDataTable {
     };
   }
 
-  static editarProducto(rowData) {
-    const row = typeof rowData === "string" ? JSON.parse(rowData) : rowData;
-
-    const nuevoNombre = prompt("Editar nombre:", row.nombre);
-    const nuevoPrecio = prompt("Editar precio:", row.precio);
-    const nuevaDescripcion = prompt("Editar descripción:", row.descripcion);
-
-    if (
-      nuevoNombre !== null &&
-      nuevoPrecio !== null &&
-      nuevaDescripcion !== null
-    ) {
-      $.ajax({
-        url: "../php/acciones_productos.php",
-        type: "POST",
-        data: {
-          action: "editar",
-          id: row.id,
-          nombre: nuevoNombre,
-          precio: parseFloat(nuevoPrecio),
-          descripcion: nuevaDescripcion,
-        },
-        success: function (response) {
-          alert(response.success);
-          window.productosTable.reload();
-        },
-        error: function (xhr) {
-          alert("Error: " + xhr.responseText);
-        },
-      });
-    }
-  }
-
-  static cambiarEstadoProducto(rowData) {
-    const row = typeof rowData === "string" ? JSON.parse(rowData) : rowData;
-    const confirmar = confirm(
-      `¿${row.estado === "activo" ? "Desactivar" : "Activar"} este producto?`
-    );
-
-    if (confirmar) {
-      $.ajax({
-        url: "../php/acciones_productos.php",
-        type: "POST",
-        data: {
-          action: "cambiar_estado",
-          id: row.id,
-        },
-        success: function (response) {
-          alert(response.success);
-          window.productosTable.reload();
-        },
-        error: function (xhr) {
-          alert("Error: " + xhr.responseText);
-        },
-      });
-    }
-  }
+ 
   static showFullImage(src) {
     const modal = `
             <div class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4" 

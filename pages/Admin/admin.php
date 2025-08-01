@@ -195,26 +195,26 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label for="editarNombre" class="block mb-2">Nombre</label>
-                                    <input type="text" id="editarNombre" name="nombre" class="w-full p-2 border rounded" required>
+                                    <input type="text" id="editarNombre" name="nombre" class="w-full p-2 border rounded" >
                                 </div>
 
                                 <div>
                                     <label for="editarPrecio" class="block mb-2">Precio</label>
-                                    <input type="number" step="0.01" id="editarPrecio" name="precio" class="w-full p-2 border rounded" required>
+                                    <input type="number" step="0.01" id="editarPrecio" name="precio" class="w-full p-2 border rounded" >
                                 </div>
 
                                 <div class="mb-4">
                                     <label for="editarCategoria" class="block mb-2">Categoría</label>
-                                    <select id="editarCategoria" name="categoria" class="w-full p-2 border rounded" required>
+                                    <select id="editarCategoria" name="categoria" class="w-full p-2 border rounded" >
                                         <option value="">Seleccione una categoría</option>
                                         <option value="Libreria">Librería</option>
                                         <option value="Oficina">Oficina</option>
                                         <option value="Papeleria">Papelería</option>
-                                    </select>1
+                                    </select>
                                 </div>
                                 <div>
                                     <label for="editarEstado" class="block mb-2">Estado</label>
-                                    <select id="editarEstado" name="estado" class="w-full p-2 border rounded">
+                                    <select id="editarEstado" name="estado" class="w-full p-2 border rounded" > 
                                         <option value="Activo">Activo</option>
                                         <option value="Inactivo">Inactivo</option>
                                     </select>
@@ -223,7 +223,7 @@
 
                             <div class="mb-4">
                                 <label for="editarDescripcion" class="block mb-2">Descripción</label>
-                                <textarea id="editarDescripcion" name="descripcion" rows="3" class="w-full p-2 border rounded"></textarea>
+                                <textarea id="editarDescripcion" name="descripcion" rows="3" class="w-full p-2 border rounded" ></textarea>
                             </div>
 
                             <div class="mb-4">
