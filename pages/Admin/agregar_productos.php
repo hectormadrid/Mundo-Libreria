@@ -7,17 +7,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Configuración para subida de imágenes
-$uploadDir = __DIR__ . '/../../uploads/productos/'; 
+$uploadDir = __DIR__ . '/../../uploads/productos/';
 $allowedTypes = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
 $maxSize = 2 * 1024 * 1024; // 2MB
 
 
 
 try {
-   require_once(__DIR__ . '/../../db/Conexion.php');
-    
+    require_once(__DIR__ . '/../../db/Conexion.php');
+
     // Validar campos obligatorios
-    $requiredFields = ['nombre', 'precio', 'descripcion','categoria', 'estado'];
+    $requiredFields = ['nombre', 'precio', 'descripcion', 'categoria', 'estado', 'Stock'];
     foreach ($requiredFields as $field) {
         if (!isset($_POST[$field])) { // Verificar si existe primero
             throw new Exception("El campo $field es requerido");
@@ -30,7 +30,7 @@ try {
     // Procesar la imagen si fue enviada
     $nombreImagen = null;
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
-        
+
         // Validar tipo de archivo
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimeType = finfo_file($finfo, $_FILES['imagen']['tmp_name']);
@@ -64,9 +64,9 @@ try {
     }
 
     // Insertar en la base de datos
-    $query = "INSERT INTO productos (nombre, precio, descripcion, categoria, estado, imagen) VALUES (?, ?, ?, ?,?, ?)";
+    $query = "INSERT INTO productos (nombre, precio, descripcion, categoria, estado, imagen,stock) VALUES (?, ?, ?, ?,?, ?,?)";
     $stmt = $conexion->prepare($query);
-    
+
     if (!$stmt) {
         throw new Exception('Error al preparar la consulta: ' . $conexion->error);
     }
@@ -77,9 +77,20 @@ try {
     $descripcion = trim($_POST['descripcion']);
     $categoria = trim($_POST['categoria']);
     $estado = in_array($_POST['estado'], ['Activo', 'Inactivo']) ? $_POST['estado'] : 'Activo';
+    $Stock = (int)$_POST['Stock'];
 
-    $stmt->bind_param("sdssss", $nombre, $precio, $descripcion, $categoria, $estado, $nombreImagen);
-    
+
+    $stmt->bind_param(
+        "sdssssi",
+        $nombre,
+        $precio,
+        $descripcion,
+        $categoria,
+        $estado,
+        $nombreImagen,
+        $Stock
+    );
+
     if ($stmt->execute()) {
         $response = [
             'success' => true,
@@ -90,9 +101,11 @@ try {
                 'nombre' => $nombre,
                 'precio' => $precio,
                 'descripcion' => $descripcion,
-                'categoria'=> $categoria,
+                'categoria' => $categoria,
                 'estado' => $estado,
-                'imagen' => $nombreImagen
+                'Stock' => $Stock,
+                'imagen' => $nombreImagen,
+
             ]
         ];
         echo json_encode($response);
@@ -107,4 +120,3 @@ try {
     if (isset($stmt)) $stmt->close();
     if (isset($conexion)) $conexion->close();
 }
-?>

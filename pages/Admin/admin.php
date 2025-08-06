@@ -104,6 +104,7 @@
                                     <th class="py-3 px-6 text-center">Precio</th>
                                     <th class="py-3 px-6 text-center">Descripción</th>
                                     <th class="py-3 px-6 text-center">Categoria</th>
+                                     <th class="py-3 px-6 text-center">stock</th>
                                     <th class="py-3 px-6 text-center">Estado</th>
                                     <th class="py-3 px-6 text-center">Fecha de Creación</th>
                                     <th class="py-3 px-6 text-center">Acciones</th>
@@ -163,6 +164,10 @@
                                     <option value="Oficina">Oficina</option>
                                     <option value="Papeleria">Papeleria</option>
                                 </select>
+                            </div>
+                                 <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Stock</label>
+                                <input type="number" name="Stock" class="w-full px-3 py-2 border rounded">
                             </div>
                             <div class="mb-4">
                                 <label class="block text-gray-700 mb-2">Estado</label>

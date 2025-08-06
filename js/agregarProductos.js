@@ -44,7 +44,9 @@ document.addEventListener("DOMContentLoaded", function () {
       formProducto.querySelector('input[name="precio"]'),
       formProducto.querySelector('textarea[name="descripcion"]'),
       formProducto.querySelector('select[name="categoria"]'),
+      formProducto.querySelector('input[name="Stock"]'),
       formProducto.querySelector('select[name="estado"]'),
+      
     ];  
 
     for (let field of requiredFields) {

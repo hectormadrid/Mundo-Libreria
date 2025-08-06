@@ -12,7 +12,7 @@ class ProductosDataTable {
         type: "GET",
         dataSrc: "data",
         error: function (xhr, error, thrown) {
-          console.error("Error en AJAX:", xhr.responseText,error);
+          console.error("Error en AJAX:", xhr.responseText, error);
           alert("Error al cargar los datos. Ver consola para detalles.");
         },
       },
@@ -49,18 +49,22 @@ class ProductosDataTable {
         render: $.fn.dataTable.render.number(",", "$"),
       },
       { data: "descripcion" },
+
       {
-    data: "categoria",
-    render: function(data) {
-        const colores = {
-            'Libreria': 'bg-blue-100 text-blue-800',
-            'Oficina': 'bg-green-100 text-green-800',
-            'Papeleria': 'bg-purple-100 text-purple-800'
-        };
-        const clase = colores[data] || 'bg-gray-100 text-gray-800';
-        return `<span class="px-2 py-1 rounded-full text-xs ${clase}">${data}</span>`;
-    }
-},
+        data: "categoria",
+        render: function (data) {
+          const colores = {
+            Libreria: "bg-blue-100 text-blue-800",
+            Oficina: "bg-green-100 text-green-800",
+            Papeleria: "bg-purple-100 text-purple-800",
+          };
+          const clase = colores[data] || "bg-gray-100 text-gray-800";
+          return `<span class="px-2 py-1 rounded-full text-xs ${clase}">${data}</span>`;
+        },
+      },
+        {
+        data: "stock"
+      },
       {
         data: "estado",
         render: (data) => {
@@ -77,20 +81,20 @@ class ProductosDataTable {
       },
       // --- Nueva columna para botones ---
       {
-    data: "id",
-    render: function(data, type, row) {
-        // Escapar comillas correctamente
-        const safeData = JSON.stringify(row)
+        data: "id",
+        render: function (data, type, row) {
+          // Escapar comillas correctamente
+          const safeData = JSON.stringify(row)
             .replace(/'/g, "\\'")
-            .replace(/"/g, '&quot;');
-        
-        return `
+            .replace(/"/g, "&quot;");
+
+          return `
             <button onclick="ProductEditModal.open('${safeData}')"
                     class="px-3 py-1 bg-blue-500 text-white rounded">
                 <i class="bx bx-edit"></i> Editar
             </button>
         `;
-    },
+        },
 
         catch(error) {
           console.error("Error al generar botón:", error);
@@ -122,7 +126,6 @@ class ProductosDataTable {
     };
   }
 
- 
   static showFullImage(src) {
     const modal = `
             <div class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4" 
