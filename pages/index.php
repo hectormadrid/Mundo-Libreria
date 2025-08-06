@@ -91,7 +91,6 @@
           <div class="bg-gradient-to-r from-lib-blue to-lib-red h-full flex items-center justify-center text-center">
             <div class="absolute inset-0 bg-black opacity-20"></div>
             <div class="relative z-10 px-4 text-white">
-
               <img src="assets/banner2.jpg" alt="Oferta especial" class="w-full h-full object-cover">
             </div>
           </div>
@@ -99,6 +98,7 @@
 
         <!-- Slide 2 (Ejemplo con imagen) -->
         <div class="min-w-full h-full relative">
+          
           <img src="assets/banner2.jpg" alt="Oferta especial" class="w-full h-full object-cover">
           <div class="absolute inset-0 bg-black opacity-30"></div>
           <div class="relative z-10 h-full flex items-center justify-center text-center text-white px-4">

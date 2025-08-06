@@ -38,6 +38,7 @@ const createProductCard = (producto) => {
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-lg font-bold text-lib-blue">${formatPrice(producto.precio)}</p>
+                    <p class="text-lg font-bold text-lib-blue">Disponibles:  ${producto.Stock} Unidades</p>
                 </div>
                 <button class="bg-lib-yellow hover:bg-yellow-500 text-lib-blue px-3 py-2 rounded-lg font-medium flex items-center gap-1 transition-colors shadow-sm hover:shadow-md">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
