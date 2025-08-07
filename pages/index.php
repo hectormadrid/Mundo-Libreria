@@ -33,7 +33,6 @@
         <img src="../assets/logo.ico" alt="Logo" class="h-10 mr-3">
         <h1 class="text-2xl font-bold">Mundo <span class="text-lib-yellow">Librería</span></h1>
       </div>
-
       <!-- Barra de búsqueda y botones de usuario -->
       <div class="flex items-center space-x-4">
         <!-- Búsqueda -->
@@ -64,7 +63,13 @@
             <span class="hidden md:inline">Iniciar Sesión</span>
           </a>
         <?php endif; ?>
-
+        <a href="Carrito.php" class="relative text-white p-2 rounded-full hover:bg-white/20 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </a>
+      </div>
+    </div>  
   </header>
 
   <nav class="bg-lib-yellow border-b border-lib-blue">
@@ -72,9 +77,9 @@
       <div class="flex flex-wrap justify-center gap-4 text-sm">
         <!-- Inicio -->
         <a href="../pages/index.php" data-category="all" class=" category-link px-3 py-1 rounded-full hover:bg-blue-50  text-lib-blue font-medium">Inicio</a>
-        <a  data-category="libreria" class="category-link px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Librería</a>
-        <a  data-category="papeleria" class="category-link px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Papelería</a>
-        <a  data-category="oficina" class="category-link px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Oficina</a>
+        <a data-category="libreria" class="category-link px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Librería</a>
+        <a data-category="papeleria" class="category-link px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Papelería</a>
+        <a data-category="oficina" class="category-link px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Oficina</a>
         <a id="contacto-link" class="px-3 py-1 hover:bg-white hover:text-lib-blue rounded-full transition">Contacto</a>
       </div>
     </div>
@@ -98,7 +103,7 @@
 
         <!-- Slide 2 (Ejemplo con imagen) -->
         <div class="min-w-full h-full relative">
-          
+
           <img src="assets/banner2.jpg" alt="Oferta especial" class="w-full h-full object-cover">
           <div class="absolute inset-0 bg-black opacity-30"></div>
           <div class="relative z-10 h-full flex items-center justify-center text-center text-white px-4">
@@ -153,18 +158,18 @@
   <main class="mt-12 container mx-auto px-4">
     <div class="flex justify-between items-center mb-8">
       <h2 class="text-3xl font-bold text-lib-blue">Productos</h2>
-     
+
     </div>
 
     <!-- Grid de Productos -->
     <div id="productos-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <!-- Los productos se cargarán aquí dinámicamente -->
     </div>
-    
+
   </main>
-<div id="productos-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-  <!-- productos aquí -->
-</div>
+  <div id="productos-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <!-- productos aquí -->
+  </div>
 
   <!-- Footer se cargará aquí -->
   <footer class="bg-lib-blue text-white mt-16 py-10">

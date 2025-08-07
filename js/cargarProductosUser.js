@@ -40,7 +40,7 @@ const createProductCard = (producto) => {
                     <p class="text-lg font-bold text-lib-blue">${formatPrice(producto.precio)}</p>
                     <p class="text-lg font-bold text-lib-blue">Disponibles:  ${producto.Stock} Unidades</p>
                 </div>
-                <button class="bg-lib-yellow hover:bg-yellow-500 text-lib-blue px-3 py-2 rounded-lg font-medium flex items-center gap-1 transition-colors shadow-sm hover:shadow-md">
+                <button data-id-producto="${producto.id}" class="agregar-carrito-btn bg-lib-yellow hover:bg-yellow-500 text-lib-blue px-3 py-2 rounded-lg font-medium flex items-center gap-1 transition-colors shadow-sm hover:shadow-md">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
@@ -51,7 +51,40 @@ const createProductCard = (producto) => {
     </div>
     `;
 };
+const attachEventListeners = () => {
+    document.querySelectorAll('.agregar-carrito-btn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            const id_producto = e.currentTarget.getAttribute('data-id-producto');
+            
+            try {
+                const response = await fetch('../pages/agregar_al_carrito.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id_producto })
+                });
 
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    // Aquí puedes mostrar una notificación de éxito
+                    console.log('Producto agregado al carrito');
+                    // Opcional: actualizar un contador de carrito en la UI
+                } else {
+                    // Aquí puedes mostrar una notificación de error
+                    console.error('Error al agregar producto:', result.error);
+                    if (response.status === 401) {
+                        // Redirigir al login si el usuario no está autenticado
+                        window.location.href = '../pages/login.php';
+                    }
+                }
+            } catch (error) {
+                console.error('Error de red:', error);
+            }
+        });
+    });
+};
 // Función principal para cargar productos
 const loadProducts = async (categoria = '') => {
     console.log('Cargando productos de categoría:', categoria);
@@ -65,6 +98,7 @@ const loadProducts = async (categoria = '') => {
 
         if (data.success && data.data.length > 0) {
             container.innerHTML = data.data.map(createProductCard).join('');
+            attachEventListeners();
         } else {
             container.innerHTML = `
                 <div class="col-span-full text-center py-10">
