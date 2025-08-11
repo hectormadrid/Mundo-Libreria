@@ -23,17 +23,27 @@ class ProductEditModal {
 
         this.btnCancelar?.addEventListener('click', () => this.close());
 
-        this.imagenInput?.addEventListener('change', function () {
+        this.imagenInput?.addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
                 const validTypes = ["image/jpeg", "image/png", "image/webp"];
                 const maxSize = 2 * 1024 * 1024;
 
                 if (!validTypes.includes(file.type)) {
-                    alert("Formato no válido. Use JPG, PNG o WEBP");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Formato no válido',
+                        text: 'Use JPG, PNG o WEBP',
+                        confirmButtonColor: '#d33'
+                    });
                     this.value = "";
                 } else if (file.size > maxSize) {
-                    alert("La imagen es demasiado grande (Máx. 2MB)");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Imagen demasiado grande',
+                        text: 'Máximo 2MB permitido',
+                        confirmButtonColor: '#d33'
+                    });
                     this.value = "";
                 }
             }
@@ -49,20 +59,35 @@ class ProductEditModal {
         try {
             if (!this.modal) throw new Error("Modal no inicializado. ¿Llamaste a ProductEditModal.init()?");
 
-            const product = typeof productData === 'string'
-                ? JSON.parse(productData.replace(/&quot;/g, '"'))
-                : productData;
+            let product;
+            if (typeof productData === 'string') {
+                try {
+                    product = JSON.parse(productData.replace(/&quot;/g, '"'));
+                } catch (e) {
+                    console.error("Error parsing product data:", e);
+                    throw new Error("Datos del producto corruptos");
+                }
+            } else {
+                product = productData;
+            }
 
+            if (!product || !product.id || !product.nombre) {
+                throw new Error("Datos del producto incompletos");
+            }
+
+            // Llenar formulario
             document.getElementById("editarId").value = product.id;
             document.getElementById("editarNombre").value = product.nombre;
             document.getElementById("editarPrecio").value = product.precio;
+            document.getElementById("editarStock").value = product.stock || product.Stock || 0;
             document.getElementById("editarDescripcion").value = product.descripcion || "";
             document.getElementById("editarCategoria").value = product.categoria || "";
             document.getElementById("editarEstado").value = product.estado || "Activo";
 
+            // Manejar imagen
             if (product.imagen) {
-                const imgPreview = document.getElementById('imagenActual');
-                imgPreview.src = `http://localhost/Mundo-Libreria/uploads/productos/${product.imagen}`;
+                this.imagenActual.src = `http://localhost/Mundo-Libreria/uploads/productos/${product.imagen}`;
+                this.imagenActualContainer.classList.remove("hidden");
             } else {
                 this.imagenActualContainer.classList.add("hidden");
             }
@@ -71,7 +96,12 @@ class ProductEditModal {
 
         } catch (error) {
             console.error("Error al abrir modal:", error);
-            alert("Error al cargar los datos del producto");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudieron cargar los datos del producto',
+                confirmButtonColor: '#d33'
+            });
         }
     }
 
@@ -85,66 +115,99 @@ class ProductEditModal {
         this.submitBtn.innerHTML = 'Guardando... <i class="bx bx-loader-alt animate-spin"></i>';
 
         try {
-            const fields = [
-                { id: "editarNombre", name: "nombre" },
-                { id: "editarPrecio", name: "precio" },
-                { id: "editarDescripcion", name: "descripción" },
-                { id: "editarCategoria", name: "categoría" },
-                { id: "editarEstado", name: "estado" }
+            // Validar campos requeridos
+            const requiredFields = [
+                { id: "editarNombre", name: "Nombre" },
+                { id: "editarPrecio", name: "Precio" },
+                { id: "editarStock", name: "Stock" },
+                { id: "editarCategoria", name: "Categoría" }
             ];
 
-            for (const field of fields) {
-                const el = document.getElementById(field.id);
-                if (!el.value.trim()) {
+            for (const field of requiredFields) {
+                const element = document.getElementById(field.id);
+                if (!element.value.trim()) {
                     await Swal.fire({
-                        icon: "warning",
-                        title: "Campo requerido",
-                        text: `Por favor completa el campo: ${field.name}`,
-                        confirmButtonColor: "#d33",
+                        icon: 'warning',
+                        title: 'Campo requerido',
+                        text: `Por favor complete el campo ${field.name}`,
+                        confirmButtonColor: '#d33'
                     });
-                    el.focus();
-                    throw new Error("Validación incompleta");
+                    element.focus();
+                    return;
                 }
             }
 
+            // Validar tipos de datos
+            const precio = parseFloat(document.getElementById("editarPrecio").value);
+            const stock = parseInt(document.getElementById("editarStock").value);
+
+            if (isNaN(precio) || precio <= 0) {
+                await Swal.fire({
+                    icon: 'warning',
+                    title: 'Precio inválido',
+                    text: 'El precio debe ser un número positivo',
+                    confirmButtonColor: '#d33'
+                });
+                document.getElementById("editarPrecio").focus();
+                return;
+            }
+
+            if (isNaN(stock) || stock < 0) {
+                await Swal.fire({
+                    icon: 'warning',
+                    title: 'Stock inválido',
+                    text: 'El stock debe ser un número entero no negativo',
+                    confirmButtonColor: '#d33'
+                });
+                document.getElementById("editarStock").focus();
+                return;
+            }
+
+            // Preparar datos del formulario
             const formData = new FormData(this.form);
+
+            // Enviar datos al servidor
             const response = await fetch("editar_productos.php", {
                 method: "POST",
                 body: formData
             });
 
-            const contentType = response.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-                const text = await response.text();
-                throw new Error("Respuesta inválida del servidor: " + text.slice(0, 300));
+            // Procesar respuesta
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Error en el servidor");
             }
 
             const data = await response.json();
 
-            if (!response.ok) throw new Error(data.error || "Error en el servidor");
+            if (!data.success) {
+                throw new Error(data.error || "Error al actualizar el producto");
+            }
 
-            if (data.success) {
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Éxito',
-                    text: 'Producto Editado Correctamente',
-                    confirmButtonColor: '#3085d6'
-                });
-                $("#productosTable").DataTable().ajax.reload();
-                this.close();
+            // Mostrar éxito y recargar datos
+            await Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: 'Producto actualizado correctamente',
+                confirmButtonColor: '#3085d6'
+            });
+
+            // Cerrar modal y recargar tabla
+            this.close();
+            if (typeof window.reloadProductTable === 'function') {
+                window.reloadProductTable();
             } else {
-                throw new Error(data.error || "Error desconocido");
+                location.reload();
             }
+
         } catch (error) {
-            if (error.message !== "Validación incompleta") {
-                console.error("Error:", error);
-                await Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.message,
-                    confirmButtonColor: '#d33'
-                });
-            }
+            console.error("Error al guardar cambios:", error);
+            await Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                html: `<small>${error.message}</small>`,
+                confirmButtonColor: '#d33'
+            });
         } finally {
             this.submitBtn.disabled = false;
             this.submitBtn.innerHTML = "Guardar Cambios";
@@ -152,6 +215,7 @@ class ProductEditModal {
     }
 }
 
+// Inicializar cuando el DOM esté listo
 document.addEventListener("DOMContentLoaded", () => {
     ProductEditModal.init();
     window.ProductEditModal = ProductEditModal;

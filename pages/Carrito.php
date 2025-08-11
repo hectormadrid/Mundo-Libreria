@@ -128,6 +128,5 @@ while ($row = $result->fetch_assoc()) {
             </div>
         <?php endif; ?>
     </main>
-
 </body>
 </html>
