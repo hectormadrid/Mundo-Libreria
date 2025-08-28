@@ -52,6 +52,7 @@ while ($row = $result->fetch_assoc()) {
     <link rel="icon" href="../assets/MUNDO-WEB.ico">
     <title>Carrito de Compras - Mundo Librería</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
     tailwind.config = {
       theme: {
