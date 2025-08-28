@@ -52,7 +52,7 @@ while ($row = $result->fetch_assoc()) {
     <link rel="icon" href="../assets/MUNDO-WEB.ico">
     <title>Carrito de Compras - Mundo Librería</title>
     <script src="https://cdn.tailwindcss.com"></script>
-     <script>
+    <script>
     tailwind.config = {
       theme: {
         extend: {
@@ -64,7 +64,7 @@ while ($row = $result->fetch_assoc()) {
         }
       }
     }
-  </script>
+    </script>
 </head>
 <body class="bg-gray-100">
 
@@ -104,11 +104,12 @@ while ($row = $result->fetch_assoc()) {
                             <th class="py-2">Precio</th>
                             <th class="py-2">Cantidad</th>
                             <th class="py-2">Subtotal</th>
+                            <th class="py-2">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($carrito_items as $item): ?>
-                            <tr class="border-b">
+                            <tr class="border-b" id="item-<?= $item['id'] ?>">
                                 <td class="py-4 flex items-center">
                                     <img src="/Mundo-Libreria/uploads/productos/<?= htmlspecialchars($item['imagen']) ?>" alt="<?= htmlspecialchars($item['nombre']) ?>" class="w-16 h-16 object-cover mr-4">
                                     <span><?= htmlspecialchars($item['nombre']) ?></span>
@@ -116,6 +117,11 @@ while ($row = $result->fetch_assoc()) {
                                 <td class="py-4">$<?= number_format($item['precio'], 0, ',', '.') ?></td>
                                 <td class="py-4"><?= $item['cantidad'] ?></td>
                                 <td class="py-4">$<?= number_format($item['subtotal'], 0, ',', '.') ?></td>
+                                <td class="py-4">
+                                    <button onclick="eliminarDelCarrito(<?= $item['id'] ?>)" class="bg-lib-red text-white px-3 py-1 rounded hover:bg-red-700">
+                                        Eliminar
+                                    </button>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -128,5 +134,8 @@ while ($row = $result->fetch_assoc()) {
             </div>
         <?php endif; ?>
     </main>
+
+    <script  src="../js/eliminarProductoCarrito.js"></script>
+   
 </body>
 </html>
