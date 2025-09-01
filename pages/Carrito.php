@@ -130,7 +130,9 @@ while ($row = $result->fetch_assoc()) {
 
                 <div class="mt-6 text-right">
                     <h2 class="text-2xl font-bold">Total: $<?= number_format($total, 0, ',', '.') ?></h2>
-                    <button class="mt-4 bg-green-500 text-white px-8 py-3 rounded-lg hover:bg-green-600">Proceder al Pago</button>
+                    <a href="chekout.php">
+                    <button  class="mt-4 bg-green-500 text-white px-8 py-3 rounded-lg hover:bg-green-600">Proceder al Pago</button>
+                </a>
                 </div>
             </div>
         <?php endif; ?>

@@ -25,14 +25,7 @@ CREATE TABLE productos (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     
-    CREATE TABLE venta (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  id_usuario INT NOT NULL,
-  id_producto INT NOT NULL,
-  cantidad INT NOT NULL DEFAULT 1,
-  FOREIGN KEY (id_usuario) REFERENCES usuario(id),
-  FOREIGN KEY (id_producto) REFERENCES productos(id)
-);
+
 
 CREATE TABLE carrito (
   id INT AUTO_INCREMENT PRIMARY KEY,
