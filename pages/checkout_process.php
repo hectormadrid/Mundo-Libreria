@@ -71,18 +71,24 @@ $conexion->query("DELETE FROM carrito WHERE id_usuario = $id_usuario");
 if ($metodo_pago === 'contra_entrega' || $metodo_pago === 'transferencia') {
     $conexion->query("UPDATE pedido SET estado='pagado' WHERE id=$id_pedido");
 }
-
-// Redirigir con mensaje de éxito
-echo "
-<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'>
-
-    Swal.fire({
-        title: '¡Pedido confirmado!',
-        text: 'Tu pedido #$id_pedido ha sido procesado con éxito.',
-        icon: 'success',
-        confirmButtonText: 'OK'
-    }).then(() => {
-        window.location.href = 'index.php';
-    });
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Compra Exitosa - Mundo Librería</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<script>
+Swal.fire({
+    title: '¡Compra exitosa!',
+    text: 'Tu pedido  ha sido procesado correctamente.',
+    icon: 'success',
+    confirmButtonText: 'Ir al inicio'
+}).then(() => {
+    window.location.href = 'index.php?success=1';
+});
 </script>
-";
+</body>
+</html>

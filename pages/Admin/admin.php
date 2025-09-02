@@ -54,9 +54,9 @@
 
                     <li>
                         <div class="iocn-link">
-                            <a href="Mensajes.php">
-                                <i class='bx bx-comment-dots'></i>
-                                <span class="link_name">Mensajes</span>
+                            <a href="pedidos.php">
+                                <i class='bx bx-package'></i>
+                                <span class="link_name">Pedidos</span>
                             </a>
                         </div>
                     </li>
