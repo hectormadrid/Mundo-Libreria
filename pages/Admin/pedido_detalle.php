@@ -25,7 +25,7 @@ if ($result->num_rows === 0) {
 echo "<table class='w-full text-left border-collapse'>
         <thead>
             <tr class='border-b'>
-                <th class='py-2'>Producto</th>
+                <th class='py-2'>Productos</th>
                 <th class='py-2 text-center'>Cantidad</th>
                 <th class='py-2 text-center'>Precio</th>
             </tr>

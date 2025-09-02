@@ -143,7 +143,7 @@ class ProductosDataTable {
   }
 }
 
-// Inicialización condicional
+
 // En tu archivo JS principal:
 document.addEventListener("DOMContentLoaded", () => {
   if ($("#productosTable").length) {
