@@ -80,10 +80,7 @@ while ($row = $result->fetch_assoc()) {
             <label class="block font-semibold">Correo Electrónico</label>
             <input type="email" name="correo" required class="w-full p-2 border rounded-lg">
           </div>
-          <div>
-            <label class="block font-semibold">Dirección</label>
-            <input type="text" name="direccion" required class="w-full p-2 border rounded-lg">
-          </div>
+  
           <div>
             <label class="block font-semibold">Método de Pago</label>
             <select name="metodo_pago" class="w-full p-2 border rounded-lg">
