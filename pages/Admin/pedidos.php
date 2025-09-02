@@ -116,7 +116,7 @@ if (!$result) {
                                 <td class="py-3 px-6"><?= htmlspecialchars($row['id']) ?></td>
                                 <td class="py-3 px-6"><?= htmlspecialchars($row['cliente']) ?></td>
                                 <td class="py-3 px-6"><?= htmlspecialchars($row['correo']) ?></td>
-                                <td class="py-3 px-6 text-center">$<?= number_format($row['total'], 2) ?></td>
+                                <td class="py-3 px-6 text-center">$<?= number_format($row['total'], 0) ?></td>
                                 <td class="py-3 px-6 text-center">
                                     <span class="px-2 py-1 rounded text-white 
                                         <?= $row['estado'] === 'pagado' ? 'bg-green-500' : 'bg-yellow-500' ?>">
@@ -137,48 +137,24 @@ if (!$result) {
             </div>
         </div>
     </section>
+    <!-- Modal -->
+    <div id="detalleModal" class="fixed inset-0 hidden bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-2/3 lg:w-1/2 p-6 relative">
+            <!-- Botón cerrar -->
+            <button id="cerrarModal" class="absolute top-2 right-2 text-gray-500 hover:text-red-500">
+            ✖
+            </button>
+
+            <h2 class="text-2xl font-bold mb-4">Detalle del Pedido</h2>
+                <div id="detalleContenido" class="overflow-y-auto max-h-96">
+                    <p class="text-gray-500 text-center">Cargando...</p>
+                </div>
+            </div>
+    </div>
+
 
     <script src="../../js/menu_admin.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#pedidosTable').DataTable({
-                responsive: true,
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
-                }
-            });
+    <script src="../../js/modalPedidos.js"></script>
 
-            // Ver detalles
-            $(".ver-detalle").click(function () {
-                let id = $(this).data("id");
-                window.location.href = "pedido_detalle.php?id=" + id;
-            });
-
-            // Actualizar estado
-            $(".actualizar-estado").click(function () {
-                let id = $(this).data("id");
-                Swal.fire({
-                    title: 'Actualizar estado',
-                    input: 'select',
-                    inputOptions: {
-                        pendiente: 'Pendiente',
-                        pagado: 'Pagado',
-                        enviado: 'Enviado',
-                        entregado: 'Entregado'
-                    },
-                    inputPlaceholder: 'Selecciona un estado',
-                    showCancelButton: true,
-                    confirmButtonText: 'Actualizar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.post("../../db/actualizar_estado_pedido.php", { id, estado: result.value }, function (res) {
-                            Swal.fire('Éxito', 'El estado se actualizó correctamente', 'success')
-                                .then(() => location.reload());
-                        });
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 </html>
