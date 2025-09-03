@@ -352,7 +352,7 @@
       
       <!-- Copyright -->
       <div class="border-t border-blue-300/30 pt-8 text-center">
-        <p class="text-blue-100">© 2025 Mundo Librería. Todos los derechos reservados. Hecho con ❤️ para los amantes de los libros.</p>
+        <p class="text-blue-100">© 2025 Mundo Librería. Todos los derechos reservados.</p>
       </div>
     </div>
   </footer>
