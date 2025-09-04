@@ -55,7 +55,13 @@ const attachEventListeners = () => {
     document.querySelectorAll('.agregar-carrito-btn').forEach(button => {
         button.addEventListener('click', async (e) => {
             const id_producto = e.currentTarget.getAttribute('data-id-producto');
+            const button = e.currentTarget;
+            const originalText = button.innerHTML;
             
+            // Loading state
+            button.innerHTML = '<span class="loading">Agregando...</span>';
+            button.disabled = true;
+
             try {
                 const response = await fetch('../pages/agregar_al_carrito.php', {
                     method: 'POST',
@@ -68,23 +74,49 @@ const attachEventListeners = () => {
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    // Aquí puedes mostrar una notificación de éxito
-                    console.log('Producto agregado al carrito');
-                    // Opcional: actualizar un contador de carrito en la UI
+                    showNotification('✅ Producto agregado al carrito', 'success');
                 } else {
-                    // Aquí puedes mostrar una notificación de error
-                    console.error('Error al agregar producto:', result.error);
+                    let errorMsg = 'Error al agregar producto';
+                    if (result.error) errorMsg = result.error;
+                    
+                    showNotification(`❌ ${errorMsg}`, 'error');
+                    
                     if (response.status === 401) {
-                        // Redirigir al login si el usuario no está autenticado
-                        window.location.href = '../pages/login.php';
+                        setTimeout(() => {
+                            window.location.href = '../pages/login.php';
+                        }, 2000);
                     }
                 }
             } catch (error) {
                 console.error('Error de red:', error);
+                showNotification('❌ Error de conexión', 'error');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
             }
         });
     });
 };
+
+// Función de notificación con SweetAlert2
+function showNotification(message, type = 'info') {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+        }
+    });
+
+    Toast.fire({
+        icon: type,
+        title: message
+    });
+}
 // Función principal para cargar productos
 const loadProducts = async (categoria = '') => {
     console.log('Cargando productos de categoría:', categoria);

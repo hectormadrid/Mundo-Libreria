@@ -14,6 +14,7 @@ if (!isset($_SESSION['ID'])) {
 $data = json_decode(file_get_contents('php://input'), true);
 $id_producto = $data['id_producto'] ?? null;
 
+
 if (!$id_producto) {
     http_response_code(400); // Solicitud incorrecta
     echo json_encode(['success' => false, 'error' => 'ID de producto no proporcionado']);

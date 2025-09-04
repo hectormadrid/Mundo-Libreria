@@ -7,6 +7,7 @@
   <link rel="icon" href="../assets/MUNDO-WEB.ico">
   <title>Mundo Libreria</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <!-- Configuración personalizada de Tailwind -->
   <script>
@@ -125,66 +126,57 @@
           <?php endif; ?>
           
           <!-- Carrito mejorado -->
-       <a href="Carrito.php" 
-   class="fixed bottom-6 right-6 z-50 bg-blue-600 p-4 rounded-full shadow-lg 
-          hover:bg-blue-700 transition-all duration-300 hover:scale-110 group">
-  <svg xmlns="http://www.w3.org/2000/svg" 
-       class="h-7 w-7 text-white group-hover:animate-bounce" 
-       fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293
-             c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 
-             2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-  </svg>
-
-  <!-- Badge de cantidad -->
- 
-</a>
-
-
+             <a href="Carrito.php" class="fixed bottom-6 right-6 z-50 bg-blue-600 p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 hover:scale-110 group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white group-hover:animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293 c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4  2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <!-- Badge de cantidad -->
+              <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+               <?php echo isset($_SESSION['carrito']) ? count($_SESSION['carrito']) : 0; ?>
+                </span>
+            </a>
+             
         </div>
       </div>  
     </div>
   </header>
 
-  <!-- Navegación -->
-  <nav class="bg-gradient-to-r from-red-600 via-red-500 to-yellow-400 shadow-lg relative">
-  <!-- Efecto de patrón decorativo -->
-  <div class="absolute inset-0 pattern-dots opacity-20"></div>
+<nav class="sticky top-0 z-50 bg-gradient-to-r from-red-700 via-red-600 to-yellow-400 shadow-lg ">
+  <!-- Patrón decorativo -->
+  <div class="absolute inset-0 pattern-dots opacity-10"></div>
 
   <div class="container mx-auto px-4 py-3 relative z-10">
-    <div class="flex flex-wrap justify-center gap-2 text-sm">
+    <div class="flex flex-wrap justify-center gap-3 text-sm">
       
       <!-- Inicio -->
       <a href="../pages/index.php" data-category="all"
-         class="category-link bg-white text-red-600 px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+         class="category-link bg-white/90 text-red-700 font-semibold px-6 py-2 rounded-full transition-all duration-300 hover:scale-110   shadow-lg">
         🏠 Inicio
       </a>
       <!-- Librería -->
       <a data-category="libreria"
-         class="category-link bg-white text-red-600 px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+         class="category-link bg-white/90 text-red-700 font-semibold px-6 py-2 rounded-full transition-all duration-300 hover:scale-110  shadow-lg">
         📚 Librería
       </a>
       <!-- Papelería -->
       <a data-category="papeleria"
-         class="category-link bg-white text-red-600 px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+         class="category-link bg-white/90 text-red-700 font-semibold px-6 py-2 rounded-full transition-all duration-300 hover:scale-110 shadow-lg">
         ✏️ Papelería
       </a>
-
       <!-- Oficina -->
       <a data-category="oficina"
-         class="category-link bg-white text-red-600 px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+         class="category-link bg-white/90 text-red-700 font-semibold px-6 py-2 rounded-full transition-all duration-300 hover:scale-110  shadow-lg">
         💼 Oficina
       </a>
-
       <!-- Contacto -->
       <a id="contacto-link"
-         class="category-link bg-white text-red-600 px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+         class="category-link bg-white/90 text-red-700 font-semibold px-6 py-2 rounded-full transition-all duration-300 hover:scale-110  shadow-lg">
         📞 Contacto
       </a>
     </div>
   </div>
 </nav>
+
 
 
   <!-- Banner Principal  -->
@@ -380,6 +372,14 @@
       </div>
     </div>
   </footer>
+  <div id="notification" class="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 opacity-0 -translate-y-10">
+  <div class="flex items-center">
+    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+    </svg>
+    <span id="notification-text">Producto agregado al carrito</span>
+  </div>
+</div>
 
   <!-- Scripts -->
   <script src="../js/carousel.js"></script>
