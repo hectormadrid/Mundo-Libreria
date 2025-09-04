@@ -126,15 +126,15 @@
           <?php endif; ?>
           
           <!-- Carrito mejorado -->
-             <a href="Carrito.php" class="fixed bottom-6 right-6 z-50 bg-blue-600 p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 hover:scale-110 group">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white group-hover:animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293 c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4  2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                <!-- Badge de cantidad -->
-              <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
-               <?php echo isset($_SESSION['carrito']) ? count($_SESSION['carrito']) : 0; ?>
-                </span>
-            </a>
+         <a href="Carrito.php" class="fixed bottom-6 right-6 z-50 bg-blue-600 p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 hover:scale-110 group">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white group-hover:animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293 c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4  2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+    </svg>
+    <!-- Badge de cantidad - Inicializado en 0, se actualizará con JS -->
+    <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold transition-transform duration-300">
+        0
+    </span>
+</a>
              
         </div>
       </div>  

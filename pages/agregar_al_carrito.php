@@ -14,7 +14,6 @@ if (!isset($_SESSION['ID'])) {
 $data = json_decode(file_get_contents('php://input'), true);
 $id_producto = $data['id_producto'] ?? null;
 
-
 if (!$id_producto) {
     http_response_code(400); // Solicitud incorrecta
     echo json_encode(['success' => false, 'error' => 'ID de producto no proporcionado']);
@@ -44,7 +43,18 @@ try {
         $stmt_insert->execute();
     }
 
-    echo json_encode(['success' => true, 'message' => 'Producto agregado al carrito']);
+    // OBTENER EL NUEVO CONTEO TOTAL DE PRODUCTOS EN EL CARRITO
+    $stmt_count = $conexion->prepare("SELECT SUM(cantidad) as total_items FROM carrito WHERE id_usuario = ?");
+    $stmt_count->bind_param("i", $id_usuario);
+    $stmt_count->execute();
+    $count_result = $stmt_count->get_result();
+    $total_items = $count_result->fetch_assoc()['total_items'] ?? 0;
+
+    echo json_encode([
+        'success' => true, 
+        'message' => 'Producto agregado al carrito',
+        'cartCount' => (int)$total_items // Devuelve el conteo total
+    ]);
 
 } catch (Exception $e) {
     http_response_code(500); // Error del servidor
