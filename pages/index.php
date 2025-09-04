@@ -147,34 +147,47 @@
     </div>
   </header>
 
-  <!-- Navegación mejorada -->
-  <nav class="bg-gradient-to-r from-lib-yellow to-yellow-300 shadow-lg relative ">
+  <!-- Navegación -->
+  <nav class="bg-gradient-to-r from-red-600 via-red-500 to-yellow-400 shadow-lg relative">
+  <!-- Efecto de patrón decorativo -->
+  <div class="absolute inset-0 pattern-dots opacity-20"></div>
 
-    <div class="absolute inset-0 pattern-dots opacity-30"></div>
-    <div class="container mx-auto px-4 py-3 relative z-10">
+  <div class="container mx-auto px-4 py-3 relative z-10">
+    <div class="flex flex-wrap justify-center gap-2 text-sm">
       
-      <div class="flex flex-wrap justify-center gap-2 text-sm">
-        
-        <a href="../pages/index.php" data-category="all" class="category-link bg-lib-blue text-white px-6 py-2 rounded-full hover:bg-blue-600 font-medium transition-all duration-300 hover:scale-105 shadow-lg">
-          🏠 Inicio
-        </a>
-        <a data-category="libreria" class="category-link bg-white/80 px-6 py-2 hover:bg-white hover:text-lib-blue rounded-full transition-all duration-300 hover:scale-105 shadow-md">
-          📚 Librería
-        </a>
-        <a data-category="papeleria" class="category-link bg-white/80 px-6 py-2 hover:bg-white hover:text-lib-blue rounded-full transition-all duration-300 hover:scale-105 shadow-md">
-          ✏️ Papelería
-        </a>
-        <a data-category="oficina" class="category-link bg-white/80 px-6 py-2 hover:bg-white hover:text-lib-blue rounded-full transition-all duration-300 hover:scale-105 shadow-md">
-          💼 Oficina
-        </a>
-        <a id="contacto-link" class="bg-white/80 px-6 py-2 hover:bg-white hover:text-lib-blue rounded-full transition-all duration-300 hover:scale-105 shadow-md">
-          📞 Contacto
-        </a>
-      </div>
-    </div>
-  </nav>
+      <!-- Inicio -->
+      <a href="../pages/index.php" data-category="all"
+         class="category-link bg-white text-red-600 px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+        🏠 Inicio
+      </a>
+      <!-- Librería -->
+      <a data-category="libreria"
+         class="category-link bg-white text-red-600 px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+        📚 Librería
+      </a>
+      <!-- Papelería -->
+      <a data-category="papeleria"
+         class="category-link bg-white text-red-600 px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+        ✏️ Papelería
+      </a>
 
-  <!-- Banner Principal mejorado -->
+      <!-- Oficina -->
+      <a data-category="oficina"
+         class="category-link bg-white text-red-600 px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+        💼 Oficina
+      </a>
+
+      <!-- Contacto -->
+      <a id="contacto-link"
+         class="category-link bg-white text-red-600 px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+        📞 Contacto
+      </a>
+    </div>
+  </div>
+</nav>
+
+
+  <!-- Banner Principal  -->
   <section class="mt-6 container mx-auto px-4">
     <div class="relative h-80 rounded-3xl overflow-hidden shadow-2xl book-shadow">
       <!-- Slides Container -->
@@ -304,7 +317,7 @@
  
   <div class="flex space-x-3">
     <!-- WhatsApp -->
-      <a href="https://wa.me/56912345678" target="_blank"
+      <a href="https://wa.me/56941870729" target="_blank"
        class="bg-white/20 text-white p-3 rounded-full hover:bg-green-500 hover:text-white transition-all duration-300 hover:scale-110">
       <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 32 32">
         <path d="M16.001 2.667c-7.364 0-13.334 5.97-13.334 13.333 0 2.354.618 4.65 1.79 6.667l-1.884 5.47 5.646-1.854a13.28 13.28 0 0 0 7.782 2.384c7.364 0 13.334-5.97 13.334-13.333S23.365 2.667 16.001 2.667zm0 24.666a11.28 11.28 0 0 1-6.104-1.792l-.438-.271-3.354 1.102 1.104-3.229-.292-.5a11.28 11.28 0 0 1-1.688-5.938c0-6.229 5.063-11.292 11.292-11.292s11.292 5.063 11.292 11.292-5.063 11.292-11.292 11.292zm6.229-8.229c-.354-.177-2.104-1.042-2.438-1.167-.333-.125-.583-.177-.833.177-.25.354-.958 1.167-1.167 1.417-.208.25-.417.271-.771.094-.354-.177-1.5-.542-2.854-1.729-1.054-.938-1.771-2.083-1.979-2.438-.208-.354-.021-.542.156-.719.161-.161.354-.417.531-.625.177-.208.24-.354.354-.583.115-.229.057-.438-.031-.625-.094-.177-.833-2.021-1.146-2.771-.302-.729-.604-.625-.833-.625-.219 0-.438-.01-.667-.01-.229 0-.604.083-.917.417-.312.333-1.188 1.167-1.188 2.854s1.219 3.313 1.385 3.542c.167.229 2.396 3.646 5.813 5.104.812.354 1.438.562 1.927.719.812.26 1.552.219 2.135.135.646-.094 2.104-.854 2.396-1.677.292-.823.292-1.531.208-1.677-.083-.146-.312-.229-.667-.396z"/>
@@ -322,7 +335,7 @@
 
 
     <!-- Facebook -->
-    <a href="https://www.facebook.com/tuusuario" target="_blank"
+    <a href="https://www.facebook.com/profile.php?id=100064931640451" target="_blank"
    class="bg-white/20 text-white p-3 rounded-full hover:bg-blue-600 hover:text-white transition-all duration-300 hover:scale-110">
   <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M22.675 0h-21.35C.597 0 0 .597 0 1.326v21.348C0 
