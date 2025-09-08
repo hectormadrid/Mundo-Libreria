@@ -1,0 +1,42 @@
+ @keyframes float {
+
+     0%,
+     100% {
+         transform: translateY(0px);
+     }
+
+     50% {
+         transform: translateY(-10px);
+     }
+ }
+
+ .glass-effect {
+     background: rgba(255, 255, 255, 0.1);
+     backdrop-filter: blur(10px);
+     border: 1px solid rgba(255, 255, 255, 0.2);
+ }
+
+ .gradient-text {
+     background: linear-gradient(135deg, #3182CE, #F6E05E);
+     -webkit-background-clip: text;
+     -webkit-text-fill-color: transparent;
+     background-clip: text;
+ }
+
+ .book-shadow {
+     box-shadow: 0 10px 25px rgba(49, 130, 206, 0.2);
+ }
+
+ .hover-lift {
+     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+ }
+
+ .hover-lift:hover {
+     transform: translateY(-8px);
+     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+ }
+
+ .pattern-dots {
+     background-image: radial-gradient(circle, rgba(49, 130, 206, 0.1) 1px, transparent 1px);
+     background-size: 20px 20px;
+ }
