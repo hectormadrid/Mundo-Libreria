@@ -1,0 +1,161 @@
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .admin-bg {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 25%, #3182CE 75%, #2B6CB0 100%);
+        }
+        
+        .premium-card {
+            box-shadow: 
+                0 0 80px rgba(49, 130, 206, 0.4),
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .admin-border {
+            border: 3px solid transparent;
+            background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)) padding-box,
+                        linear-gradient(90deg, #3182CE, #F6E05E, #E53E3E, #3182CE) border-box;
+        }
+        
+        .crown-glow {
+            animation: crown-pulse 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes crown-pulse {
+            from {
+                box-shadow: 
+                    0 0 30px rgba(246, 224, 94, 0.8),
+                    0 0 60px rgba(246, 224, 94, 0.6),
+                    0 0 90px rgba(246, 224, 94, 0.4);
+                transform: scale(1);
+            }
+            to {
+                box-shadow: 
+                    0 0 40px rgba(229, 62, 62, 0.8),
+                    0 0 80px rgba(229, 62, 62, 0.6),
+                    0 0 120px rgba(229, 62, 62, 0.4);
+                transform: scale(1.05);
+            }
+        }
+        
+        .slide-down {
+            animation: slideDown 1s ease-out forwards;
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+        
+        @keyframes slideDown {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .admin-input:focus {
+            box-shadow: 
+                0 0 0 4px rgba(49, 130, 206, 0.3),
+                0 0 30px rgba(49, 130, 206, 0.2),
+                0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .btn-admin {
+            background: linear-gradient(135deg, #2d3748 0%, #3182CE 25%, #2B6CB0 75%, #1a365d 100%);
+            background-size: 300% 300%;
+            animation: adminGradient 4s ease infinite;
+        }
+        
+        @keyframes adminGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(246, 224, 94, 0.6);
+            border-radius: 50%;
+            animation: particleFloat 10s linear infinite;
+        }
+        
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+        .particle:nth-child(3) { left: 30%; animation-delay: 4s; }
+        .particle:nth-child(4) { left: 40%; animation-delay: 1s; }
+        .particle:nth-child(5) { left: 50%; animation-delay: 3s; }
+        .particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+        .particle:nth-child(7) { left: 70%; animation-delay: 2.5s; }
+        .particle:nth-child(8) { left: 80%; animation-delay: 4.5s; }
+        .particle:nth-child(9) { left: 90%; animation-delay: 1.5s; }
+        
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) scale(1);
+                opacity: 0;
+            }
+        }
+        
+        .crown-rotate {
+            animation: crownRotate 6s ease-in-out infinite;
+        }
+        
+        @keyframes crownRotate {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+        }
+        
+        .admin-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .admin-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+        }
+        
+        .security-badge {
+            background: linear-gradient(135deg, #10B981, #059669);
+            animation: securityPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes securityPulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        .exclusive-text {
+            background: linear-gradient(135deg, #F6E05E, #E53E3E, #3182CE);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textShimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes textShimmer {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(90deg); }
+        }
