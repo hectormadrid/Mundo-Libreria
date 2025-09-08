@@ -91,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         ¡Hola de nuevo!
                     </h1>
                     <p class="text-white/90 font-medium">
-                        Accede a tu panel de control
+                        Accede a tu Cuenta de Usuario
                     </p>
                 </div>
             </div>
@@ -154,7 +154,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <button
                         type="submit"
                         class="w-full btn-gradient text-white py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-3xl hover:scale-105 focus:ring-4 focus:ring-lib-yellow/50 focus:outline-none transition-all duration-300 uppercase tracking-wider">
-                        <i class="fas fa-rocket mr-2"></i>
+                      
                         Iniciar Sesión
                     </button>
                 </form>

@@ -268,7 +268,9 @@
     <div class="bg-white p-2 rounded-full shadow-lg mr-3">
       <img src="../assets/MUNDO-WEB.ico" alt="Logo" class="h-8 w-8">
     </div>
-    <h3 class="font-bold text-2xl">Mundo Librería</h3>
+      <h1 class="text-3xl font-bold">
+            Mundo <span class="text-lib-yellow animate-pulse">Librería</span>
+          </h1>
   </div>
  
   <div class="flex space-x-3">
