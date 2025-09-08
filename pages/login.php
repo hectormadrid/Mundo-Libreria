@@ -158,6 +158,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         Iniciar Sesión
                     </button>
                 </form>
+                <div class="space-y-4 p-6">
+                    <a href="index.php" class="admin-hover flex items-center justify-center w-full py-3 px-6 bg-gray-100 border-2 border-gray-300 rounded-2xl font-bold text-gray-700 hover:bg-gray-200 hover:border-gray-400 transition-all duration-300">
+                        <i class="fas fa-arrow-left mr-3 text-lib-blue"></i>
+                        Volver al Sitio Principal
+                    </a>
+                </div>
 
                 <!-- Mensaje de error (ejemplo) -->
                    <?php if (!empty($error)): ?>
