@@ -111,7 +111,6 @@
 
   <div class="container mx-auto px-4 py-3 relative z-10">
     <div class="flex flex-wrap justify-center gap-3 text-sm">
-      
       <!-- Inicio -->
       <a href="../pages/index.php" data-category="all"
          class="category-link bg-white/90 text-red-700 font-semibold px-6 py-2 rounded-full transition-all duration-300 hover:scale-110   shadow-lg">
@@ -134,7 +133,7 @@
       </a>
       <!-- Contacto -->
       <a id="contacto-link"
-         class="category-link bg-white/90 text-red-700 font-semibold px-6 py-2 rounded-full transition-all duration-300 hover:scale-110  shadow-lg">
+         class=" bg-white/90 text-red-700 font-semibold px-6 py-2 rounded-full transition-all duration-300 hover:scale-110  shadow-lg">
         📞 Contacto
       </a>
     </div>

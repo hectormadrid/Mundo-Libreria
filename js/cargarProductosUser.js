@@ -1,4 +1,3 @@
-// Función para formatear precio
 const formatPrice = (price) => {
   return (
     "$" +
@@ -203,14 +202,4 @@ const loadProducts = async (categoria = "") => {
   }
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadProducts(); // carga inicial
 
-  document.querySelectorAll(".category-link").forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const categoria = link.getAttribute("data-category");
-      loadProducts(categoria === "all" ? "" : categoria);
-    });
-  });
-});
