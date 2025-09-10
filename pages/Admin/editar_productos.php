@@ -28,9 +28,9 @@ try {
     $nombre = trim($_POST['nombre'] ?? '');
     $precio = filter_input(INPUT_POST, 'precio', FILTER_VALIDATE_FLOAT);
     $descripcion = trim($_POST['descripcion'] ?? '');
-    $stock = filter_input(INPUT_POST, 'Stock', FILTER_VALIDATE_INT);
+    $stock = filter_input(INPUT_POST, 'stock', FILTER_VALIDATE_INT);
     $categoria = $_POST['categoria'] ?? '';
-    $estado = $_POST['estado'] ?? 'Activo';
+    $estado = $_POST['estado'] ?? 'activo';
 
     // Validaciones básicas
     if (!$id || $id <= 0) {
@@ -111,7 +111,7 @@ try {
             precio = ?,
             descripcion = ?,
             categoria = ?,
-            Stock = ?,
+            stock = ?,
             estado = ?";
     
     $params = [$nombre, $precio, $descripcion, $categoria, $stock, $estado];

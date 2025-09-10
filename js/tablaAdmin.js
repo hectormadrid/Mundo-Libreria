@@ -13,7 +13,11 @@ class ProductosDataTable {
         dataSrc: "data",
         error: function (xhr, error, thrown) {
           console.error("Error en AJAX:", xhr.responseText, error);
-          alert("Error al cargar los datos. Ver consola para detalles.");
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "No se pudieron cargar los productos. Ver consola para más detalles.",
+          });
         },
       },
       columns: this.getColumns(),
@@ -37,19 +41,18 @@ class ProductosDataTable {
           if (!data) return '<span class="text-gray-400">Sin imagen</span>';
           const path = `${baseUrl}/uploads/productos/${data}`;
           return `
-                    <img src="${path}" 
-                         alt="Imagen producto" 
-                         class="h-12 w-12 object-cover rounded cursor-pointer hover:scale-150 transition-all"
-                         onclick="ProductosDataTable.showFullImage('${path}')">
-                `;
+            <img src="${path}" 
+                 alt="Imagen producto" 
+                 class="h-12 w-12 object-cover rounded cursor-pointer hover:scale-150 transition-all"
+                 onclick="ProductosDataTable.showFullImage('${path}')">
+          `;
         },
       },
       {
         data: "precio",
-        render: $.fn.dataTable.render.number(",", "$"),
+        render: $.fn.dataTable.render.number(".", ",", 0, "$"),
       },
       { data: "descripcion" },
-
       {
         data: "categoria",
         render: function (data) {
@@ -62,16 +65,14 @@ class ProductosDataTable {
           return `<span class="px-2 py-1 rounded-full text-xs ${clase}">${data}</span>`;
         },
       },
-        {
-        data: "stock"
-      },
+      { data: "stock" },
       {
         data: "estado",
         render: (data) => {
           const color =
-            data === "Activo"
-              ? "bg-red-100 text-red-800"
-              : "bg-green-100 text-green-800";
+            data === "activo"
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800";
           return `<span class="px-2 py-1 rounded-full ${color}">${data}</span>`;
         },
       },
@@ -79,26 +80,36 @@ class ProductosDataTable {
         data: "fecha_creacion",
         render: (data) => (data ? new Date(data).toLocaleDateString() : ""),
       },
-      // --- Nueva columna para botones ---
       {
         data: "id",
         render: function (data, type, row) {
-          // Escapar comillas correctamente
-          const safeData = JSON.stringify(row)
-            .replace(/'/g, "\\'")
-            .replace(/"/g, "&quot;");
+          try {
+            const safeData = JSON.stringify(row)
+              .replace(/'/g, "\\'")
+              .replace(/"/g, "&quot;");
 
-          return `
-            <button onclick="ProductEditModal.open('${safeData}')"
-                    class="px-3 py-1 bg-blue-500 text-white rounded">
-                <i class="bx bx-edit"></i> Editar
-            </button>
-        `;
-        },
+            return `
+              <div class="flex gap-2">
+                <button onclick="ProductEditModal.open('${safeData}')"
+                        class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded shadow">
+                    <i class="bx bx-edit"></i> Editar
+                </button>
 
-        catch(error) {
-          console.error("Error al generar botón:", error);
-          return "Error";
+                <button onclick="ProductosDataTable.confirmDelete(${row.id})"
+                        class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded shadow">
+                    <i class="bx bx-trash"></i> Eliminar
+                </button>
+
+                <button onclick="ProductosDataTable.showDetails('${safeData}')"
+                        class="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded shadow">
+                    <i class="bx bx-show"></i> Ver
+                </button>
+              </div>
+            `;
+          } catch (error) {
+            console.error("Error al generar botones:", error);
+            return '<span class="text-red-500">Error</span>';
+          }
         },
         orderable: false,
         searchable: false,
@@ -128,14 +139,60 @@ class ProductosDataTable {
 
   static showFullImage(src) {
     const modal = `
-            <div class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4" 
-                 onclick="this.remove()">
-                <div class="max-w-4xl w-full">
-                    <img src="${src}" class="w-full h-auto max-h-screen object-contain">
-                </div>
-            </div>
-        `;
+      <div class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4" 
+           onclick="this.remove()">
+          <div class="max-w-4xl w-full">
+              <img src="${src}" class="w-full h-auto max-h-screen object-contain">
+          </div>
+      </div>
+    `;
     document.body.insertAdjacentHTML("beforeend", modal);
+  }
+
+  static confirmDelete(id) {
+    Swal.fire({
+      title: "¿Eliminar producto?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`eliminar_producto.php?id=${id}`, { method: "DELETE" })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              Swal.fire("Eliminado", "El producto ha sido eliminado.", "success");
+              window.productosTable.reload();
+            } else {
+              Swal.fire("Error", data.error || "No se pudo eliminar.", "error");
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            Swal.fire("Error", "Error de conexión.", "error");
+          });
+      }
+    });
+  }
+
+  static showDetails(productoJson) {
+    const producto = JSON.parse(productoJson.replace(/&quot;/g, '"'));
+    Swal.fire({
+      title: producto.nombre,
+      html: `
+        <img src="/Mundo-Libreria/uploads/productos/${producto.imagen}" class="mx-auto mb-3 h-40 object-contain">
+        <p><b>Precio:</b> $${producto.precio}</p>
+        <p><b>Stock:</b> ${producto.stock}</p>
+        <p><b>Categoría:</b> ${producto.categoria}</p>
+        <p><b>Estado:</b> ${producto.estado}</p>
+        <p><b>Descripción:</b> ${producto.descripcion}</p>
+      `,
+      confirmButtonText: "Cerrar",
+    });
   }
 
   reload() {
@@ -143,11 +200,14 @@ class ProductosDataTable {
   }
 }
 
+function updateTime() { const el = document.getElementById('currentTime'); el.textContent = new Date().toLocaleString(); }
+updateTime(); setInterval(updateTime, 1000);
 
-// En tu archivo JS principal:
+
+// Iniciar DataTable al cargar admin.php
 document.addEventListener("DOMContentLoaded", () => {
   if ($("#productosTable").length) {
     window.productosTable = new ProductosDataTable("#productosTable");
-    console.log("DataTable inicializado:", window.productosTable); // 👈 Verifica
+    console.log("✅ DataTable inicializado:", window.productosTable);
   }
 });
