@@ -3,7 +3,8 @@ session_start();
 require_once __DIR__ . '/../../db/Conexion.php'; // <-- ajusta la ruta según tu proyecto
 
 // Helper: limpiar entrada
-function clean($v) {
+function clean($v)
+{
     return trim(htmlspecialchars($v, ENT_QUOTES));
 }
 
@@ -14,7 +15,8 @@ if (!is_dir($upload_dir)) {
 }
 
 // Flash message helper
-function set_flash($type, $message) {
+function set_flash($type, $message)
+{
     $_SESSION['flash'] = ['type' => $type, 'message' => $message];
 }
 
@@ -36,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $tmp = $_FILES['imagen']['tmp_name'];
             $orig = basename($_FILES['imagen']['name']);
             $ext = strtolower(pathinfo($orig, PATHINFO_EXTENSION));
-            $allowed = ['jpg','jpeg','png','webp'];
+            $allowed = ['jpg', 'jpeg', 'png', 'webp'];
             if (in_array($ext, $allowed)) {
                 $imagenNombre = time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
                 move_uploaded_file($tmp, $upload_dir . $imagenNombre);
@@ -83,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $tmp = $_FILES['imagen']['tmp_name'];
             $orig = basename($_FILES['imagen']['name']);
             $ext = strtolower(pathinfo($orig, PATHINFO_EXTENSION));
-            $allowed = ['jpg','jpeg','png','webp'];
+            $allowed = ['jpg', 'jpeg', 'png', 'webp'];
             if (in_array($ext, $allowed)) {
                 $newName = time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
                 move_uploaded_file($tmp, $upload_dir . $newName);
@@ -129,7 +131,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 // Consultas para métricas
-$totalProductos = 0; $productosActivos = 0; $stockBajo = 0; $valorTotal = 0.0;
+$totalProductos = 0;
+$productosActivos = 0;
+$stockBajo = 0;
+$valorTotal = 0.0;
 $r = $conexion->query("SELECT COUNT(*) AS c FROM productos");
 if ($rr = $r->fetch_assoc()) $totalProductos = $rr['c'];
 $r = $conexion->query("SELECT COUNT(*) AS c FROM productos WHERE estado = 'Activo'");
@@ -153,6 +158,7 @@ unset($_SESSION['flash']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -164,205 +170,272 @@ unset($_SESSION['flash']);
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Pequeños ajustes visuales */
-        .sidebar { background: linear-gradient(180deg,#1f2937,#111827); width: 260px; height:100vh; position:fixed; left:0; top:0; padding:20px; }
-        .sidebar.close { width:72px }
-        .home-section { margin-left:260px; padding:20px; }
-        .sidebar .nav-links a { display:flex; gap:10px; align-items:center; color:#fff; padding:8px 10px; border-radius:8px; }
-        .sidebar .nav-links a:hover { background: rgba(255,255,255,0.04); }
-        .badge-active { background:#D1FAE5; color:#065f46; padding:4px 8px; border-radius:999px; font-weight:600; }
-        .badge-inactive { background:#FEE2E2; color:#991B1B; padding:4px 8px; border-radius:999px; font-weight:600; }
+        .sidebar {
+            background: linear-gradient(180deg, #1f2937, #111827);
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 20px;
+        }
+
+        .sidebar.close {
+            width: 72px
+        }
+
+        .home-section {
+            margin-left: 260px;
+            padding: 20px;
+        }
+
+        .sidebar .nav-links a {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            color: #fff;
+            padding: 8px 10px;
+            border-radius: 8px;
+        }
+
+        .sidebar .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .badge-active {
+            background: #D1FAE5;
+            color: #065f46;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .badge-inactive {
+            background: #FEE2E2;
+            color: #991B1B;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
     </style>
 </head>
+
 <body class="bg-gray-100">
 
-<div class="sidebar" id="sidebar">
-    <div class="logo-details text-white mb-6">
-        <div class="flex items-center gap-3">
-            <svg class="w-8 h-8 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5z"></path></svg>
-            <span class="font-bold text-lg">Mundo Librería</span>
-        </div>
-    </div>
-    <div class="nav-links space-y-2">
-        <a href="admin.php" class="flex items-center"><i class="fas fa-home text-white mr-2"></i><span class="text-white">Inicio</span></a>
-        <a href="pedidos.php" class="flex items-center"><i class="fas fa-box text-white mr-2"></i><span class="text-white">Pedidos</span></a>
-        <a href="#" class="flex items-center"><i class="fas fa-users text-white mr-2"></i><span class="text-white">Usuarios</span></a>
-    </div>
-    <div class="mt-8 text-white">
-        <div class="font-semibold"><?php echo htmlspecialchars($_SESSION['nombre'] ?? 'Administrador'); ?></div>
-        <a href="../../db/cerrar_sesion.php" class="inline-block mt-3 bg-red-600 px-3 py-1 rounded text-white">Cerrar sesión</a>
-    </div>
-</div>
-
-<section class="home-section">
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold">Panel de Administración</h1>
-        <div class="flex items-center gap-4">
-            <div class="text-gray-600">Fecha: <span id="currentTime"></span></div>
-            <button id="btnAgregarProductoTop" class="bg-blue-600 text-white px-4 py-2 rounded">+ Nuevo</button>
-        </div>
-    </div>
-
-    <!-- Estadísticas -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div class="p-4 bg-white rounded shadow">
-            <div class="text-sm text-gray-500">Total Productos</div>
-            <div class="text-2xl font-bold"><?php echo $totalProductos; ?></div>
-        </div>
-        <div class="p-4 bg-white rounded shadow">
-            <div class="text-sm text-gray-500">Activos</div>
-            <div class="text-2xl font-bold"><?php echo $productosActivos; ?></div>
-        </div>
-        <div class="p-4 bg-white rounded shadow">
-            <div class="text-sm text-gray-500">Stock bajo (&lt;10)</div>
-            <div class="text-2xl font-bold text-red-600"><?php echo $stockBajo; ?></div>
-        </div>
-        <div class="p-4 bg-white rounded shadow">
-            <div class="text-sm text-gray-500">Valor total</div>
-            <div class="text-2xl font-bold text-green-600">$<?php echo number_format((float)$valorTotal, 0, ',', '.'); ?></div>
-        </div>
-    </div>
-    
-    <!-- Tabla de productos -->
-    <div class="bg-white rounded shadow p-4">
-        <table id="productosTable" class="min-w-full table-auto">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="p-2">ID</th>
-                    <th class="p-2">Nombre</th>
-                    <th class="p-2">Imagen</th>
-                    <th class="p-2">Precio</th>
-                    <th class="p-2">Descripción</th>
-                    <th class="p-2">Categoria</th>
-                    <th class="p-2">Stock</th>
-                    <th class="p-2">Estado</th>
-                    <th class="p-2">Fecha</th>
-                    <th class="p-2">Acciones</th>
-                </tr>
-            </thead>
-           
-        </table>
-    </div>
-
-</section>
-
-<!-- Modal Agregar -->
-<div id="modalAgregar" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50">
-    <div class="bg-white rounded p-6 w-full max-w-3xl">
-        <h3 class="text-xl font-bold mb-4">Agregar Producto</h3>
-        <form method="post" enctype="multipart/form-data">
-            <input type="hidden" name="action" value="add_product">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input name="nombre" placeholder="Nombre" class="border p-2 rounded" required>
-                <input name="precio" type="number" step="0.01" placeholder="Precio" class="border p-2 rounded" required>
-                <textarea name="descripcion" placeholder="Descripción" class="border p-2 rounded md:col-span-2"></textarea>
-                <select name="categoria" class="border p-2 rounded">
-                    <option value="Libreria">Librería</option>
-                    <option value="Oficina">Oficina</option>
-                    <option value="Papeleria">Papelería</option>
-                </select>
-                <input name="Stock" type="number" min="0" class="border p-2 rounded" placeholder="Stock">
-                <select name="estado" class="border p-2 rounded">
-                    <option value="Activo">Activo</option>
-                    <option value="Inactivo">Inactivo</option>
-                </select>
-                <input type="file" name="imagen" accept="image/*" onchange="previewImageAdd(this)" class="md:col-span-2">
-                <div id="previewAdd" class="md:col-span-2 hidden mt-2"><img id="previewAddImg" src="" style="max-height:120px"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="logo-details text-white mb-6">
+            <div class="flex items-center gap-3">
+                <svg class="w-8 h-8 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                </svg>
+                <span class="font-bold text-lg">Mundo Librería</span>
             </div>
-            <div class="mt-4 flex justify-end gap-2">
-                <button type="button" onclick="closeModal('modalAgregar')" class="px-4 py-2 border rounded">Cancelar</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
-            </div>
-        </form>
+        </div>
+        <div class="nav-links space-y-2">
+            <a href="admin.php" class="flex items-center"><i class="fas fa-home text-white mr-2"></i><span class="text-white">Inicio</span></a>
+            <a href="pedidos.php" class="flex items-center"><i class="fas fa-box text-white mr-2"></i><span class="text-white">Pedidos</span></a>
+            <a href="#" class="flex items-center"><i class="fas fa-users text-white mr-2"></i><span class="text-white">Usuarios</span></a>
+        </div>
+        <div class="mt-8 text-white">
+            <div class="font-semibold"><?php echo htmlspecialchars($_SESSION['nombre'] ?? 'Administrador'); ?></div>
+            <a href="../../db/cerrar_sesion.php" class="inline-block mt-3 bg-red-600 px-3 py-1 rounded text-white">Cerrar sesión</a>
+        </div>
     </div>
-</div>
 
-<!-- Modal Editar -->
-<div id="modalEditar" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
-    <h2 class="text-2xl font-bold mb-4">Editar Producto</h2>
-
-    <form id="formEditarProducto" enctype="multipart/form-data" class="space-y-4">
-      <input type="hidden" id="editarId" name="id">
-
-      <div>
-        <label for="editarNombre" class="block text-sm font-medium">Nombre</label>
-        <input type="text" id="editarNombre" name="nombre" class="w-full border rounded px-3 py-2" required>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label for="editarPrecio" class="block text-sm font-medium">Precio</label>
-          <input type="number" id="editarPrecio" name="precio" step="0.01" class="w-full border rounded px-3 py-2" required>
-        </div>
-        <div>
-          <label for="editarStock" class="block text-sm font-medium">Stock</label>
-          <input type="number" id="editarStock" name="stock" min="0" class="w-full border rounded px-3 py-2" required>
-        </div>
-      </div>
-
-      <div>
-        <label for="editarDescripcion" class="block text-sm font-medium">Descripción</label>
-        <textarea id="editarDescripcion" name="descripcion" class="w-full border rounded px-3 py-2"></textarea>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label for="editarCategoria" class="block text-sm font-medium">Categoría</label>
-          <select id="editarCategoria" name="categoria" class="w-full border rounded px-3 py-2" required>
-            <option value="">Seleccionar</option>
-            <option value="Libreria">Librería</option>
-            <option value="Papeleria">Papelería</option>
-            <option value="Oficina">Oficina</option>
-          </select>
-        </div>
-        <div>
-          <label for="editarEstado" class="block text-sm font-medium">Estado</label>
-          <select id="editarEstado" name="estado" class="w-full border rounded px-3 py-2" required>
-            <option value="Activo">Activo</option>
-            <option value="Inactivo">Inactivo</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Imagen actual -->
-      <div id="imagenActualContainer" class="mt-2 hidden">
-        <label class="block text-sm font-medium">Imagen actual:</label>
-        <img id="imagenActual" src="" alt="Imagen producto" class="h-24 object-contain mt-1">
-      </div>
-
-      <!-- Nueva imagen -->
-      <div>
-        <label for="editarImagen" class="block text-sm font-medium">Nueva imagen (opcional)</label>
-        <input type="file" id="editarImagen" name="imagen" accept="image/*" class="w-full border rounded px-3 py-2">
-      </div>
-
-      <!-- Botones -->
-      <div class="flex justify-end gap-3 pt-4">
-        <button type="button" id="btnCancelarEdicion" class="px-4 py-2 bg-gray-400 text-white rounded">Cancelar</button>
-        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">Guardar Cambios</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-
-<!-- Modal Eliminar -->
-<div id="modalEliminar" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50">
-    <div class="bg-white rounded p-6 w-full max-w-md">
-        <h3 class="text-xl font-bold mb-4">Confirmar eliminación</h3>
-        <p class="mb-4">¿Estás seguro que deseas marcar este producto como Inactivo?</p>
-        <form method="post">
-            <input type="hidden" name="action" value="delete_product">
-            <input type="hidden" name="id" id="deleteId">
-            <div class="flex justify-end gap-2">
-                <button type="button" onclick="closeModal('modalEliminar')" class="px-4 py-2 border rounded">Cancelar</button>
-                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded">Confirmar</button>
+    <section class="home-section">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-bold">Panel de Administración</h1>
+            <div class="flex items-center gap-4">
+                <div class="text-gray-600">Fecha: <span id="currentTime"></span></div>
+                <button id="btnAgregarProducto" class="bg-blue-600 text-white px-4 py-2 rounded">+ Nuevo</button>
             </div>
-        </form>
-    </div>
-</div>
+        </div>
 
-<script src="../../js/tablaAdmin.js"></script>
-<script src="../../js/editarProductos.js"></script>
+        <!-- Estadísticas -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="p-4 bg-white rounded shadow">
+                <div class="text-sm text-gray-500">Total Productos</div>
+                <div class="text-2xl font-bold"><?php echo $totalProductos; ?></div>
+            </div>
+            <div class="p-4 bg-white rounded shadow">
+                <div class="text-sm text-gray-500">Activos</div>
+                <div class="text-2xl font-bold"><?php echo $productosActivos; ?></div>
+            </div>
+            <div class="p-4 bg-white rounded shadow">
+                <div class="text-sm text-gray-500">Stock bajo (&lt;10)</div>
+                <div class="text-2xl font-bold text-red-600"><?php echo $stockBajo; ?></div>
+            </div>
+            <div class="p-4 bg-white rounded shadow">
+                <div class="text-sm text-gray-500">Valor total</div>
+                <div class="text-2xl font-bold text-green-600">$<?php echo number_format((float)$valorTotal, 0, ',', '.'); ?></div>
+            </div>
+        </div>
+
+        <!-- Tabla de productos -->
+        <div class="bg-white rounded shadow p-4">
+            <table id="productosTable" class="min-w-full table-auto">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="p-2">ID</th>
+                        <th class="p-2">Nombre</th>
+                        <th class="p-2">Imagen</th>
+                        <th class="p-2">Precio</th>
+                        <th class="p-2">Descripción</th>
+                        <th class="p-2">Categoria</th>
+                        <th class="p-2">Stock</th>
+                        <th class="p-2">Estado</th>
+                        <th class="p-2">Fecha</th>
+                        <th class="p-2">Acciones</th>
+                    </tr>
+                </thead>
+
+            </table>
+        </div>
+
+    </section>
+    <!-- Modal Agregar -->
+    <div id="modalAgregar" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-4">Agregar Producto</h2>
+                <form id="formAgregarProducto" enctype="multipart/form-data" method="POST">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Nombre</label>
+                        <input type="text" name="nombre" class="w-full px-3 py-2 border rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Imagen del producto</label>
+                        <input type="file" name="imagen" accept="image/*" class="w-full px-3 py-2 border rounded">
+                        <p class="text-xs text-gray-500">Formatos: JPG, PNG, WEBP (Máx. 2MB)</p>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Precio</label>
+                        <input type="number" name="precio" class="w-full px-3 py-2 border rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Descripción</label>
+                        <textarea name="descripcion" class="w-full px-3 py-2 border rounded"></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Categoria</label>
+                        <select name="categoria" class="w-full px-3 py-2 border rounded">
+                            <option value="Libreria">Libreria</option>
+                            <option value="Oficina">Oficina</option>
+                            <option value="Papeleria">Papeleria</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Stock</label>
+                        <input type="number" name="Stock" class="w-full px-3 py-2 border rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Estado</label>
+                        <select name="estado" class="w-full px-3 py-2 border rounded">
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" id="btnCancelar" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                            Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Editar -->
+    <div id="modalEditar" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+            <h2 class="text-2xl font-bold mb-4">Editar Producto</h2>
+
+            <form id="formEditarProducto" enctype="multipart/form-data" class="space-y-4">
+                <input type="hidden" id="editarId" name="id">
+
+                <div>
+                    <label for="editarNombre" class="block text-sm font-medium">Nombre</label>
+                    <input type="text" id="editarNombre" name="nombre" class="w-full border rounded px-3 py-2" required>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="editarPrecio" class="block text-sm font-medium">Precio</label>
+                        <input type="number" id="editarPrecio" name="precio" step="0.01" class="w-full border rounded px-3 py-2" required>
+                    </div>
+                    <div>
+                        <label for="editarStock" class="block text-sm font-medium">Stock</label>
+                        <input type="number" id="editarStock" name="stock" min="0" class="w-full border rounded px-3 py-2" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="editarDescripcion" class="block text-sm font-medium">Descripción</label>
+                    <textarea id="editarDescripcion" name="descripcion" class="w-full border rounded px-3 py-2"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="editarCategoria" class="block text-sm font-medium">Categoría</label>
+                        <select id="editarCategoria" name="categoria" class="w-full border rounded px-3 py-2" required>
+                            <option value="">Seleccionar</option>
+                            <option value="Libreria">Librería</option>
+                            <option value="Papeleria">Papelería</option>
+                            <option value="Oficina">Oficina</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="editarEstado" class="block text-sm font-medium">Estado</label>
+                        <select id="editarEstado" name="estado" class="w-full border rounded px-3 py-2" required>
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Imagen actual -->
+                <div id="imagenActualContainer" class="mt-2 hidden">
+                    <label class="block text-sm font-medium">Imagen actual:</label>
+                    <img id="imagenActual" src="" alt="Imagen producto" class="h-24 object-contain mt-1">
+                </div>
+
+                <!-- Nueva imagen -->
+                <div>
+                    <label for="editarImagen" class="block text-sm font-medium">Nueva imagen (opcional)</label>
+                    <input type="file" id="editarImagen" name="imagen" accept="image/*" class="w-full border rounded px-3 py-2">
+                </div>
+
+                <!-- Botones -->
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" id="btnCancelarEdicion" class="px-4 py-2 bg-gray-400 text-white rounded">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Modal Eliminar -->
+    <div id="modalEliminar" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50">
+        <div class="bg-white rounded p-6 w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">Confirmar eliminación</h3>
+            <p class="mb-4">¿Estás seguro que deseas marcar este producto como Inactivo?</p>
+            <form method="post">
+                <input type="hidden" name="action" value="delete_product">
+                <input type="hidden" name="id" id="deleteId">
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('modalEliminar')" class="px-4 py-2 border rounded">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded">Confirmar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../js/tablaAdmin.js"></script>
+    <script src="../../js/editarProductos.js"></script>
+    <script src="../../js/agregarProductos.js"></script>
 </body>
+
 </html>
