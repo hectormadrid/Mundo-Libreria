@@ -44,9 +44,7 @@ function eliminarDelCarrito(idProducto) {
     });
 }
 
-// Recalcula total leyendo data-value o texto (fallback)
 function updateCartTotal() {
-    // Recalcular total y cantidad leyendo atributos data del DOM
     const items = document.querySelectorAll('[id^="item-"]');
     let total = 0;
     let count = 0;
@@ -63,7 +61,6 @@ function updateCartTotal() {
         count += qty;
     });
 
-    // Actualizar elementos del resumen
     const totalEl = document.getElementById('cart-total');
     if (totalEl) totalEl.textContent = '$' + total.toLocaleString('es-CL');
 
@@ -73,7 +70,6 @@ function updateCartTotal() {
     const summaryCountEl = document.getElementById('summary-count');
     if (summaryCountEl) summaryCountEl.textContent = count;
 
-    // Mostrar/ocultar contenedores
     const cart = document.getElementById('cart-with-items');
     const emptyCart = document.getElementById('empty-cart');
     if (cart && emptyCart) {
@@ -85,26 +81,7 @@ function updateCartTotal() {
             emptyCart.classList.add('hidden');
         }
     }
-    }
-        total += parseInt(val, 10);
-   
-
-    const totalEl = document.getElementById('cart-total');
-    if (totalEl) {
-        totalEl.textContent = '$' + total.toLocaleString('es-CL');
-    }
-
-    const cart = document.getElementById('cart-with-items');
-    const emptyCart = document.getElementById('empty-cart');
-    if (cart && emptyCart) {
-        if (document.querySelectorAll('[id^="item-"]').length === 0) {
-            cart.style.display = 'none';
-            emptyCart.classList.remove('hidden');
-        } else {
-            cart.style.display = '';
-            emptyCart.classList.add('hidden');
-        }
-    }
+}
 
 
 // Limpiar carrito (confirm + llamada a endpoint que debes crear)
