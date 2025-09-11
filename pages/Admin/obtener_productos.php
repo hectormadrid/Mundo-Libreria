@@ -30,5 +30,4 @@ try {
         "error" => $e->getMessage()
     ]);
 }
-
 ?>

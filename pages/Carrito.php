@@ -1,9 +1,9 @@
 <?php
 session_start();
-require_once __DIR__.'/../db/Conexion.php';
+require_once __DIR__ . '/../db/Conexion.php';
 
 // Verificar conexión
-if (!$conexion) {
+if (!isset($conexion) || !$conexion) {
     die("Error de conexión: " . mysqli_connect_error());
 }
 
@@ -13,7 +13,7 @@ if (!isset($_SESSION['ID'])) {
     exit;
 }
 
-$id_usuario = $_SESSION['ID'];
+$id_usuario = (int) $_SESSION['ID'];
 
 // Consulta SQL (con verificación de errores)
 $sql = "
@@ -23,13 +23,11 @@ $sql = "
     WHERE c.id_usuario = ?
 ";
 $stmt = $conexion->prepare($sql);
-
 if (!$stmt) {
     die("Error al preparar la consulta: " . $conexion->error);
 }
 
 $stmt->bind_param("i", $id_usuario);
-
 if (!$stmt->execute()) {
     die("Error al ejecutar la consulta: " . $stmt->error);
 }
@@ -39,11 +37,19 @@ $carrito_items = [];
 $total = 0;
 
 while ($row = $result->fetch_assoc()) {
+    // Asegurar tipos
+    $row['precio'] = (float) $row['precio'];
+    $row['cantidad'] = (int) $row['cantidad'];
     $row['subtotal'] = $row['precio'] * $row['cantidad'];
+
     $total += $row['subtotal'];
     $carrito_items[] = $row;
 }
+$stmt->close();
+
+$hasItems = !empty($carrito_items);
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -53,92 +59,173 @@ while ($row = $result->fetch_assoc()) {
     <title>Carrito de Compras - Mundo Librería</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../style/carrito.css">
     <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'lib-red': '#E53E3E', // Rojo vibrante
-            'lib-yellow': '#F6E05E', // Amarillo claro
-            'lib-blue': '#3182CE', // Azul sólido
-          }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'lib-red': '#E53E3E',
+                        'lib-yellow': '#F6E05E',
+                        'lib-blue': '#3182CE',
+                    }
+                }
+            }
         }
-      }
-    }
     </script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
 
-    <!-- Header -->
-    <header class="bg-lib-blue text-white shadow-md">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="index.php" class="flex items-center">
-                <img src="../assets/logo.ico" alt="Logo" class="h-10 mr-3">
-                <h1 class="text-2xl font-bold">Mundo <span class="text-lib-yellow">Librería</span></h1>
+<header class="gradient-header shadow-2xl sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex justify-between items-center">
+            <a href="index.php" class="flex items-center group">
+                <div class="ml-4">
+                    <h1 class="text-3xl font-bold text-white">Mundo <span class="text-lib-yellow">Librería</span></h1>
+                    <p class="text-blue-100 text-sm">Tu carrito de compras</p>
+                </div>
             </a>
-            <div class="flex items-center space-x-4">
-                <a href="index.php" class="text-white hover:text-lib-yellow">Inicio</a>
-                <a href="carrito.php" class="relative">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <!-- Aquí se podría agregar un contador de items -->
+            <nav class="flex items-center space-x-6">
+                <a href="index.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
+                    <i class="fas fa-home mr-2"></i>
+                    Inicio
                 </a>
-            </div>
+
+                <a href="../db/cerrar_sesion.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    Salir
+                </a>
+            </nav>
         </div>
-    </header>
+    </div>
+</header>
 
-    <main class="container mx-auto mt-10 p-4">
-        <h1 class="text-3xl font-bold mb-6">Tu Carrito de Compras</h1>
+<main class="container mx-auto px-6 py-12">
 
-        <?php if (empty($carrito_items)): ?>
-            <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                <p class="text-gray-600">Tu carrito está vacío.</p>
-                <a href="index.php" class="mt-4 inline-block bg-lib-blue text-white px-6 py-2 rounded-lg hover:bg-blue-700">Volver a la tienda</a>
-            </div>
-        <?php else: ?>
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr>
-                            <th class="py-2">Producto</th>
-                            <th class="py-2">Precio</th>
-                            <th class="py-2">Cantidad</th>
-                            <th class="py-2">Subtotal</th>
-                            <th class="py-2">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+    <!-- Breadcrumb -->
+    <div class="flex items-center space-x-2 text-gray-600 mb-8">
+        <i class="fas fa-home"></i>
+        <span>Inicio</span>
+        <i class="fas fa-chevron-right text-xs"></i>
+        <span class="text-lib-blue font-semibold">Carrito de Compras</span>
+    </div>
+
+    <div class="text-center mb-12">
+        <h1 class="text-5xl font-bold mb-4">
+            <i class="fas fa-shopping-cart text-lib-blue mr-4"></i>
+            <span class="total-gradient">Tu Carrito</span>
+        </h1>
+        <p class="text-gray-600 text-lg">Revisa tus productos antes de finalizar la compra</p>
+    </div>
+
+    <!-- Carrito vacío (siempre presente, se oculta cuando hay items) -->
+    <div id="empty-cart" class="text-center py-12 <?= $hasItems ? 'hidden' : '' ?>">
+        <i class="fas fa-shopping-cart text-6xl text-gray-400 mb-4"></i>
+        <h2 class="text-2xl font-bold text-gray-700 mb-2">¡Tu carrito está vacío!</h2>
+        <p class="text-gray-500 mb-6">Agrega productos para continuar con tu compra.</p>
+        <a href="index.php" class="btn-primary px-6 py-3 rounded-lg text-white">
+            <i class="fas fa-store mr-2"></i> Explorar productos
+        </a>
+    </div>
+
+    <!-- Carrito con productos -->
+    <div id="cart-with-items" style="<?= $hasItems ? '' : 'display:none;' ?>">
+        <div class="grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden">
+                    <div class="bg-gradient-to-r from-lib-blue to-lib-red p-6">
+                        <h3 class="text-2xl font-bold text-white flex items-center"><i class="fas fa-list mr-3"></i> Productos en tu Carrito</h3>
+                    </div>
+                    <div class="p-6 space-y-6">
                         <?php foreach ($carrito_items as $item): ?>
-                            <tr class="border-b" id="item-<?= $item['id'] ?>">
-                                <td class="py-4 flex items-center">
-                                    <img src="/Mundo-Libreria/uploads/productos/<?= htmlspecialchars($item['imagen']) ?>" alt="<?= htmlspecialchars($item['nombre']) ?>" class="w-16 h-16 object-cover mr-4">
-                                    <span><?= htmlspecialchars($item['nombre']) ?></span>
-                                </td>
-                                <td class="py-4">$<?= number_format($item['precio'], 0, ',', '.') ?></td>
-                                <td class="py-4"><?= $item['cantidad'] ?></td>
-                                <td class="py-4">$<?= number_format($item['subtotal'], 0, ',', '.') ?></td>
-                                <td class="py-4">
-                                    <button onclick="eliminarDelCarrito(<?= $item['id'] ?>)" class="bg-lib-red text-white px-3 py-1 rounded hover:bg-red-700">
+                            <?php // Seguridad y casteo --> ?>
+                            <?php $pid = (int) $item['id']; ?>
+                            <?php $nombre = htmlspecialchars($item['nombre']); ?>
+                            <?php $imagen = htmlspecialchars($item['imagen']); ?>
+                            <?php $precio = (float) $item['precio']; ?>
+                            <?php $cantidad = (int) $item['cantidad']; ?>
+                            <?php $subtotal = (int) ($item['subtotal']); ?>
+
+                            <div class="flex items-center bg-white rounded-2xl p-6 shadow-lg card-hover border border-gray-100" id="item-<?= $pid ?>" data-qty="<?= $cantidad ?>">
+                                <div class="relative">
+                                    <img src="/Mundo-Libreria/uploads/productos/<?= $imagen ?>"
+                                        alt="<?= $nombre ?>"
+                                        class="product-image w-24 h-24 object-cover rounded-xl border-2 border-gray-200">
+                                </div>
+                                <div class="flex-1 ml-6">
+                                    <h4 class="font-bold text-xl text-gray-800 mb-2"><?= $nombre ?></h4>
+                                    <div class="flex items-center justify-between">
+                                        <span class="price-highlight text-2xl font-bold">$<?= number_format($precio, 0, ',', '.') ?></span>
+                                        <!-- Controles de cantidad (opcional) -->
+                                    </div>
+                                </div>
+                                <div class="ml-6 text-right">
+                                    <!-- añadimos data-value para facilitar lectura JS -->
+                                    <p class="text-2xl font-bold text-lib-blue mb-4 subtotal" data-value="<?= $subtotal ?>">$<?= number_format($subtotal, 0, ',', '.') ?></p>
+                                    <button onclick="eliminarDelCarrito(<?= $pid ?>)" class="btn-danger text-white px-4 py-2 rounded-lg">
+                                        <i class="fas fa-trash mr-1"></i>
                                         Eliminar
                                     </button>
-                                </td>
-                            </tr>
+                                </div>
+                            </div>
                         <?php endforeach; ?>
-                    </tbody>
-                </table>
 
-                <div class="mt-6 text-right">
-                    <h2 class="text-2xl font-bold">Total: $<?= number_format($total, 0, ',', '.') ?></h2>
-                    <a href="chekout.php">
-                    <button  class="mt-4 bg-green-500 text-white px-8 py-3 rounded-lg hover:bg-green-600">Proceder al Pago</button>
-                </a>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-6">
+                    <a href="index.php" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold flex items-center">
+                        <i class="fas fa-arrow-left mr-2"></i> Seguir Comprando
+                    </a>
+                    <button id="clear-cart-btn" class="bg-lib-yellow text-gray-800 px-6 py-3 rounded-xl font-semibold hover:bg-yellow-500 transition-all duration-300">
+                        <i class="fas fa-broom mr-2"></i> Limpiar Carrito
+                    </button>
                 </div>
             </div>
-        <?php endif; ?>
-    </main>
 
-    <script  src="../js/eliminarProductoCarrito.js"></script>
-   
+            <div class="lg:col-span-1">
+                <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden sticky top-32">
+                    <div class="bg-gradient-to-r from-lib-yellow to-lib-red p-6">
+                        <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i class="fas fa-calculator mr-3"></i> Resumen de Compra</h3>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Subtotal (<span id="summary-count"><?= array_sum(array_column($carrito_items, 'cantidad') ?: [0]) ?></span> productos)</span>
+                                <span id="summary-subtotal" class="font-semibold text-lg">$<?= number_format($total, 0, ',', '.') ?></span> 
+                            </div>
+                            <hr class="border-gray-200">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xl font-bold text-gray-800">Total</span>
+                                <span id="cart-total" class="text-3xl font-bold total-gradient">$<?= number_format($total, 0, ',', '.') ?></span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <p class="font-semibold text-gray-700"><i class="fas fa-credit-card mr-2"></i> Métodos de Pago Aceptados</p>
+                            <div class="flex space-x-2">
+                                <div class="bg-blue-100 p-2 rounded-lg"><i class="fab fa-cc-visa text-blue-600 text-xl"></i></div>
+                                <div class="bg-red-100 p-2 rounded-lg"><i class="fab fa-cc-mastercard text-red-600 text-xl"></i></div>
+                                <div class="bg-yellow-100 p-2 rounded-lg"><i class="fas fa-university text-yellow-600 text-xl"></i></div>
+                            </div>
+                        </div>
+
+                        <a href="checkout.php" class="block">
+                            <button class="btn-success text-white w-full py-4 rounded-2xl font-bold text-lg"><i class="fas fa-credit-card mr-2"></i> Proceder al Pago</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+<script src="../js/eliminarProductoCarrito.js"></script>
+
+
+
 </body>
 </html>
