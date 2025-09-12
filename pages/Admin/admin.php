@@ -168,55 +168,9 @@ unset($_SESSION['flash']);
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../../style/admin.css">
     <style>
-        /* Pequeños ajustes visuales */
-        .sidebar {
-            background: linear-gradient(180deg, #1f2937, #111827);
-            width: 260px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            padding: 20px;
-        }
-
-        .sidebar.close {
-            width: 72px
-        }
-
-        .home-section {
-            margin-left: 260px;
-            padding: 20px;
-        }
-
-        .sidebar .nav-links a {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            color: #fff;
-            padding: 8px 10px;
-            border-radius: 8px;
-        }
-
-        .sidebar .nav-links a:hover {
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .badge-active {
-            background: #D1FAE5;
-            color: #065f46;
-            padding: 4px 8px;
-            border-radius: 999px;
-            font-weight: 600;
-        }
-
-        .badge-inactive {
-            background: #FEE2E2;
-            color: #991B1B;
-            padding: 4px 8px;
-            border-radius: 999px;
-            font-weight: 600;
-        }
+       
     </style>
 </head>
 
