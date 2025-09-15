@@ -347,10 +347,10 @@
 </div>
 
   <!-- Scripts -->
-  <script src="../js/carousel.js"></script>
-  <script src="../js/components.js"></script>
-  <script src="../js/cargarProductosUser.js"></script>
-  <script src="../js/contacto.js"></script>
+  <script src="../js/User/carousel.js"></script>
+  <script src="../js/User/components.js"></script>
+  <script src="../js/User/cargarProductosUser.js"></script>
+  <script src="../js/User/contacto.js"></script>
 
   <script>
     // Animaciones adicionales cuando el DOM esté listo
