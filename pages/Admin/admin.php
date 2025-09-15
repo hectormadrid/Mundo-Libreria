@@ -166,33 +166,78 @@ unset($_SESSION['flash']);
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../style/admin.css">
-    <style>
-       
-    </style>
 </head>
 
 <body class="bg-gray-100">
 
-    <div class="sidebar" id="sidebar">
-        <div class="logo-details text-white mb-6">
-            <div class="flex items-center gap-3">
-                <svg class="w-8 h-8 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                </svg>
-                <span class="font-bold text-lg">Mundo Librería</span>
-            </div>
+<!-- Botón toggle mejorado -->
+<button class="sidebar-toggle fixed top-4 left-4 z-50 bg-blue-600 p-2 rounded-lg text-white shadow-lg md:left-4 transition-all duration-300 hover:bg-blue-700">
+    <!-- Icono de hamburguesa -->
+    <svg class="w-6 h-6 open-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+    </svg>
+    
+    <!-- Icono de X -->
+    <svg class="w-6 h-6 close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+    </svg>
+</button>
+   
+
+   <div class="sidebar" id="sidebar">
+    <!-- Tu contenido actual del sidebar -->
+    <div class="logo-details text-white mb-6">
+        <div class="flex items-center gap-3">
+            <svg class="w-8 h-8 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            </svg>
+            <span class="font-bold text-lg logo-text px-3">Mundo Librería</span>
         </div>
+    </div>
         <div class="nav-links space-y-2">
-            <a href="admin.php" class="flex items-center"><i class="fas fa-home text-white mr-2"></i><span class="text-white">Inicio</span></a>
-            <a href="pedidos.php" class="flex items-center"><i class="fas fa-box text-white mr-2"></i><span class="text-white">Pedidos</span></a>
-            <a href="#" class="flex items-center"><i class="fas fa-users text-white mr-2"></i><span class="text-white">Usuarios</span></a>
+            <!-- Item simple -->
+            <a href="admin.php" class="nav-item flex items-center p-3 rounded-lg transition-all">
+                <i class="fas fa-home text-white mr-3 w-5 text-center"></i>
+                <span class="nav-text text-white">Inicio</span>
+            </a>
+
+            <!-- Item simple -->
+            <a href="pedidos.php" class="nav-item flex items-center p-3 rounded-lg transition-all">
+                <i class="fas fa-box text-white mr-3 w-5 text-center"></i>
+                <span class="nav-text text-white">Pedidos</span>
+            </a>
+
+            <!-- Item con submenú -->
+            <div class="has-submenu group">
+                <div class="nav-item flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all">
+                    <div class="flex items-center">
+                        <i class="fas fa-users text-white mr-3 w-5 text-center"></i>
+                        <span class="nav-text text-white">Usuarios</span>
+                    </div>
+                    <i class="fas fa-chevron-down arrow text-white text-xs transition-transform"></i>
+                </div>
+
+                <div class="submenu pl-9 mt-1 space-y-1 hidden">
+                    <a href="usuarios.php" class="block py-2 px-3 rounded text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-all">
+                        Lista de Usuarios
+                    </a>
+                    <a href="crear-usuario.php" class="block py-2 px-3 rounded text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-all">
+                        Crear Usuario
+                    </a>
+                </div>
+            </div>
+           
         </div>
-        <div class="mt-8 text-white">
-            <div class="font-semibold"><?php echo htmlspecialchars($_SESSION['nombre'] ?? 'Administrador'); ?></div>
-            <a href="../../db/cerrar_sesion.php" class="inline-block mt-3 bg-red-600 px-3 py-1 rounded text-white">Cerrar sesión</a>
+
+        <div class="mt-8 text-white user-section">
+            <div class="font-semibold user-name"><?php echo htmlspecialchars($_SESSION['nombre'] ?? 'Administrador'); ?></div>
+            <a href="../../db/cerrar_sesion.php" class="inline-block mt-3 bg-red-600 px-3 py-1 rounded text-white logout-btn">
+                Cerrar sesión
+            </a>
         </div>
     </div>
 
@@ -387,9 +432,10 @@ unset($_SESSION['flash']);
         </div>
     </div>
 
-    <script src="../../js/tablaAdmin.js"></script>
-    <script src="../../js/editarProductos.js"></script>
-    <script src="../../js/agregarProductos.js"></script>
+    <script src="../../js/Admin/menu_admin.js"></script>
+    <script src="../../js/Admin/tablaAdmin.js"></script>
+    <script src="../../js/Admin/agregarProductos.js"></script>
+    <script src="../../js/Admin/editarProductos.js"></script>
 </body>
 
 </html>
