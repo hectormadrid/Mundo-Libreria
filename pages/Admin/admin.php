@@ -174,30 +174,30 @@ unset($_SESSION['flash']);
 
 <body class="bg-gray-100">
 
-<!-- Botón toggle mejorado -->
-<button class="sidebar-toggle fixed top-4 left-4 z-50 bg-blue-600 p-2 rounded-lg text-white shadow-lg md:left-4 transition-all duration-300 hover:bg-blue-700">
-    <!-- Icono de hamburguesa -->
-    <svg class="w-6 h-6 open-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-    </svg>
-    
-    <!-- Icono de X -->
-    <svg class="w-6 h-6 close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-    </svg>
-</button>
-   
+    <!-- Botón toggle mejorado -->
+    <button class="sidebar-toggle fixed top-4 left-4 z-50 bg-blue-600 p-2 rounded-lg text-white shadow-lg md:left-4 transition-all duration-300 hover:bg-blue-700">
+        <!-- Icono de hamburguesa -->
+        <svg class="w-6 h-6 open-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
 
-   <div class="sidebar" id="sidebar">
-    <!-- Tu contenido actual del sidebar -->
-    <div class="logo-details text-white mb-6">
-        <div class="flex items-center gap-3">
-            <svg class="w-8 h-8 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-            </svg>
-            <span class="font-bold text-lg logo-text px-3">Mundo Librería</span>
+        <!-- Icono de X -->
+        <svg class="w-6 h-6 close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+    </button>
+
+
+    <div class="sidebar" id="sidebar">
+        <!-- Tu contenido actual del sidebar -->
+        <div class="logo-details text-white mb-6">
+            <div class="flex items-center gap-3">
+                <svg class="w-8 h-8 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                </svg>
+                <span class="font-bold text-lg logo-text px-3">Mundo Librería</span>
+            </div>
         </div>
-    </div>
         <div class="nav-links space-y-2">
             <!-- Item simple -->
             <a href="admin.php" class="nav-item flex items-center p-3 rounded-lg transition-all">
@@ -211,26 +211,11 @@ unset($_SESSION['flash']);
                 <span class="nav-text text-white">Pedidos</span>
             </a>
 
-            <!-- Item con submenú -->
-            <div class="has-submenu group">
-                <div class="nav-item flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all">
-                    <div class="flex items-center">
-                        <i class="fas fa-users text-white mr-3 w-5 text-center"></i>
-                        <span class="nav-text text-white">Usuarios</span>
-                    </div>
-                    <i class="fas fa-chevron-down arrow text-white text-xs transition-transform"></i>
-                </div>
+          <a href="usuarios.php" class="nav-item flex items-center p-3 rounded-lg transition-all">
+                <i class="fas fa-box text-white mr-3 w-5 text-center"></i>
+                <span class="nav-text text-white">Usuarios</span>
+            </a>
 
-                <div class="submenu pl-9 mt-1 space-y-1 hidden">
-                    <a href="usuarios.php" class="block py-2 px-3 rounded text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-all">
-                        Lista de Usuarios
-                    </a>
-                    <a href="crear-usuario.php" class="block py-2 px-3 rounded text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-all">
-                        Crear Usuario
-                    </a>
-                </div>
-            </div>
-           
         </div>
 
         <div class="mt-8 text-white user-section">
