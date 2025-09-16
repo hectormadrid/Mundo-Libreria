@@ -212,7 +212,7 @@ unset($_SESSION['flash']);
             </a>
 
           <a href="usuarios.php" class="nav-item flex items-center p-3 rounded-lg transition-all">
-                <i class="fas fa-box text-white mr-3 w-5 text-center"></i>
+                <i class="fas fa-users text-white mr-3 w-5 text-center"></i>
                 <span class="nav-text text-white">Usuarios</span>
             </a>
 
