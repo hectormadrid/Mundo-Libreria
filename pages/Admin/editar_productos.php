@@ -3,13 +3,11 @@ header('Content-Type: application/json');
 session_start();
 require_once __DIR__ . '/../../db/Conexion.php';
 
-// Verificar autenticación
-if (!isset($_SESSION['ID'])) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'error' => 'No autorizado']);
+// Verificar que sea administrador
+if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
+    header('Location: ../pages/login_admin.php');
     exit;
 }
-
 // Habilitar reporte de errores para depuración
 error_reporting(E_ALL);
 ini_set('display_errors', 1);

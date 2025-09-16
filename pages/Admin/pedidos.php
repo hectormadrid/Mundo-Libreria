@@ -1,7 +1,11 @@
 <?php
 session_start();
 require_once __DIR__ . '/../../db/Conexion.php';
-
+// Verificar que sea administrador
+if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
+    header('Location: ../pages/login_admin.php');
+    exit;
+}
 // Traer pedidos con detalles
 $sql = "SELECT 
   p.id,

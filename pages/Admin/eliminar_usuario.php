@@ -3,7 +3,11 @@
 session_start();
 header('Content-Type: application/json');
 require_once __DIR__.'/../../db/Conexion.php';
-
+// Verificar que sea administrador
+if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
+    header('Location: ../pages/login_admin.php');
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);

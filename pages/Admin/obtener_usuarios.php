@@ -4,8 +4,12 @@ session_start();
 header('Content-Type: application/json');
 require_once __DIR__.'/../../db/Conexion.php';
 
-// Verificar si es administrador
 
+// Verificar que sea administrador
+if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
+    header('Location: ../pages/login_admin.php');
+    exit;
+}
 try {
     $query = "SELECT id, rut, nombre, correo FROM usuario ORDER BY id DESC";
     $stmt = $conexion->prepare($query);

@@ -31,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (password_verify($password, $usuario['password'])) {
                 $_SESSION['nombre'] = $usuario['nombre'];
                 $_SESSION['ID'] = $usuario['id'];
+                 $_SESSION['tipo'] = 'administrador'; 
                  $_SESSION['password'] = $usuario['password'];
             
 
@@ -220,7 +221,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p>&copy; 2025 Mundo Librería - Panel de Control</p>
         </div>
     </div>
-    <script src="../js/login_admin.js"></script>
+    <script src="../js/Admin/login_admin.js"></script>
 </body>
 
 </html>

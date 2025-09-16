@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../../db/Conexion.php';
-
+// Verificar que sea administrador
+if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
+    header('Location: ../pages/login_admin.php');
+    exit;
+}
 if (!isset($_GET['id'])) {
     echo "<p class='text-red-500 text-center'>ID de pedido no válido.</p>";
     exit;
