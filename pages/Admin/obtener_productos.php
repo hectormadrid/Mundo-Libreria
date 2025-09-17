@@ -1,11 +1,6 @@
 <?php
 header('Content-Type: application/json');
-header("Access-Control-Allow-Origin: *"); // Solo para desarrollo
-// Verificar que sea administrador
-if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
-    header('Location: ../pages/login_admin.php');
-    exit;
-}
+
 try {
     require_once __DIR__.'/../../db/Conexion.php';
     
