@@ -1,31 +1,47 @@
 <?php
 session_start();
-require_once __DIR__ . '/../db/Conexion.php';
+require_once __DIR__.'/../db/Conexion.php';
 
 // Verificar sesión
 if (!isset($_SESSION['ID'])) {
-  header('Location: login.php');
-  exit;
+    header('Location: login.php');
+    exit;
 }
 
 $id_usuario = $_SESSION['ID'];
 
+// Obtener datos del usuario
+$sql_usuario = "SELECT rut ,nombre, correo FROM usuario WHERE id = ?";
+$stmt_usuario = $conexion->prepare($sql_usuario);
+$stmt_usuario->bind_param("i", $id_usuario);
+$stmt_usuario->execute();
+$result_usuario = $stmt_usuario->get_result();
+
+$usuario = null;
+if ($result_usuario->num_rows > 0) {
+    $usuario = $result_usuario->fetch_assoc();
+}
+
 // Obtener productos del carrito
-$sql = "SELECT p.id, p.imagen, p.nombre, p.precio, c.cantidad, (p.precio * c.cantidad) as subtotal
-        FROM carrito c
-        JOIN productos p ON c.id_producto = p.id
-        WHERE c.id_usuario = ?";
-$stmt = $conexion->prepare($sql);
-$stmt->bind_param("i", $id_usuario);
-$stmt->execute();
-$result = $stmt->get_result();
+$sql_carrito = "SELECT p.id, p.nombre, p.precio, p.imagen, c.cantidad, (p.precio * c.cantidad) as subtotal
+                FROM carrito c
+                JOIN productos p ON c.id_producto = p.id
+                WHERE c.id_usuario = ?";
+$stmt_carrito = $conexion->prepare($sql_carrito);
+$stmt_carrito->bind_param("i", $id_usuario);
+$stmt_carrito->execute();
+$result_carrito = $stmt_carrito->get_result();
 
 $items = [];
 $total = 0;
-while ($row = $result->fetch_assoc()) {
-  $items[] = $row;
-  $total += $row['subtotal'];
+while ($row = $result_carrito->fetch_assoc()) {
+    $items[] = $row;
+    $total += $row['subtotal'];
 }
+
+// Cerrar statements
+$stmt_usuario->close();
+$stmt_carrito->close();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -80,39 +96,55 @@ while ($row = $result->fetch_assoc()) {
 
       <!-- Formulario  -->
       <div class="lg:col-span-2 space-y-6 py-3.5">
-        <!-- Información de contacto -->
-        <div class="glass-effect rounded-2xl p-8 card-shadow hover-lift fade-in-up">
-          <div class="flex items-center mb-6">
-            <div class="w-12 h-12 gradient-blue rounded-full flex items-center justify-center mr-4">
-              <i class="fas fa-user text-white text-xl"></i>
+      <!-- Formulario Mejorado -->
+<div class="lg:col-span-2">
+    <div class="bg-white rounded-xl shadow-lg card-hover p-6">
+        <div class="flex items-center mb-6">
+            <div class="w-8 h-8 bg-lib-blue rounded-full flex items-center justify-center text-white mr-3">
+                <i class="fas fa-user"></i>
             </div>
             <h2 class="text-2xl font-bold text-gray-800">Información de Contacto</h2>
-          </div>
-
-          <form id="checkoutForm" action="checkout_process.php" method="POST" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="input-group">
-                <input type="text" name="nombre" placeholder=" " required>
-                <label>Nombre Completo</label>
-              </div>
-              <div class="input-group">
-                <input type="email" name="correo" placeholder=" " required>
-                <label>Correo Electrónico</label>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="input-group">
-                <input type="tel" name="telefono" placeholder=" ">
-                <label>Teléfono (Opcional)</label>
-              </div>
-              <div class="input-group">
-                <input type="text" name="rut" placeholder=" ">
-                <label>RUT (Opcional)</label>
-              </div>
-            </div>
-          </form>
         </div>
+
+        <form action="checkout_process.php" method="POST" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nombre Completo *</label>
+                    <input type="text" name="nombre" required 
+                           class="w-full p-3 border border-gray-300 rounded-lg input-focus focus:outline-none"
+                           placeholder="Juan Pérez"
+                           value="<?= isset($usuario['nombre']) ? htmlspecialchars($usuario['nombre']) : '' ?>">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Correo Electrónico *</label>
+                    <input type="email" name="correo" required 
+                           class="w-full p-3 border border-gray-300 rounded-lg input-focus focus:outline-none"
+                           placeholder="juan@ejemplo.com"
+                           value="<?= isset($usuario['correo']) ? htmlspecialchars($usuario['correo']) : '' ?>">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Teléfono</label>
+                    <input type="tel" name="telefono" 
+                           class="w-full p-3 border border-gray-300 rounded-lg input-focus focus:outline-none"
+                           placeholder="+56 9 1234 5678"
+                           value="<?= isset($usuario['telefono']) ? htmlspecialchars($usuario['telefono']) : '' ?>">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Dirección</label>
+                    <input type="text" name="direccion" 
+                           class="w-full p-3 border border-gray-300 rounded-lg input-focus focus:outline-none"
+                           placeholder="Av. Principal #123"
+                           value="<?= isset($usuario['direccion']) ? htmlspecialchars($usuario['direccion']) : '' ?>">
+                </div>
+            </div>
+
+            <!-- ... resto del formulario ... -->
+        </form>
+    </div>
+</div>
 
         <!-- Método de pago -->
         <div class="glass-effect rounded-2xl p-8 card-shadow hover-lift fade-in-up">
