@@ -26,7 +26,6 @@ CREATE TABLE productos (
     );
     
 
-
 CREATE TABLE carrito (
   id INT AUTO_INCREMENT PRIMARY KEY,
   id_usuario INT NOT NULL,
@@ -35,14 +34,34 @@ CREATE TABLE carrito (
   FOREIGN KEY (id_usuario) REFERENCES usuario(id),
   FOREIGN KEY (id_producto) REFERENCES productos(id)
 );
-
-
+CREATE TABLE pedido (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_usuario INT NOT NULL,
+  total DECIMAL(10,2) NOT NULL,
+  estado ENUM('pendiente', 'pagado', 'cancelado') DEFAULT 'pendiente',
+  fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_usuario) REFERENCES usuario(id)
+);
+CREATE TABLE detalle_pedido (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_pedido INT NOT NULL,
+  id_producto INT NOT NULL,
+  cantidad INT NOT NULL,
+  precio DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (id_pedido) REFERENCES pedido(id),
+  FOREIGN KEY (id_producto) REFERENCES productos(id)
+);
     
 insert into Administrador values (null,'ingrid', '1234');
 delete from  productos where id =4;
-
+use Mundo_Libreria;
 select * from usuario;
 select * from productos;
 select * from carrito;
+select * from pedido;
+select * from detalle_pedido;
 show tables;
+ALTER TABLE usuario 
+ADD COLUMN telefono VARCHAR(20) NULL AFTER correo,
+ADD COLUMN direccion TEXT NULL AFTER telefono;
 -- drop database Mundo_Libreria;

@@ -11,7 +11,7 @@ if (!isset($_SESSION['ID'])) {
 $id_usuario = $_SESSION['ID'];
 
 // Obtener datos del usuario
-$sql_usuario = "SELECT rut ,nombre, correo FROM usuario WHERE id = ?";
+$sql_usuario = "SELECT rut ,nombre, correo,telefono FROM usuario WHERE id = ?";
 $stmt_usuario = $conexion->prepare($sql_usuario);
 $stmt_usuario->bind_param("i", $id_usuario);
 $stmt_usuario->execute();
@@ -236,18 +236,6 @@ $stmt_carrito->close();
 
           <!-- Desglose de costos -->
           <div class="space-y-3 mb-6">
-            <div class="flex justify-between text-gray-600">
-              <span>Subtotal</span>
-              <span id="subtotal">$63.500</span>
-            </div>
-            <div class="flex justify-between text-gray-600">
-              <span>Envío</span>
-              <span class="text-green-600 font-semibold">Gratis</span>
-            </div>
-            <div class="flex justify-between text-gray-600">
-              <span>Descuento</span>
-              <span class="text-red-600">-$0</span>
-            </div>
             <hr class="border-gray-300">
             <div class="flex justify-between text-xl font-bold text-gray-800">
               <span>Total</span>

@@ -217,7 +217,6 @@ $hasItems = !empty($carrito_items);
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 

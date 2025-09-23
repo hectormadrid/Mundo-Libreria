@@ -14,6 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         empty($_POST['nombre']) ||
         empty($_POST['rut']) ||
         empty($_POST['correo']) ||
+        empty($_POST['telefono'])||
         empty($_POST['password']) ||
         empty($_POST['csrf_token']) ||
         $_POST['csrf_token'] !== $_SESSION['csrf_token']
@@ -23,6 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $nombre = trim($_POST['nombre']);
         $rut = trim($_POST['rut']);
         $correo = trim($_POST['correo']);
+        $telefono = trim($_POST['telefono']);
         $password = $_POST['password'];
 
         $stmt = $conexion->prepare("SELECT id, rut FROM usuario WHERE correo = ? or rut = ?");
@@ -34,8 +36,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $error = "El usuario ya está registrado.";
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $insert = $conexion->prepare("INSERT INTO usuario (rut,nombre, correo, password) VALUES (?,?, ?, ?)");
-            $insert->bind_param("ssss",$rut, $nombre, $correo, $hashed_password);
+            $insert = $conexion->prepare("INSERT INTO usuario (rut,nombre, correo,telefono, password) VALUES (?,?, ?, ?,?)");
+            $insert->bind_param("sssss",$rut, $nombre, $correo,$telefono, $hashed_password);
             if ($insert->execute()) {
                 $success = "Registro exitoso. Puedes iniciar sesión.";
                 header("Refresh: 2; URL=login.php");
@@ -138,10 +140,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 maxlength="12"
                                 class="input-glow w-full px-6 py-4 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:border-lib-yellow focus:bg-white outline-none text-gray-800 placeholder-gray-500 font-medium transition-all duration-300">
                         </div>
-                    </div>
+                         <div class="input-container space-y-3">
+                            <label for="telefono" class="block text-sm font-bold text-gray-700 uppercase tracking-wider">
+                                <i class="fas fa-id-card text-lib-red mr-2"></i>
+                                RUT
+                            </label>
+                            <input
+                                type="text"
+                                id="telefono"
+                                name="telefono"
+                                required
+                                placeholder="+569 1234 5678"
+                                maxlength="12"
+                                class="input-glow w-full px-6 py-4 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:border-lib-yellow focus:bg-white outline-none text-gray-800 placeholder-gray-500 font-medium transition-all duration-300">
+                        </div>
+                        <div class="input-container space-y-3">
 
-                    <!-- Campo de email -->
-                    <div class="input-container space-y-3">
                         <label for="correo" class="block text-sm font-bold text-gray-700 uppercase tracking-wider">
                             <i class="fas fa-envelope text-lib-blue mr-2"></i>
                             Correo Electrónico
@@ -153,7 +167,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             required
                             placeholder="tu@email.com"
                             class="input-glow w-full px-6 py-4 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:border-lib-yellow focus:bg-white outline-none text-gray-800 placeholder-gray-500 font-medium transition-all duration-300">
+                            
                     </div>
+                    </div>
+                    
+
+                    <!-- Campo de email -->
+                    
 
                     <!-- Campo de contraseña -->
                     <div class="input-container space-y-3">
