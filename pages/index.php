@@ -69,11 +69,13 @@
           </div>
           
           <!-- Botones de usuario con efectos -->
-          
           <?php if (isset($_SESSION['nombre'])): ?>
             <div class="flex items-center space-x-3 glass-effect rounded-full px-4 py-2">
               <div class="w-8 h-8 bg-lib-yellow rounded-full flex items-center justify-center">
                 <span class="text-lib-blue font-bold text-sm"><?= strtoupper(substr($_SESSION['nombre'], 0, 1)) ?></span>
+              </div>
+              <div>
+                <a href="perfilUser.php">perfil </a>
               </div>
               <span class="text-white font-semibold hidden md:inline">¡Hola, <?= htmlspecialchars($_SESSION['nombre']) ?>!</span>
               <a href="../db/Cerrar_sesion.php" class="bg-lib-red px-4 py-2 rounded-full text-white hover:bg-red-600 transition-all duration-300 hover:scale-105 shadow-lg">
@@ -89,7 +91,7 @@
             </a>
           <?php endif; ?>
           
-          <!-- Carrito mejorado -->
+          <!-- Carrito -->
          <a href="Carrito.php" class="fixed bottom-6 right-6 z-50 bg-blue-600 p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 hover:scale-110 group">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white group-hover:animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293 c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4  2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />

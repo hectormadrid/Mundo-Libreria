@@ -1,0 +1,112 @@
+/* perfil.css - Combinación Rojo y Azul */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+.gradient-header {
+    background: linear-gradient(135deg, #E53E3E 0%, #3182CE 50%, #2B6CB0 100%);
+}
+
+.glass-effect {
+    backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.profile-gradient {
+    background: linear-gradient(135deg, #E53E3E, #3182CE);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #E53E3E 0%, #3182CE 100%);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #C53030 0%, #2B6CB0 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(229, 62, 62, 0.3);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #3182CE 0%, #E53E3E 100%);
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #2B6CB0 0%, #C53030 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(49, 130, 206, 0.3);
+}
+
+.input-focus:focus {
+    border-color: #E53E3E;
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+.status-badge {
+    background: linear-gradient(135deg, #E53E3E, #3182CE);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.quick-action:hover {
+    transform: translateX(5px);
+    transition: all 0.3s ease;
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #E53E3E 0%, #3182CE 100%);
+}
+
+.gradient-bg-reverse {
+    background: linear-gradient(135deg, #3182CE 0%, #E53E3E 100%);
+}
+
+.gradient-border {
+    border: 2px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(135deg, #E53E3E, #3182CE) border-box;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.pulse:hover {
+    animation: pulse 2s infinite;
+}
+
+.icon-red {
+    color: #E53E3E;
+}
+
+.icon-blue {
+    color: #3182CE;
+}

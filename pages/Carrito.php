@@ -49,7 +49,6 @@ $stmt->close();
 
 $hasItems = !empty($carrito_items);
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -219,12 +218,7 @@ $hasItems = !empty($carrito_items);
             </div>
         </div>
     </div>
-
 </main>
-
 <script src="../js/eliminarProductoCarrito.js"></script>
-
-
-
 </body>
 </html>
