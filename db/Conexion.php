@@ -4,14 +4,16 @@ $user = "root";
 $password = "";
 $dbname = "Mundo_libreria";
 
-// Crear conexión
 $conexion = new mysqli($host, $user, $password, $dbname);
 
-// Verificar conexión
 if ($conexion->connect_error) {
-    die("Error de conexión a la base de datos: " . $conexion->connect_error);
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Error de conexión a la base de datos: ' . $conexion->connect_error
+    ]);
+    exit;
 }
 
-// Establecer el conjunto de caracteres a utf8
 $conexion->set_charset("utf8");
 ?>

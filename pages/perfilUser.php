@@ -321,7 +321,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Footer con gradiente -->
     <footer class="dual-gradient text-white py-8 mt-12">
         <div class="container mx-auto px-4 text-center">
-            <p>&copy; 2024 Mundo Librería. Todos los derechos reservados.</p>
+            <p>&copy; 2025 Mundo Librería. Todos los derechos reservados.</p>
             <div class="flex justify-center space-x-4 mt-4">
                 <a href="#" class="hover:text-lib-yellow transition-colors transform hover:scale-110">
                     <i class="fab fa-facebook text-xl"></i>

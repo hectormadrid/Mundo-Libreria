@@ -68,12 +68,24 @@ class ProductosDataTable {
       { data: "stock" },
       {
         data: "estado",
-        render: (data) => {
-          const color =
-            data === "activo"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800";
-          return `<span class="px-2 py-1 rounded-full ${color}">${data}</span>`;
+        render: (data, type, row) => {
+          const isActive = data === "activo";
+          return `
+      <div class="switch-container">
+        <label class="switch">
+          <input type="checkbox" ${isActive ? "checked" : ""} 
+                 onchange="ProductosDataTable.toggleEstado(${
+                   row.id
+                 }, this.checked)">
+          <span class="slider"></span>
+        </label>
+        <span class="estado-label ${
+          isActive ? "estado-activo" : "estado-inactivo"
+        }">
+          ${isActive ? "Activo" : "Inactivo"}
+        </span>
+      </div>
+          `;
         },
       },
       {
@@ -91,18 +103,15 @@ class ProductosDataTable {
             return `
               <div class="flex gap-2">
                 <button onclick="ProductEditModal.open('${safeData}')"
-                        class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded shadow">
-                    <i class="bx bx-edit"></i> Editar
+                        class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded shadow transition-colors">
+                    <i class="fas fa-edit mr-1"></i> Editar
                 </button>
 
-                <button onclick="ProductosDataTable.confirmDelete(${row.id})"
-                        class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded shadow">
-                    <i class="bx bx-trash"></i> Eliminar
-                </button>
+               
 
                 <button onclick="ProductosDataTable.showDetails('${safeData}')"
-                        class="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded shadow">
-                    <i class="bx bx-show"></i> Ver
+                        class="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded shadow transition-colors">
+                    <i class="fas fa-eye mr-1"></i> Ver
                 </button>
               </div>
             `;
@@ -116,6 +125,81 @@ class ProductosDataTable {
       },
     ];
   }
+
+  // Método para cambiar el estado del producto
+static async toggleEstado(productId, nuevoEstado) {
+  try {
+    const response = await fetch("actualizar_estado_producto.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: productId,
+        estado: nuevoEstado ? "activo" : "inactivo",
+      }),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      Swal.fire({
+        icon: "success",
+        title: "¡Estado actualizado!",
+        text: `El producto ahora está ${nuevoEstado ? "activo" : "inactivo"}`,
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      // ✅ Actualizar texto y color en el DOM inmediatamente
+      const container = document.querySelector(
+        `input[onchange*="${productId}"]`
+      )?.closest(".switch-container");
+
+      if (container) {
+        const label = container.querySelector(".estado-label");
+        if (label) {
+          label.textContent = nuevoEstado ? "Activo" : "Inactivo";
+          label.classList.toggle("estado-activo", nuevoEstado);
+          label.classList.toggle("estado-inactivo", !nuevoEstado);
+        }
+      }
+
+      // Opcional: recargar la tabla luego de un delay
+      setTimeout(() => {
+        if (window.productosTable) {
+          window.productosTable.reload();
+        }
+      }, 1000);
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: result.error || "No se pudo actualizar el estado",
+      });
+
+      // Revertir el switch
+      const checkbox = document.querySelector(
+        `input[onchange*="${productId}"]`
+      );
+      if (checkbox) checkbox.checked = !nuevoEstado;
+    }
+  } catch (error) {
+    console.error("Error al cambiar estado:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error de conexión",
+      text: "No se pudo conectar con el servidor",
+    });
+
+    // Revertir el switch
+    const checkbox = document.querySelector(
+      `input[onchange*="${productId}"]`
+    );
+    if (checkbox) checkbox.checked = !nuevoEstado;
+  }
+}
+
 
   getLanguageSettings() {
     return {
@@ -137,47 +221,6 @@ class ProductosDataTable {
     };
   }
 
-  static showFullImage(src) {
-    const modal = `
-      <div class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4" 
-           onclick="this.remove()">
-          <div class="max-w-4xl w-full">
-              <img src="${src}" class="w-full h-auto max-h-screen object-contain">
-          </div>
-      </div>
-    `;
-    document.body.insertAdjacentHTML("beforeend", modal);
-  }
-
-  static confirmDelete(id) {
-    Swal.fire({
-      title: "¿Eliminar producto?",
-      text: "Esta acción no se puede deshacer.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        fetch(`eliminar_producto.php?id=${id}`, { method: "DELETE" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.success) {
-              Swal.fire("Eliminado", "El producto ha sido eliminado.", "success");
-              window.productosTable.reload();
-            } else {
-              Swal.fire("Error", data.error || "No se pudo eliminar.", "error");
-            }
-          })
-          .catch((err) => {
-            console.error(err);
-            Swal.fire("Error", "Error de conexión.", "error");
-          });
-      }
-    });
-  }
 
   static showDetails(productoJson) {
     const producto = JSON.parse(productoJson.replace(/&quot;/g, '"'));
@@ -200,9 +243,12 @@ class ProductosDataTable {
   }
 }
 
-function updateTime() { const el = document.getElementById('currentTime'); el.textContent = new Date().toLocaleString(); }
-updateTime(); setInterval(updateTime, 1000);
-
+function updateTime() {
+  const el = document.getElementById("currentTime");
+  el.textContent = new Date().toLocaleString();
+}
+updateTime();
+setInterval(updateTime, 1000);
 
 // Iniciar DataTable al cargar admin.php
 document.addEventListener("DOMContentLoaded", () => {

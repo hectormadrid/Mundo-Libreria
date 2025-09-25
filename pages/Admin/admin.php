@@ -400,23 +400,6 @@ unset($_SESSION['flash']);
         </div>
     </div>
 
-
-    <!-- Modal Eliminar -->
-    <div id="modalEliminar" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50">
-        <div class="bg-white rounded p-6 w-full max-w-md">
-            <h3 class="text-xl font-bold mb-4">Confirmar eliminación</h3>
-            <p class="mb-4">¿Estás seguro que deseas marcar este producto como Inactivo?</p>
-            <form method="post">
-                <input type="hidden" name="action" value="delete_product">
-                <input type="hidden" name="id" id="deleteId">
-                <div class="flex justify-end gap-2">
-                    <button type="button" onclick="closeModal('modalEliminar')" class="px-4 py-2 border rounded">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded">Confirmar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script src="../../js/Admin/menu_admin.js"></script>
     <script src="../../js/Admin/tablaAdmin.js"></script>
     <script src="../../js/Admin/agregarProductos.js"></script>
