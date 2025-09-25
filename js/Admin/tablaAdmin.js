@@ -165,12 +165,7 @@ static async toggleEstado(productId, nuevoEstado) {
         }
       }
 
-      // Opcional: recargar la tabla luego de un delay
-      setTimeout(() => {
-        if (window.productosTable) {
-          window.productosTable.reload();
-        }
-      }, 1000);
+
     } else {
       Swal.fire({
         icon: "error",
