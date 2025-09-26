@@ -57,6 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Panel de Administración - Mundo Librería</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -222,6 +223,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
     <script src="../js/Admin/login_admin.js"></script>
+
+    <?php if (!empty($error)): ?>
+    <script>
+        Swal.fire({
+            icon: '<?php echo $type; ?>',
+            title: 'Acceso denegado',
+            text: '<?php echo $error; ?>',
+            confirmButtonColor: '#3182CE'
+        })
+    </script>
+    <?php endif; ?>
+    
 </body>
 
 </html>
