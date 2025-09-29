@@ -142,10 +142,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     <!-- Opciones adicionales -->
                     <div class="flex items-center justify-between text-sm">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" class="w-4 h-4 text-lib-blue rounded border-gray-300 focus:ring-lib-blue">
-                            <span class="ml-2 text-gray-600 font-medium">Recordarme</span>
-                        </label>
                         <a href="#" class="text-lib-red hover:text-red-700 font-semibold transition-colors">
                             ¿Olvidaste tu contraseña?
                         </a>
@@ -153,9 +149,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     <!-- Botón de envío -->
                     <button
-                        type="submit"
-                        class="w-full btn-gradient text-white py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-3xl hover:scale-105 focus:ring-4 focus:ring-lib-yellow/50 focus:outline-none transition-all duration-300 uppercase tracking-wider">
-                      
+                        type="submit" class="w-full btn-gradient text-white py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-3xl hover:scale-105 focus:ring-4 focus:ring-lib-yellow/50 focus:outline-none transition-all duration-300 uppercase tracking-wider">
                         Iniciar Sesión
                     </button>
                 </form>
@@ -165,11 +159,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         Volver al Sitio Principal
                     </a>
                 </div>
-
-                <!-- Mensaje de error (ejemplo) -->
-                   <?php if (!empty($error)): ?>
-            <p class="mt-4 text-red-500 text-center"><?php echo htmlspecialchars($error); ?></p>
-        <?php endif; ?>
+       
 
                 <!-- Divisor -->
                 <div class="flex items-center my-8">
@@ -202,7 +192,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    <?php if (!empty($error)): ?>
     <script>
         Swal.fire({
-            icon: '<?php echo $type; ?>',
             title: 'Atención',
             text: '<?php echo $error; ?>',
             confirmButtonColor: '#3182CE'

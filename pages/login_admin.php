@@ -187,13 +187,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </button>
                 </form>
 
-                <!-- Mensaje de error (ejemplo) -->
-                <div id="error-message" class="hidden mt-6 p-4 bg-red-50 border-l-4 border-lib-red rounded-lg">
-                    <div class="flex items-center">
-                        <i class="fas fa-exclamation-triangle text-lib-red mr-3"></i>
-                        <p class="text-red-800 font-medium">Credenciales incorrectas. Acceso denegado.</p>
-                    </div>
-                </div>
+                      <?php if (!empty($error)): ?>
+            <p class="mt-4 text-red-500 text-center"><?php echo htmlspecialchars($error); ?></p>
+        <?php endif; ?>
 
                 <!-- Divisor -->
                 <div class="flex items-center my-8">
@@ -227,9 +223,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php if (!empty($error)): ?>
     <script>
         Swal.fire({
-            icon: '<?php echo $type; ?>',
             title: 'Acceso denegado',
-            text: '<?php echo $error; ?>',
+            text: '<?php json_encode ($error); ?>',
             confirmButtonColor: '#3182CE'
         })
     </script>
