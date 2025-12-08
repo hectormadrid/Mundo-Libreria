@@ -8,12 +8,12 @@ try {
 
     // Prepara la consulta con o sin filtro de categoría
     if (!empty($categoria)) {
-        $stmt = $conexion->prepare("SELECT id, nombre, imagen, precio, descripcion , Stock , categoria  
-        FROM productos WHERE estado = 'Activo' AND Stock > 0  AND LOWER(categoria) = ?  LIMIT 8");
+        $stmt = $conexion->prepare("SELECT id, nombre, imagen, precio, descripcion , stock , categoria  
+        FROM productos WHERE estado = 'Activo' AND stock > 0  AND LOWER(categoria) = ?  LIMIT 8");
         $stmt->bind_param("s", $categoria);
     } else {
-        $stmt = $conexion->prepare("SELECT id, nombre, imagen, precio, descripcion, Stock , categoria  
-        FROM productos WHERE estado = 'Activo' AND Stock > 0 LIMIT 8");
+        $stmt = $conexion->prepare("SELECT id, nombre, imagen, precio, descripcion, stock , categoria  
+        FROM productos WHERE estado = 'Activo' AND stock > 0 LIMIT 8");
     }
 if (!empty($categoria)) {
     // filtra por categoría

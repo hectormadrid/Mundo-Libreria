@@ -1,5 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
   const slidesContainer = document.getElementById("slides-container");
+
+  // Si el contenedor del carrusel no existe en esta página, no ejecutar el script.
+  if (!slidesContainer) {
+    return;
+  }
+
   const slides = document.querySelectorAll(".min-w-full");
   const prevBtn = document.getElementById("prev-slide");
   const nextBtn = document.getElementById("next-slide");
