@@ -142,7 +142,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     <!-- Opciones adicionales -->
                     <div class="flex items-center justify-between text-sm">
-                        <a href="#" class="text-lib-red hover:text-red-700 font-semibold transition-colors">
+                        <a href="forgot_password.php" class="text-lib-red hover:text-red-700 font-semibold transition-colors">
                             ¿Olvidaste tu contraseña?
                         </a>
                     </div>
