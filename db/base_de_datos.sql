@@ -11,6 +11,7 @@ CREATE TABLE usuario (
 CREATE TABLE Administrador (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50) NOT NULL,
+  tipo Varchar(50) not null, 
   password VARCHAR(255) NOT NULL
 );
 CREATE TABLE productos (
@@ -52,8 +53,7 @@ CREATE TABLE detalle_pedido (
   FOREIGN KEY (id_producto) REFERENCES productos(id)
 );
     
-insert into Administrador values (null,'ingrid', '1234');
-delete from  productos where id =4;
+insert into Administrador values (null,'ingrid','administrador', '1234');
 use Mundo_Libreria;
 select * from usuario;
 select * from productos;
@@ -64,4 +64,4 @@ show tables;
 ALTER TABLE usuario 
 ADD COLUMN telefono VARCHAR(20) NULL AFTER correo,
 ADD COLUMN direccion TEXT NULL AFTER telefono;
--- drop database Mundo_Libreria;
+drop database Mundo_Libreria;

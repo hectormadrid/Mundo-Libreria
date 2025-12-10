@@ -1,6 +1,12 @@
 <?php
 session_start();
-require_once __DIR__ . '/../../db/Conexion.php'; // <-- ajusta la ruta según tu proyecto
+require_once __DIR__ . '/../../db/Conexion.php';
+
+// Verificar que sea administrador
+if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
+    header('Location: ../login_admin.php');
+    exit;
+}
 
 // Helper: limpiar entrada
 function clean($v)
@@ -231,7 +237,28 @@ unset($_SESSION['flash']);
             <h1 class="text-3xl font-bold">Panel de Administración</h1>
             <div class="flex items-center gap-4">
                 <div class="text-gray-600">Fecha: <span id="currentTime"></span></div>
-                <button id="btnAgregarProducto" class="bg-blue-600 text-white px-4 py-2 rounded">+ Nuevo</button>
+                <button id="btnGestionarAdmins" class="bg-purple-600 text-white px-4 py-2 rounded">Gestionar Admins</button>
+                <button id="btnAgregarProducto" class="bg-blue-600 text-white px-4 py-2 rounded">+ Nuevo Producto</button>
+            </div>
+        </div>
+
+        <!-- Sección Gestión de Administradores (inicialmente oculta) -->
+        <div id="seccionGestionAdmins" class="hidden bg-white rounded shadow p-4 mb-6">
+            <h2 class="text-2xl font-bold mb-4">Gestión de Administradores</h2>
+            <button id="btnCrearAdmin" class="bg-green-600 text-white px-4 py-2 rounded mb-4">+ Crear Administrador</button>
+            <div class="bg-white rounded shadow p-4">
+                <table id="adminsTable" class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="p-2">ID</th>
+                            <th class="p-2">Nombre</th>
+                            <th class="p-2">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Contenido cargado por AJAX -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -400,10 +427,38 @@ unset($_SESSION['flash']);
         </div>
     </div>
 
+    <!-- Modal Crear Administrador -->
+    <div id="modalCrearAdmin" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-4">Crear Nuevo Administrador</h2>
+                <form id="formCrearAdmin">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Nombre</label>
+                        <input type="text" name="nombre" class="w-full px-3 py-2 border rounded" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Contraseña</label>
+                        <input type="password" name="password" class="w-full px-3 py-2 border rounded" required>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" id="btnCancelarAdmin" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+                            Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="../../js/Admin/menu_admin.js"></script>
     <script src="../../js/Admin/tablaAdmin.js"></script>
     <script src="../../js/Admin/agregarProductos.js"></script>
     <script src="../../js/Admin/editarProductos.js"></script>
+    <script src="../../js/Admin/gestionAdmins.js"></script>
 </body>
 
 </html>

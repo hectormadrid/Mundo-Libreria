@@ -1,6 +1,14 @@
 <?php
 header('Content-Type: application/json');
 
+session_start();
+// Verificar que sea administrador
+if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'error' => 'Acceso no autorizado.']);
+    exit;
+}
+
 try {
     // Incluir la conexión a la base de datos
     require_once __DIR__ . '/../../db/Conexion.php';
