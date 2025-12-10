@@ -236,7 +236,7 @@
   <!-- Sección de productos mejorada -->
   <main class="mt-16 container mx-auto px-4">
     <!-- Header de productos -->
-    <div class="text-center mb-12">
+    <div id="productos-header" class="text-center mb-12">
       <div class="inline-flex items-center bg-white rounded-full px-6 py-3 shadow-lg book-shadow mb-4">
         <span class="text-3xl mr-3">📚</span>
         <h2 class="text-4xl font-bold gradient-text">Nuestros Productos</h2>

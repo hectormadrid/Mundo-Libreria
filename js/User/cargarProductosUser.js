@@ -50,8 +50,8 @@ const createProductCard = (producto) => {
                     <p class="text-lg font-bold text-lib-blue">${formatPrice(
                       producto.precio
                     )}</p>
-                    <p class="text-lg font-bold text-lib-blue">Disponibles:  ${
-                      producto.Stock
+                    <p class="text-lg font-bold text-lib-blue">Disponibles: ${
+                      producto.stock
                     } Unidades</p>
                 </div>
                 <button data-id-producto="${
