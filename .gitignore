@@ -1,0 +1,5 @@
+# Credenciales de la base de datos
+db_config.php
+
+# Dependencias de Node.js
+node_modules/
