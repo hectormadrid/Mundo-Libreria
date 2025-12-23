@@ -212,23 +212,22 @@ unset($_SESSION['flash']);
             </div>
         </div>
 
-        <!-- Estadísticas -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div class="p-4 bg-white rounded shadow">
                 <div class="text-sm text-gray-500">Total Productos</div>
-                <div class="text-2xl font-bold"><?php echo $totalProductos; ?></div>
+                <div id="metric-total-productos" class="text-2xl font-bold"><?php echo $totalProductos; ?></div>
             </div>
             <div class="p-4 bg-white rounded shadow">
                 <div class="text-sm text-gray-500">Activos</div>
-                <div class="text-2xl font-bold"><?php echo $productosActivos; ?></div>
+                <div id="metric-activos" class="text-2xl font-bold"><?php echo $productosActivos; ?></div>
             </div>
             <div class="p-4 bg-white rounded shadow">
                 <div class="text-sm text-gray-500">Stock bajo (&lt;10)</div>
-                <div class="text-2xl font-bold text-red-600"><?php echo $stockBajo; ?></div>
+                <div id="metric-stock-bajo" class="text-2xl font-bold text-red-600"><?php echo $stockBajo; ?></div>
             </div>
             <div class="p-4 bg-white rounded shadow">
                 <div class="text-sm text-gray-500">Valor total</div>
-                <div class="text-2xl font-bold text-green-600">$<?php echo number_format((float)$valorTotal, 0, ',', '.'); ?></div>
+                <div id="metric-valor-total" class="text-2xl font-bold text-green-600">$<?php echo number_format((float)$valorTotal, 0, ',', '.'); ?></div>
             </div>
         </div>
 
@@ -327,14 +326,16 @@ unset($_SESSION['flash']);
             <form id="formEditarProducto" enctype="multipart/form-data" class="space-y-4">
                 <input type="hidden" id="editarId" name="id">
 
-                <div>
-                    <label for="editarNombre" class="block text-sm font-medium">Nombre</label>
-                    <input type="text" id="editarNombre" name="nombre" class="w-full border rounded px-3 py-2" required>
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="editarNombre" class="block text-sm font-medium">Nombre</label>
+                        <input type="text" id="editarNombre" name="nombre" class="w-full border rounded px-3 py-2" required>
+                    </div>
 
-                <div>
-                    <label for="editarCodigoBarras" class="block text-sm font-medium">Código de Barras</label>
-                    <input type="text" id="editarCodigoBarras" name="codigo_barras" class="w-full border rounded px-3 py-2">
+                    <div>
+                        <label for="editarCodigoBarras" class="block text-sm font-medium">Código de Barras</label>
+                        <input type="text" id="editarCodigoBarras" name="codigo_barras" class="w-full border rounded px-3 py-2">
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">

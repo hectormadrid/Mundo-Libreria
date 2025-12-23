@@ -128,50 +128,66 @@ class ProductosDataTable {
   }
 
   // Método para cambiar el estado del producto
-static async toggleEstado(productId, nuevoEstado) {
-  try {
-    const response = await fetch("actualizar_estado_producto.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: productId,
-        estado: nuevoEstado ? "activo" : "inactivo",
-      }),
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      Swal.fire({
-        icon: "success",
-        title: "¡Estado actualizado!",
-        text: `El producto ahora está ${nuevoEstado ? "activo" : "inactivo"}`,
-        timer: 1500,
-        showConfirmButton: false,
+  static async toggleEstado(productId, nuevoEstado) {
+    try {
+      const response = await fetch("actualizar_estado_producto.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: productId,
+          estado: nuevoEstado ? "activo" : "inactivo",
+        }),
       });
 
-      // ✅ Actualizar texto y color en el DOM inmediatamente
-      const container = document.querySelector(
-        `input[onchange*="${productId}"]`
-      )?.closest(".switch-container");
+      const result = await response.json();
 
-      if (container) {
-        const label = container.querySelector(".estado-label");
-        if (label) {
-          label.textContent = nuevoEstado ? "Activo" : "Inactivo";
-          label.classList.toggle("estado-activo", nuevoEstado);
-          label.classList.toggle("estado-inactivo", !nuevoEstado);
+      if (result.success) {
+        Swal.fire({
+          icon: "success",
+          title: "¡Estado actualizado!",
+          text: `El producto ahora está ${nuevoEstado ? "activo" : "inactivo"}`,
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        // Actualizar texto y color en el DOM inmediatamente
+        const container = document.querySelector(
+          `input[onchange*="${productId}"]`
+        )?.closest(".switch-container");
+
+        if (container) {
+          const label = container.querySelector(".estado-label");
+          if (label) {
+            label.textContent = nuevoEstado ? "Activo" : "Inactivo";
+            label.classList.toggle("estado-activo", nuevoEstado);
+            label.classList.toggle("estado-inactivo", !nuevoEstado);
+          }
         }
+        
+        // Actualizar las métricas del dashboard
+        this.updateDashboardMetrics();
+
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: result.error || "No se pudo actualizar el estado",
+        });
+
+        // Revertir el switch
+        const checkbox = document.querySelector(
+          `input[onchange*="${productId}"]`
+        );
+        if (checkbox) checkbox.checked = !nuevoEstado;
       }
-
-
-    } else {
+    } catch (error) {
+      console.error("Error al cambiar estado:", error);
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text: result.error || "No se pudo actualizar el estado",
+        title: "Error de conexión",
+        text: "No se pudo conectar con el servidor",
       });
 
       // Revertir el switch
@@ -180,21 +196,35 @@ static async toggleEstado(productId, nuevoEstado) {
       );
       if (checkbox) checkbox.checked = !nuevoEstado;
     }
-  } catch (error) {
-    console.error("Error al cambiar estado:", error);
-    Swal.fire({
-      icon: "error",
-      title: "Error de conexión",
-      text: "No se pudo conectar con el servidor",
-    });
-
-    // Revertir el switch
-    const checkbox = document.querySelector(
-      `input[onchange*="${productId}"]`
-    );
-    if (checkbox) checkbox.checked = !nuevoEstado;
   }
-}
+
+  static async updateDashboardMetrics() {
+    try {
+        const response = await fetch("obtener_metricas.php");
+        if (!response.ok) {
+            throw new Error('No se pudo obtener las métricas.');
+        }
+        const result = await response.json();
+
+        if (result.success) {
+            const metrics = result.data;
+            document.getElementById('metric-total-productos').textContent = metrics.totalProductos;
+            document.getElementById('metric-activos').textContent = metrics.productosActivos;
+            document.getElementById('metric-stock-bajo').textContent = metrics.stockBajo;
+            
+            // Formatear como moneda chilena
+            const formattedTotal = new Intl.NumberFormat('es-CL', { 
+                style: 'currency', 
+                currency: 'CLP',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(metrics.valorTotal);
+            document.getElementById('metric-valor-total').textContent = formattedTotal;
+        }
+    } catch (error) {
+        console.error("Error al actualizar las métricas del dashboard:", error);
+    }
+  }
 
 
   getLanguageSettings() {
