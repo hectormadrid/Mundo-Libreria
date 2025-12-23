@@ -24,12 +24,12 @@ try {
     require_once(__DIR__ . '/../../db/Conexion.php');
 
     // Validar campos obligatorios
-    $requiredFields = ['nombre', 'precio', 'descripcion', 'categoria', 'estado', 'Stock'];
+    $requiredFields = ['nombre', 'precio', 'descripcion', 'id_categoria', 'estado', 'Stock'];
     foreach ($requiredFields as $field) {
         if (!isset($_POST[$field])) { // Verificar si existe primero
             throw new Exception("El campo $field es requerido");
         }
-        if (empty(trim($_POST[$field]))) { // Validar que no esté vacío
+        if ($field !== 'id_categoria' && empty(trim($_POST[$field]))) { // Validar que no esté vacío, excepto para id_categoria que puede ser 0
             throw new Exception("El campo $field no puede estar vacío");
         }
     }
@@ -102,7 +102,7 @@ try {
     }
 
     // Insertar en la base de datos
-    $query = "INSERT INTO productos (nombre, codigo_barras, precio, descripcion, categoria, estado, imagen, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO productos (nombre, codigo_barras, id_categoria, precio, descripcion, estado, imagen, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conexion->prepare($query);
 
     if (!$stmt) {
@@ -113,33 +113,47 @@ try {
     $nombre = trim($_POST['nombre']);
     $precio = (float)$_POST['precio'];
     $descripcion = trim($_POST['descripcion']);
-    $categoria = trim($_POST['categoria']);
+    $id_categoria = (int)$_POST['id_categoria'];
     $estado = in_array($_POST['estado'], ['Activo', 'Inactivo']) ? $_POST['estado'] : 'Activo';
     $Stock = (int)$_POST['Stock'];
 
     $stmt->bind_param(
-        "ssdssssi",
+        "ssidsssi",
         $nombre,
         $codigo_barras,
+        $id_categoria,
         $precio,
         $descripcion,
-        $categoria,
         $estado,
         $nombreImagen,
         $Stock
     );
 
     if ($stmt->execute()) {
+        // Obtener el nombre de la categoría para la respuesta
+        $categoriaNombre = '';
+        if ($id_categoria > 0) {
+            $cat_stmt = $conexion->prepare("SELECT nombre FROM categorias WHERE id = ?");
+            $cat_stmt->bind_param("i", $id_categoria);
+            $cat_stmt->execute();
+            $cat_res = $cat_stmt->get_result();
+            if ($cat_row = $cat_res->fetch_assoc()) {
+                $categoriaNombre = $cat_row['nombre'];
+            }
+            $cat_stmt->close();
+        }
+
         $response = [
             'success' => true,
             'message' => 'Producto agregado correctamente',
             'imagen' => $nombreImagen,
-            'data' => [ // Estructura que DataTables espera para actualización
+            'data' => [ 
                 'id' => $stmt->insert_id,
                 'nombre' => $nombre,
                 'precio' => $precio,
                 'descripcion' => $descripcion,
-                'categoria' => $categoria,
+                'id_categoria' => $id_categoria,
+                'categoria' => $categoriaNombre, // Enviar también el nombre para la tabla
                 'estado' => $estado,
                 'Stock' => $Stock,
                 'imagen' => $nombreImagen,

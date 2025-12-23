@@ -3,23 +3,39 @@ header('Content-Type: application/json');
 require_once __DIR__.'/../db/Conexion.php';
 
 try {
-    // Verifica si se pasó una categoría por GET
-   $categoria = isset($_GET['categoria']) ? strtolower(trim($_GET['categoria'])) : '';
+    $categoria_nombre = isset($_GET['categoria']) ? strtolower(trim($_GET['categoria'])) : '';
 
-    // Prepara la consulta con o sin filtro de categoría
-    if (!empty($categoria)) {
-        $stmt = $conexion->prepare("SELECT id, nombre, imagen, precio, descripcion , stock , categoria  
-        FROM productos WHERE estado = 'Activo' AND stock > 0  AND LOWER(categoria) = ?  LIMIT 8");
-        $stmt->bind_param("s", $categoria);
+    $base_query = "
+        SELECT 
+            p.id, p.nombre, p.imagen, p.precio, p.descripcion, p.stock, c.nombre AS categoria 
+        FROM 
+            productos p
+        LEFT JOIN 
+            categorias c ON p.id_categoria = c.id
+        WHERE 
+            p.estado = 'Activo' AND p.stock > 0
+    ";
+
+    if (!empty($categoria_nombre)) {
+        // Si se filtra por categoría, usamos un INNER JOIN implícito en el WHERE
+        $query = "
+            SELECT 
+                p.id, p.nombre, p.imagen, p.precio, p.descripcion, p.stock, c.nombre AS categoria 
+            FROM 
+                productos p
+            JOIN 
+                categorias c ON p.id_categoria = c.id
+            WHERE 
+                p.estado = 'Activo' AND p.stock > 0 AND LOWER(c.nombre) = ?
+            LIMIT 8
+        ";
+        $stmt = $conexion->prepare($query);
+        $stmt->bind_param("s", $categoria_nombre);
     } else {
-        $stmt = $conexion->prepare("SELECT id, nombre, imagen, precio, descripcion, stock , categoria  
-        FROM productos WHERE estado = 'Activo' AND stock > 0 LIMIT 8");
+        // Sin filtro, trae todos los productos activos
+        $query = $base_query . " LIMIT 8";
+        $stmt = $conexion->prepare($query);
     }
-if (!empty($categoria)) {
-    // filtra por categoría
-} else {
-    // trae todos los productos
-}
 
     $stmt->execute();
     $result = $stmt->get_result();
@@ -41,7 +57,7 @@ if (!empty($categoria)) {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "error" => $e->getMessage()
+        "error" => "Error: " . $e->getMessage()
     ]);
 }
 ?>

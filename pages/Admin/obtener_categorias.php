@@ -1,8 +1,8 @@
 <?php
 header('Content-Type: application/json');
+require_once __DIR__.'/../../db/Conexion.php';
 
 session_start();
-// Verificar que sea administrador
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
     http_response_code(403);
     echo json_encode(['success' => false, 'error' => 'Acceso no autorizado.']);
@@ -10,10 +10,7 @@ if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
 }
 
 try {
-    require_once __DIR__.'/../../db/Conexion.php';
-    
-  
-    $query = "SELECT p.*, c.nombre AS categoria FROM productos p LEFT JOIN categorias c ON p.id_categoria = c.id";
+    $query = "SELECT id, nombre, fecha_creacion FROM categorias ORDER BY id DESC";
     $result = $conexion->query($query);
     
     $data = [];
@@ -23,11 +20,7 @@ try {
     
     echo json_encode([
         "success" => true,
-        "data" => $data,
-        "debug" => [
-            "request_time" => date('Y-m-d H:i:s'),
-            "row_count" => count($data)
-        ]
+        "data" => $data
     ]);
     
 } catch(Exception $e) {
@@ -37,4 +30,3 @@ try {
         "error" => $e->getMessage()
     ]);
 }
-?>

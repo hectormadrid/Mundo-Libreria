@@ -150,12 +150,14 @@ if ($rr = $r->fetch_assoc()) $stockBajo = $rr['c'];
 $r = $conexion->query("SELECT IFNULL(SUM(precio * Stock),0) AS v FROM productos WHERE estado = 'Activo'");
 if ($rr = $r->fetch_assoc()) $valorTotal = $rr['v'];
 
-// Obtener productos para tabla
-$productos = [];
-$sql = "SELECT id, nombre, imagen, precio, descripcion, categoria, Stock, estado, fecha_creacion FROM productos ORDER BY id DESC";
-$res = $conexion->query($sql);
-while ($row = $res->fetch_assoc()) {
-    $productos[] = $row;
+// Los productos se cargan por AJAX a través de tablaAdmin.js
+
+// Obtener categorías para los modales
+$categorias = [];
+$sql_cat = "SELECT id, nombre FROM categorias ORDER BY nombre ASC";
+$res_cat = $conexion->query($sql_cat);
+while ($row_cat = $res_cat->fetch_assoc()) {
+    $categorias[] = $row_cat;
 }
 
 // Recuperar flash si existe
@@ -292,10 +294,11 @@ unset($_SESSION['flash']);
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-gray-700 mb-2">Categoria</label>
-                            <select name="categoria" class="w-full px-3 py-2 border rounded">
-                                <option value="Libreria">Libreria</option>
-                                <option value="Oficina">Oficina</option>
-                                <option value="Papeleria">Papeleria</option>
+                            <select name="id_categoria" class="w-full px-3 py-2 border rounded" required>
+                                <option value="">Seleccione una categoría</option>
+                                <?php foreach ($categorias as $categoria) : ?>
+                                    <option value="<?php echo $categoria['id']; ?>"><?php echo htmlspecialchars($categoria['nombre']); ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
@@ -357,11 +360,11 @@ unset($_SESSION['flash']);
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label for="editarCategoria" class="block text-sm font-medium">Categoría</label>
-                        <select id="editarCategoria" name="categoria" class="w-full border rounded px-3 py-2" required>
-                            <option value="">Seleccionar</option>
-                            <option value="Libreria">Librería</option>
-                            <option value="Papeleria">Papelería</option>
-                            <option value="Oficina">Oficina</option>
+                        <select id="editarCategoria" name="id_categoria" class="w-full border rounded px-3 py-2" required>
+                            <option value="">Seleccione una categoría</option>
+                            <?php foreach ($categorias as $categoria) : ?>
+                                <option value="<?php echo $categoria['id']; ?>"><?php echo htmlspecialchars($categoria['nombre']); ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div>

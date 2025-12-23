@@ -32,6 +32,10 @@
             <i class="fas fa-users text-white mr-3 w-5 text-center"></i>
             <span class="nav-text text-white">Usuarios</span>
         </a>
+        <a href="categorias.php" class="nav-item flex items-center p-3 rounded-lg transition-all">
+            <i class="fas fa-tags text-white mr-3 w-5 text-center"></i>
+            <span class="nav-text text-white">Categorías</span>
+        </a>
         <a href="generador_codigos.php" class="nav-item flex items-center p-3 rounded-lg transition-all">
             <i class="fas fa-barcode text-white mr-3 w-5 text-center"></i>
             <span class="nav-text text-white">Generar Códigos</span>

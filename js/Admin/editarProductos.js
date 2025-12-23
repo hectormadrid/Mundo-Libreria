@@ -82,7 +82,7 @@ class ProductEditModal {
             document.getElementById("editarPrecio").value = product.precio;
             document.getElementById("editarStock").value = product.stock || product.Stock || 0;
             document.getElementById("editarDescripcion").value = product.descripcion || "";
-            document.getElementById("editarCategoria").value = product.categoria || "";
+            document.getElementById("editarCategoria").value = product.id_categoria || "";
             document.getElementById("editarEstado").value = product.estado || "Activo";
 
             // Manejar imagen

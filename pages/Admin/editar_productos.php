@@ -28,29 +28,15 @@ try {
     $precio = filter_input(INPUT_POST, 'precio', FILTER_VALIDATE_FLOAT);
     $descripcion = trim($_POST['descripcion'] ?? '');
     $stock = filter_input(INPUT_POST, 'stock', FILTER_VALIDATE_INT);
-    $categoria = $_POST['categoria'] ?? '';
+    $id_categoria = filter_input(INPUT_POST, 'id_categoria', FILTER_VALIDATE_INT);
     $estado = $_POST['estado'] ?? 'activo';
 
     // Validaciones básicas
-    if (!$id || $id <= 0) {
-        throw new Exception("ID de producto no válido");
-    }
-
-    if (empty($nombre)) {
-        throw new Exception("El nombre es obligatorio");
-    }
-
-    if (!$precio || $precio <= 0) {
-        throw new Exception("El precio debe ser un número positivo");
-    }
-
-    if ($stock === false || $stock < 0) {
-        throw new Exception("El stock debe ser un número entero no negativo");
-    }
-
-    if (!in_array($categoria, $categoriasPermitidas)) {
-        throw new Exception("Categoría no válida");
-    }
+    if (!$id || $id <= 0) throw new Exception("ID de producto no válido");
+    if (empty($nombre)) throw new Exception("El nombre es obligatorio");
+    if (!$precio || $precio <= 0) throw new Exception("El precio debe ser un número positivo");
+    if ($stock === false || $stock < 0) throw new Exception("El stock debe ser un número entero no negativo");
+    if (!$id_categoria) throw new Exception("La categoría es obligatoria");
 
     // Validar código de barras
     $codigo_barras = trim($_POST['codigo_barras'] ?? '');
@@ -121,16 +107,16 @@ try {
     $sql = "UPDATE productos SET 
             nombre = ?,
             codigo_barras = ?,
+            id_categoria = ?,
             precio = ?,
             descripcion = ?,
-            categoria = ?,
             stock = ?,
             estado = ?";
     
     $codigo_barras_or_null = !empty($codigo_barras) ? $codigo_barras : null;
-    $params = [$nombre, $codigo_barras_or_null, $precio, $descripcion, $categoria, $stock, $estado];
-    $types = "ssdssis"; // s:nombre, s:codigo_barras, d:precio, s:desc, s:cat, i:stock, s:estado
-    
+    $params = [$nombre, $codigo_barras_or_null, $id_categoria, $precio, $descripcion, $stock, $estado];
+    $types = "ssidisi"; // s:nombre, s:codigo_barras, i:id_cat, d:precio, s:desc, i:stock, s:estado
+
     if ($nombreImagen) {
         $sql .= ", imagen = ?";
         $params[] = $nombreImagen;
