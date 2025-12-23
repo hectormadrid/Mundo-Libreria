@@ -52,6 +52,19 @@ try {
         throw new Exception("Categoría no válida");
     }
 
+    // Validar código de barras
+    $codigo_barras = trim($_POST['codigo_barras'] ?? '');
+    if (!empty($codigo_barras)) {
+        $check_stmt = $conexion->prepare("SELECT id FROM productos WHERE codigo_barras = ? AND id != ?");
+        $check_stmt->bind_param("si", $codigo_barras, $id);
+        $check_stmt->execute();
+        $check_stmt->store_result();
+        if ($check_stmt->num_rows > 0) {
+            throw new Exception("El código de barras ingresado ya está en uso por otro producto.");
+        }
+        $check_stmt->close();
+    }
+
     // Iniciar transacción
     $conexion->begin_transaction();
 
@@ -107,24 +120,26 @@ try {
     // Construir consulta SQL
     $sql = "UPDATE productos SET 
             nombre = ?,
+            codigo_barras = ?,
             precio = ?,
             descripcion = ?,
             categoria = ?,
             stock = ?,
             estado = ?";
     
-    $params = [$nombre, $precio, $descripcion, $categoria, $stock, $estado];
-    $types = "ssssis"; // Tipos: string, string, string, string, integer, string
+    $codigo_barras_or_null = !empty($codigo_barras) ? $codigo_barras : null;
+    $params = [$nombre, $codigo_barras_or_null, $precio, $descripcion, $categoria, $stock, $estado];
+    $types = "ssdssis"; // s:nombre, s:codigo_barras, d:precio, s:desc, s:cat, i:stock, s:estado
     
     if ($nombreImagen) {
         $sql .= ", imagen = ?";
         $params[] = $nombreImagen;
-        $types .= "s"; // Agregar tipo string para la imagen
+        $types .= "s";
     }
     
     $sql .= " WHERE id = ?";
     $params[] = $id;
-    $types .= "i"; // Agregar tipo integer para el ID
+    $types .= "i";
 
     // Preparar y ejecutar consulta
     $stmt = $conexion->prepare($sql);

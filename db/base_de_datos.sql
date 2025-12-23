@@ -17,6 +17,7 @@ CREATE TABLE Administrador (
 CREATE TABLE productos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
+	codigo_barras VARCHAR(255) UNIQUE DEFAULT NULL,
     imagen VARCHAR(255) DEFAULT NULL,
     descripcion TEXT,
     categoria VARCHAR (50),
@@ -60,8 +61,16 @@ select * from productos;
 select * from carrito;
 select * from pedido;
 select * from detalle_pedido;
+select* from Administrador; 
 show tables;
 ALTER TABLE usuario 
 ADD COLUMN telefono VARCHAR(20) NULL AFTER correo,
 ADD COLUMN direccion TEXT NULL AFTER telefono;
-drop database Mundo_Libreria;
+
+alter table productos
+add column codigo_barras varchar(255) unique default null after nombre;
+
+ALTER TABLE `usuario`
+ADD COLUMN `reset_token_hash` VARCHAR(64) NULL DEFAULT NULL,
+ADD COLUMN `reset_token_expires_at` DATETIME NULL DEFAULT NULL,
+ADD UNIQUE (`reset_token_hash`);

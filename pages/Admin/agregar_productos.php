@@ -70,8 +70,39 @@ try {
         }
     }
 
+    // Lógica para el código de barras
+    $codigo_barras = isset($_POST['codigo_barras']) ? trim($_POST['codigo_barras']) : '';
+
+    if (empty($codigo_barras)) {
+        // Generar un código de barras único si está vacío
+        do {
+            // Genera un código de 13 dígitos con prefijo 'ML'
+            $generated_barcode = 'ML' . str_pad(mt_rand(1, 99999999999), 11, '0', STR_PAD_LEFT);
+            
+            // Verificar si ya existe
+            $check_stmt = $conexion->prepare("SELECT id FROM productos WHERE codigo_barras = ?");
+            $check_stmt->bind_param("s", $generated_barcode);
+            $check_stmt->execute();
+            $check_stmt->store_result();
+            $is_unique = ($check_stmt->num_rows === 0);
+            $check_stmt->close();
+
+        } while (!$is_unique);
+        $codigo_barras = $generated_barcode;
+    } else {
+        // Si se proporciona un código, verificar que no exista
+        $check_stmt = $conexion->prepare("SELECT id FROM productos WHERE codigo_barras = ?");
+        $check_stmt->bind_param("s", $codigo_barras);
+        $check_stmt->execute();
+        $check_stmt->store_result();
+        if ($check_stmt->num_rows > 0) {
+            throw new Exception("El código de barras ingresado ya existe.");
+        }
+        $check_stmt->close();
+    }
+
     // Insertar en la base de datos
-    $query = "INSERT INTO productos (nombre, precio, descripcion, categoria, estado, imagen,stock) VALUES (?, ?, ?, ?,?, ?,?)";
+    $query = "INSERT INTO productos (nombre, codigo_barras, precio, descripcion, categoria, estado, imagen, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conexion->prepare($query);
 
     if (!$stmt) {
@@ -86,10 +117,10 @@ try {
     $estado = in_array($_POST['estado'], ['Activo', 'Inactivo']) ? $_POST['estado'] : 'Activo';
     $Stock = (int)$_POST['Stock'];
 
-
     $stmt->bind_param(
-        "sdssssi",
+        "ssdssssi",
         $nombre,
+        $codigo_barras,
         $precio,
         $descripcion,
         $categoria,
@@ -112,7 +143,7 @@ try {
                 'estado' => $estado,
                 'Stock' => $Stock,
                 'imagen' => $nombreImagen,
-
+                'codigo_barras' => $codigo_barras
             ]
         ];
         echo json_encode($response);

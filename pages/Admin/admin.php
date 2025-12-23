@@ -289,6 +289,7 @@ unset($_SESSION['flash']);
                     <tr class="bg-gray-100">
                         <th class="p-2">ID</th>
                         <th class="p-2">Nombre</th>
+                        <th class="p-2">Código de Barras</th>
                         <th class="p-2">Imagen</th>
                         <th class="p-2">Precio</th>
                         <th class="p-2">Descripción</th>
@@ -306,45 +307,55 @@ unset($_SESSION['flash']);
     </section>
     <!-- Modal Agregar -->
     <div id="modalAgregar" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-xl">
             <div class="p-6">
                 <h2 class="text-2xl font-bold mb-4">Agregar Producto</h2>
                 <form id="formAgregarProducto" enctype="multipart/form-data" method="POST">
-                    <div class="mb-4">
-                        <label class="block text-gray-700 mb-2">Nombre</label>
-                        <input type="text" name="nombre" class="w-full px-3 py-2 border rounded">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Nombre</label>
+                            <input type="text" name="nombre" class="w-full px-3 py-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Código de Barras</label>
+                            <input type="text" name="codigo_barras" class="w-full px-3 py-2 border rounded" placeholder="Opcional: se generará uno si se deja vacío">
+                        </div>
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2">Imagen del producto</label>
                         <input type="file" name="imagen" accept="image/*" class="w-full px-3 py-2 border rounded">
                         <p class="text-xs text-gray-500">Formatos: JPG, PNG, WEBP (Máx. 2MB)</p>
                     </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 mb-2">Precio</label>
-                        <input type="number" name="precio" class="w-full px-3 py-2 border rounded">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Precio</label>
+                            <input type="number" name="precio" class="w-full px-3 py-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Stock</label>
+                            <input type="number" name="Stock" class="w-full px-3 py-2 border rounded">
+                        </div>
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2">Descripción</label>
                         <textarea name="descripcion" class="w-full px-3 py-2 border rounded"></textarea>
                     </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 mb-2">Categoria</label>
-                        <select name="categoria" class="w-full px-3 py-2 border rounded">
-                            <option value="Libreria">Libreria</option>
-                            <option value="Oficina">Oficina</option>
-                            <option value="Papeleria">Papeleria</option>
-                        </select>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 mb-2">Stock</label>
-                        <input type="number" name="Stock" class="w-full px-3 py-2 border rounded">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 mb-2">Estado</label>
-                        <select name="estado" class="w-full px-3 py-2 border rounded">
-                            <option value="Activo">Activo</option>
-                            <option value="Inactivo">Inactivo</option>
-                        </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Categoria</label>
+                            <select name="categoria" class="w-full px-3 py-2 border rounded">
+                                <option value="Libreria">Libreria</option>
+                                <option value="Oficina">Oficina</option>
+                                <option value="Papeleria">Papeleria</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Estado</label>
+                            <select name="estado" class="w-full px-3 py-2 border rounded">
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="flex justify-end gap-2">
                         <button type="button" id="btnCancelar" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
@@ -369,6 +380,11 @@ unset($_SESSION['flash']);
                 <div>
                     <label for="editarNombre" class="block text-sm font-medium">Nombre</label>
                     <input type="text" id="editarNombre" name="nombre" class="w-full border rounded px-3 py-2" required>
+                </div>
+
+                <div>
+                    <label for="editarCodigoBarras" class="block text-sm font-medium">Código de Barras</label>
+                    <input type="text" id="editarCodigoBarras" name="codigo_barras" class="w-full border rounded px-3 py-2">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">

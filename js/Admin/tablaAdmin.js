@@ -35,6 +35,7 @@ class ProductosDataTable {
     return [
       { data: "id" },
       { data: "nombre" },
+      { data: "codigo_barras", defaultContent: "<i>N/A</i>" },
       {
         data: "imagen",
         render: (data) => {
