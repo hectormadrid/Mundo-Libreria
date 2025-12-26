@@ -2,6 +2,7 @@ class ProductosDataTable {
   constructor(tableId, options = {}) {
     this.table = $(tableId);
     this.options = options;
+    this.productDataMap = new Map(); // Almacenar datos de productos aquí
     this.init();
   }
 
@@ -10,13 +11,21 @@ class ProductosDataTable {
       ajax: {
         url: "obtener_productos.php",
         type: "GET",
-        dataSrc: "data",
-        error: function (xhr, error, thrown) {
+        dataSrc: (json) => {
+          this.productDataMap.clear(); // Limpiar el mapa antes de llenarlo
+          if (json.data) {
+            json.data.forEach(product => {
+              this.productDataMap.set(product.id, product);
+            });
+          }
+          return json.data || []; // Devolver los datos para que DataTables los procese
+        },
+        error: (xhr, error, thrown) => {
           console.error("Error en AJAX:", xhr.responseText, error);
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: "No se pudieron cargar los productos. Ver consola para más detalles.",
+            text: "No se pudieron cargar los productos. Ver consola.",
           });
         },
       },
@@ -56,7 +65,7 @@ class ProductosDataTable {
       { data: "descripcion" },
       {
         data: "categoria",
-        render: function (data) {
+        render: (data) => {
           const colores = {
             Libreria: "bg-blue-100 text-blue-800",
             Oficina: "bg-green-100 text-green-800",
@@ -72,20 +81,16 @@ class ProductosDataTable {
         render: (data, type, row) => {
           const isActive = data === "activo";
           return `
-      <div class="switch-container">
-        <label class="switch">
-          <input type="checkbox" ${isActive ? "checked" : ""} 
-                 onchange="ProductosDataTable.toggleEstado(${
-                   row.id
-                 }, this.checked)">
-          <span class="slider"></span>
-        </label>
-        <span class="estado-label ${
-          isActive ? "estado-activo" : "estado-inactivo"
-        }">
-          ${isActive ? "Activo" : "Inactivo"}
-        </span>
-      </div>
+            <div class="switch-container">
+              <label class="switch">
+                <input type="checkbox" ${isActive ? "checked" : ""} 
+                       onchange="ProductosDataTable.toggleEstado(${row.id}, this.checked)">
+                <span class="slider"></span>
+              </label>
+              <span class="estado-label ${isActive ? "estado-activo" : "estado-inactivo"}">
+                ${isActive ? "Activo" : "Inactivo"}
+              </span>
+            </div>
           `;
         },
       },
@@ -95,52 +100,69 @@ class ProductosDataTable {
       },
       {
         data: "id",
-        render: function (data, type, row) {
-          try {
-            const safeData = JSON.stringify(row)
-              .replace(/'/g, "\\'")
-              .replace(/"/g, "&quot;");
-
-            return `
-              <div class="flex gap-2">
-                <button onclick="ProductEditModal.open('${safeData}')"
-                        class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded shadow transition-colors">
-                    <i class="fas fa-edit mr-1"></i> Editar
-                </button>
-
-               
-
-                <button onclick="ProductosDataTable.showDetails('${safeData}')"
-                        class="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded shadow transition-colors">
-                    <i class="fas fa-eye mr-1"></i> Ver
-                </button>
-              </div>
-            `;
-          } catch (error) {
-            console.error("Error al generar botones:", error);
-            return '<span class="text-red-500">Error</span>';
-          }
+        render: (data, type, row) => {
+          // Ahora solo pasamos el ID, mucho más seguro.
+          return `
+            <div class="flex gap-2">
+              <button onclick="ProductEditModal.open(${row.id})"
+                      class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded shadow transition-colors">
+                  <i class="fas fa-edit mr-1"></i> Editar
+              </button>
+              <button onclick="window.productosTable.showDetails(${row.id})"
+                      class="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded shadow transition-colors">
+                  <i class="fas fa-eye mr-1"></i> Ver
+              </button>
+            </div>
+          `;
         },
         orderable: false,
         searchable: false,
       },
     ];
   }
+  
+  // Convertido a método de instancia para acceder a `this.productDataMap`
+  showDetails(productId) {
+    const producto = this.productDataMap.get(productId);
+    if (!producto) {
+      Swal.fire('Error', 'No se encontraron los datos del producto.', 'error');
+      return;
+    }
 
-  // Método para cambiar el estado del producto
+    Swal.fire({
+      title: producto.nombre,
+      html: `
+        <img src="/Mundo-Libreria/uploads/productos/${producto.imagen}" class="mx-auto mb-3 h-40 object-contain">
+        <p><b>Precio:</b> $${producto.precio}</p>
+        <p><b>Stock:</b> ${producto.stock}</p>
+        <p><b>Categoría:</b> ${producto.categoria}</p>
+        <p><b>Estado:</b> ${producto.estado}</p>
+        <p><b>Descripción:</b> ${producto.descripcion || 'N/A'}</p>
+      `,
+      confirmButtonText: "Cerrar",
+    });
+  }
+
+  // Métodos estáticos no necesitan `this`
+  static showFullImage(path) {
+    Swal.fire({
+      imageUrl: path,
+      imageWidth: 400,
+      imageAlt: 'Imagen del producto',
+      width: 'auto',
+      padding: '0',
+      background: 'transparent',
+      showConfirmButton: false,
+    });
+  }
+
   static async toggleEstado(productId, nuevoEstado) {
     try {
       const response = await fetch("actualizar_estado_producto.php", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: productId,
-          estado: nuevoEstado ? "activo" : "inactivo",
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: productId, estado: nuevoEstado ? "activo" : "inactivo" }),
       });
-
       const result = await response.json();
 
       if (result.success) {
@@ -151,12 +173,7 @@ class ProductosDataTable {
           timer: 1500,
           showConfirmButton: false,
         });
-
-        // Actualizar texto y color en el DOM inmediatamente
-        const container = document.querySelector(
-          `input[onchange*="${productId}"]`
-        )?.closest(".switch-container");
-
+        const container = document.querySelector(`input[onchange*="${productId}"]`)?.closest(".switch-container");
         if (container) {
           const label = container.querySelector(".estado-label");
           if (label) {
@@ -165,103 +182,52 @@ class ProductosDataTable {
             label.classList.toggle("estado-inactivo", !nuevoEstado);
           }
         }
-        
-        // Actualizar las métricas del dashboard
-        this.updateDashboardMetrics();
-
+        ProductosDataTable.updateDashboardMetrics();
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: result.error || "No se pudo actualizar el estado",
-        });
-
-        // Revertir el switch
-        const checkbox = document.querySelector(
-          `input[onchange*="${productId}"]`
-        );
+        Swal.fire({ icon: "error", title: "Error", text: result.error || "No se pudo actualizar" });
+        const checkbox = document.querySelector(`input[onchange*="${productId}"]`);
         if (checkbox) checkbox.checked = !nuevoEstado;
       }
     } catch (error) {
       console.error("Error al cambiar estado:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error de conexión",
-        text: "No se pudo conectar con el servidor",
-      });
-
-      // Revertir el switch
-      const checkbox = document.querySelector(
-        `input[onchange*="${productId}"]`
-      );
+      Swal.fire({ icon: "error", title: "Error de conexión", text: "No se pudo conectar con el servidor" });
+      const checkbox = document.querySelector(`input[onchange*="${productId}"]`);
       if (checkbox) checkbox.checked = !nuevoEstado;
     }
   }
 
   static async updateDashboardMetrics() {
     try {
-        const response = await fetch("obtener_metricas.php");
-        if (!response.ok) {
-            throw new Error('No se pudo obtener las métricas.');
-        }
-        const result = await response.json();
+      const response = await fetch("obtener_metricas.php");
+      if (!response.ok) throw new Error('No se pudo obtener las métricas.');
+      const result = await response.json();
 
-        if (result.success) {
-            const metrics = result.data;
-            document.getElementById('metric-total-productos').textContent = metrics.totalProductos;
-            document.getElementById('metric-activos').textContent = metrics.productosActivos;
-            document.getElementById('metric-stock-bajo').textContent = metrics.stockBajo;
-            
-            // Formatear como moneda chilena
-            const formattedTotal = new Intl.NumberFormat('es-CL', { 
-                style: 'currency', 
-                currency: 'CLP',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(metrics.valorTotal);
-            document.getElementById('metric-valor-total').textContent = formattedTotal;
-        }
+      if (result.success) {
+        const metrics = result.data;
+        $('#metric-total-productos').text(metrics.totalProductos);
+        $('#metric-activos').text(metrics.productosActivos);
+        $('#metric-stock-bajo').text(metrics.stockBajo);
+        const formattedTotal = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(metrics.valorTotal);
+        $('#metric-valor-total').text(formattedTotal);
+      }
     } catch (error) {
-        console.error("Error al actualizar las métricas del dashboard:", error);
+      console.error("Error al actualizar métricas:", error);
     }
   }
-
 
   getLanguageSettings() {
     return {
       decimal: "",
       emptyTable: "No hay productos registrados",
       info: "Mostrando _START_ a _END_ de _TOTAL_ productos",
-      infoEmpty: "Mostrando 0 a 0 de 0 productos",
-      infoFiltered: "(filtrado de _MAX_ productos totales)",
+      infoEmpty: "Mostrando 0 a 0 de 0",
+      infoFiltered: "(filtrado de _MAX_ productos)",
       lengthMenu: "Mostrar _MENU_ productos",
       loadingRecords: "Cargando...",
       search: "Buscar:",
       zeroRecords: "No se encontraron productos",
-      paginate: {
-        first: "Primero",
-        last: "Último",
-        next: "Siguiente",
-        previous: "Anterior",
-      },
+      paginate: { first: "Primero", last: "Último", next: "Siguiente", previous: "Anterior" },
     };
-  }
-
-
-  static showDetails(productoJson) {
-    const producto = JSON.parse(productoJson.replace(/&quot;/g, '"'));
-    Swal.fire({
-      title: producto.nombre,
-      html: `
-        <img src="/Mundo-Libreria/uploads/productos/${producto.imagen}" class="mx-auto mb-3 h-40 object-contain">
-        <p><b>Precio:</b> $${producto.precio}</p>
-        <p><b>Stock:</b> ${producto.stock}</p>
-        <p><b>Categoría:</b> ${producto.categoria}</p>
-        <p><b>Estado:</b> ${producto.estado}</p>
-        <p><b>Descripción:</b> ${producto.descripcion}</p>
-      `,
-      confirmButtonText: "Cerrar",
-    });
   }
 
   reload() {
@@ -271,15 +237,14 @@ class ProductosDataTable {
 
 function updateTime() {
   const el = document.getElementById("currentTime");
-  el.textContent = new Date().toLocaleString();
+  if(el) el.textContent = new Date().toLocaleString();
 }
 updateTime();
 setInterval(updateTime, 1000);
 
-// Iniciar DataTable al cargar admin.php
 document.addEventListener("DOMContentLoaded", () => {
   if ($("#productosTable").length) {
     window.productosTable = new ProductosDataTable("#productosTable");
-    console.log("✅ DataTable inicializado:", window.productosTable);
+    console.log("✅ DataTable inicializado y refactorizado:", window.productosTable);
   }
 });

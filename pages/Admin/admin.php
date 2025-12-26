@@ -302,6 +302,12 @@ unset($_SESSION['flash']);
                             </select>
                         </div>
                         <div>
+                            <label class="block text-gray-700 mb-2">Familia</label>
+                            <select name="id_familia" class="w-full px-3 py-2 border rounded" disabled>
+                                <option value="">Seleccione una categoría primero</option>
+                            </select>
+                        </div>
+                        <div>
                             <label class="block text-gray-700 mb-2">Estado</label>
                             <select name="estado" class="w-full px-3 py-2 border rounded">
                                 <option value="Activo">Activo</option>
@@ -365,6 +371,12 @@ unset($_SESSION['flash']);
                             <?php foreach ($categorias as $categoria) : ?>
                                 <option value="<?php echo $categoria['id']; ?>"><?php echo htmlspecialchars($categoria['nombre']); ?></option>
                             <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="editarFamilia" class="block text-sm font-medium">Familia</label>
+                        <select id="editarFamilia" name="id_familia" class="w-full border rounded px-3 py-2">
+                            <option value="">-- Sin Familia --</option>
                         </select>
                     </div>
                     <div>

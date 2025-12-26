@@ -152,32 +152,106 @@ const loadCartCount = async () => {
   }
 };
 
+// Variables de estado para los filtros
+let activeCategory = "";
+let activeFamily = "";
+
 // Al cargar la página
 document.addEventListener("DOMContentLoaded", () => {
-  loadProducts(); // carga inicial de productos
-  loadCartCount(); // carga inicial del contador del carrito
+  loadProducts(); // Carga inicial de productos
+  loadCartCount(); // Carga inicial del contador del carrito
 
+  // Manejador para los links de categoría
   document.querySelectorAll(".category-link").forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
-      const categoria = link.getAttribute("data-category");
-      loadProducts(categoria === "all" ? "" : categoria);
+      const categoryName = link.getAttribute("data-category");
+      
+      // Actualizar estado
+      activeCategory = categoryName === "all" ? "" : categoryName;
+      activeFamily = ""; // Resetear familia al cambiar de categoría
+
+      // Resaltar categoría activa
+      document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active-filter'));
+      link.classList.add('active-filter');
+
+      // Cargar productos y luego actualizar filtros de familia
+      loadProducts(activeCategory, activeFamily);
+      updateFamilyFilters(activeCategory);
     });
+  });
+
+  // Manejador para los links de familia (usando delegación de eventos)
+  document.getElementById('familia-filters-container').addEventListener('click', function(e) {
+    if (e.target.classList.contains('family-link')) {
+        e.preventDefault();
+        const familyId = e.target.getAttribute('data-family');
+
+        activeFamily = familyId === 'all' ? '' : familyId;
+
+        // Resaltar familia activa
+        document.querySelectorAll('.family-link').forEach(l => l.classList.remove('active-filter'));
+        e.target.classList.add('active-filter');
+
+        loadProducts(activeCategory, activeFamily);
+    }
   });
 });
 
-// Función principal para cargar productos
-const loadProducts = async (categoria = "") => {
-  console.log("Cargando productos de categoría:", categoria);
+// NUEVA: Función para actualizar los filtros de familia
+const updateFamilyFilters = async (categoryName) => {
+    const container = document.getElementById('familia-filters-container');
+    if (!categoryName) {
+        container.innerHTML = '';
+        container.classList.add('hidden');
+        return;
+    }
+
+    try {
+        const response = await fetch(`../pages/obtener_familias_por_categoria.php?categoria_nombre=${categoryName}`);
+        const familias = await response.json();
+
+        if (familias.length > 0) {
+            let filtersHtml = `
+                <a href="#" data-family="all" class="family-link active-filter bg-white/80 text-gray-700 font-semibold px-4 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-md">
+                    Todos
+                </a>
+            `;
+            familias.forEach(familia => {
+                filtersHtml += `
+                    <a href="#" data-family="${familia.id}" class="family-link bg-white/80 text-gray-700 font-semibold px-4 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-md">
+                        ${familia.nombre}
+                    </a>
+                `;
+            });
+            container.innerHTML = `<div class="flex flex-wrap justify-center gap-3 text-sm">${filtersHtml}</div>`;
+            container.classList.remove('hidden');
+        } else {
+            container.innerHTML = '';
+            container.classList.add('hidden');
+        }
+    } catch (error) {
+        console.error("Error al cargar familias:", error);
+        container.innerHTML = '';
+        container.classList.add('hidden');
+    }
+};
+
+// Función principal para cargar productos (MODIFICADA)
+const loadProducts = async (categoria = "", familiaId = "") => {
+  console.log(`Cargando productos de categoría: '${categoria}' y familia: '${familiaId}'`);
+  const container = document.getElementById("productos-container");
+  container.innerHTML = `<div class="col-span-full text-center py-10"><p class="text-gray-500">Cargando productos...</p></div>`;
+
 
   try {
-    const response = await fetch(
-      `../pages/obtener_prductos_user.php?categoria=${encodeURIComponent(
-        categoria
-      )}`
-    );
+    let url = `../pages/obtener_prductos_user.php?categoria=${encodeURIComponent(categoria)}`;
+    if (familiaId) {
+        url += `&familia_id=${encodeURIComponent(familiaId)}`;
+    }
+    
+    const response = await fetch(url);
     const data = await response.json();
-    const container = document.getElementById("productos-container");
 
     if (!response.ok)
       throw new Error(data.error || "Error al cargar productos");
@@ -188,7 +262,7 @@ const loadProducts = async (categoria = "") => {
     } else {
       container.innerHTML = `
                 <div class="col-span-full text-center py-10">
-                    <p class="text-gray-500">No hay productos disponibles</p>
+                    <p class="text-gray-500">No se encontraron productos con estos filtros.</p>
                 </div>
             `;
     }

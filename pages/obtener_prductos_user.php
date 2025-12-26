@@ -4,37 +4,44 @@ require_once __DIR__.'/../db/Conexion.php';
 
 try {
     $categoria_nombre = isset($_GET['categoria']) ? strtolower(trim($_GET['categoria'])) : '';
+    $familia_id = isset($_GET['familia_id']) ? (int)$_GET['familia_id'] : 0;
 
-    $base_query = "
+    $query = "
         SELECT 
             p.id, p.nombre, p.imagen, p.precio, p.descripcion, p.stock, c.nombre AS categoria 
         FROM 
             productos p
         LEFT JOIN 
             categorias c ON p.id_categoria = c.id
-        WHERE 
-            p.estado = 'Activo' AND p.stock > 0
     ";
 
+    $conditions = ["p.estado = 'Activo'", "p.stock > 0"];
+    $params = [];
+    $types = "";
+
     if (!empty($categoria_nombre)) {
-        // Si se filtra por categoría, usamos un INNER JOIN implícito en el WHERE
-        $query = "
-            SELECT 
-                p.id, p.nombre, p.imagen, p.precio, p.descripcion, p.stock, c.nombre AS categoria 
-            FROM 
-                productos p
-            JOIN 
-                categorias c ON p.id_categoria = c.id
-            WHERE 
-                p.estado = 'Activo' AND p.stock > 0 AND LOWER(c.nombre) = ?
-            LIMIT 8
-        ";
-        $stmt = $conexion->prepare($query);
-        $stmt->bind_param("s", $categoria_nombre);
-    } else {
-        // Sin filtro, trae todos los productos activos
-        $query = $base_query . " LIMIT 8";
-        $stmt = $conexion->prepare($query);
+        // Necesitamos un JOIN explícito si filtramos por nombre de categoría
+        $conditions[] = "LOWER(c.nombre) = ?";
+        $params[] = $categoria_nombre;
+        $types .= "s";
+    }
+
+    if ($familia_id > 0) {
+        $conditions[] = "p.id_familia = ?";
+        $params[] = $familia_id;
+        $types .= "i";
+    }
+
+    if (count($conditions) > 0) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+
+    $query .= " ORDER BY p.id DESC LIMIT 12"; // Aumentado el límite para mejor visualización
+
+    $stmt = $conexion->prepare($query);
+
+    if (!empty($types)) {
+        $stmt->bind_param($types, ...$params);
     }
 
     $stmt->execute();
@@ -59,5 +66,9 @@ try {
         "success" => false,
         "error" => "Error: " . $e->getMessage()
     ]);
+} finally {
+    if(isset($conexion)) {
+        $conexion->close();
+    }
 }
 ?>

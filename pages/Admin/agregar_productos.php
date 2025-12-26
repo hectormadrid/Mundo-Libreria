@@ -102,7 +102,7 @@ try {
     }
 
     // Insertar en la base de datos
-    $query = "INSERT INTO productos (nombre, codigo_barras, id_categoria, precio, descripcion, estado, imagen, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO productos (nombre, codigo_barras, id_categoria, id_familia, precio, descripcion, estado, imagen, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conexion->prepare($query);
 
     if (!$stmt) {
@@ -114,14 +114,16 @@ try {
     $precio = (float)$_POST['precio'];
     $descripcion = trim($_POST['descripcion']);
     $id_categoria = (int)$_POST['id_categoria'];
+    $id_familia = isset($_POST['id_familia']) && !empty($_POST['id_familia']) ? (int)$_POST['id_familia'] : null;
     $estado = in_array($_POST['estado'], ['Activo', 'Inactivo']) ? $_POST['estado'] : 'Activo';
     $Stock = (int)$_POST['Stock'];
 
     $stmt->bind_param(
-        "ssidsssi",
+        "ssiidsssi",
         $nombre,
         $codigo_barras,
         $id_categoria,
+        $id_familia,
         $precio,
         $descripcion,
         $estado,

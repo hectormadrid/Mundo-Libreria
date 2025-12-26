@@ -142,6 +142,11 @@
   </div>
 </nav>
 
+  <!-- Contenedor para Filtros de Familia (oculto por defecto) -->
+  <div id="familia-filters-container" class="hidden container mx-auto px-4 py-4 text-center">
+      <!-- Los filtros de familia se cargarán aquí dinámicamente -->
+  </div>
+
 
 
   <!-- Banner Principal  -->

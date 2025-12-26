@@ -104,18 +104,21 @@ try {
     }
 
     // Construir consulta SQL
+    $id_familia = isset($_POST['id_familia']) && !empty($_POST['id_familia']) ? (int)$_POST['id_familia'] : null;
+
     $sql = "UPDATE productos SET 
             nombre = ?,
             codigo_barras = ?,
             id_categoria = ?,
+            id_familia = ?,
             precio = ?,
             descripcion = ?,
             stock = ?,
             estado = ?";
     
     $codigo_barras_or_null = !empty($codigo_barras) ? $codigo_barras : null;
-    $params = [$nombre, $codigo_barras_or_null, $id_categoria, $precio, $descripcion, $stock, $estado];
-    $types = "ssidisi"; // s:nombre, s:codigo_barras, i:id_cat, d:precio, s:desc, i:stock, s:estado
+    $params = [$nombre, $codigo_barras_or_null, $id_categoria, $id_familia, $precio, $descripcion, $stock, $estado];
+    $types = "ssiidisi"; // s:nombre, s:codigo_barras, i:id_cat, i:id_familia, d:precio, s:desc, i:stock, s:estado
 
     if ($nombreImagen) {
         $sql .= ", imagen = ?";

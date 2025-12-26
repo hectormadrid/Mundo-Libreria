@@ -99,3 +99,7 @@ INSERT INTO `categorias` (`nombre`) VALUES
 
 INSERT INTO `Administrador` (`id`, `nombre`, `tipo`, `password`) VALUES
 (NULL, 'ingrid', 'administrador', '$2y$10$UAW3EuwP8tN.eToRjgS0TeiWCX7c/IegE2xE0nkFM69YFPXoM3gg6');
+
+use Mundo_libreria;
+
+show tables
