@@ -329,7 +329,7 @@ unset($_SESSION['flash']);
     </div>
     <!-- Modal Editar -->
     <div id="modalEditar" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 relative">
             <h2 class="text-2xl font-bold mb-4">Editar Producto</h2>
 
             <form id="formEditarProducto" enctype="multipart/form-data" class="space-y-4">
@@ -363,7 +363,7 @@ unset($_SESSION['flash']);
                     <textarea id="editarDescripcion" name="descripcion" class="w-full border rounded px-3 py-2"></textarea>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div>
                         <label for="editarCategoria" class="block text-sm font-medium">Categoría</label>
                         <select id="editarCategoria" name="id_categoria" class="w-full border rounded px-3 py-2" required>

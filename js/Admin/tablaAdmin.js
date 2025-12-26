@@ -15,7 +15,7 @@ class ProductosDataTable {
           this.productDataMap.clear(); // Limpiar el mapa antes de llenarlo
           if (json.data) {
             json.data.forEach(product => {
-              this.productDataMap.set(product.id, product);
+              this.productDataMap.set(Number(product.id), product);
             });
           }
           return json.data || []; // Devolver los datos para que DataTables los procese

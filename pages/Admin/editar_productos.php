@@ -68,7 +68,6 @@ try {
         // Validar tipo real del archivo
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimeReal = finfo_file($finfo, $_FILES['imagen']['tmp_name']);
-        finfo_close($finfo);
         
         $permitidos = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
         if (!array_key_exists($mimeReal, $permitidos)) {
