@@ -41,7 +41,6 @@ try {
         // Validar tipo de archivo
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimeType = finfo_file($finfo, $_FILES['imagen']['tmp_name']);
-        finfo_close($finfo);
 
         if (!array_key_exists($mimeType, $allowedTypes)) {
             throw new Exception("Tipo de archivo no permitido. Use JPG, PNG o WEBP");
@@ -115,7 +114,13 @@ try {
     $descripcion = trim($_POST['descripcion']);
     $id_categoria = (int)$_POST['id_categoria'];
     $id_familia = isset($_POST['id_familia']) && !empty($_POST['id_familia']) ? (int)$_POST['id_familia'] : null;
-    $estado = in_array($_POST['estado'], ['Activo', 'Inactivo']) ? $_POST['estado'] : 'Activo';
+    
+    $estado_raw = $_POST['estado'] ?? ''; // Obtener estado, por defecto cadena vacía
+    $estado = strtolower($estado_raw); // Convertir a minúsculas
+    // Validar y establecer por defecto si es inválido
+    if (!in_array($estado, ['activo', 'inactivo'])) {
+        $estado = 'activo'; // Por defecto 'activo'
+    }
     $Stock = (int)$_POST['Stock'];
 
     $stmt->bind_param(

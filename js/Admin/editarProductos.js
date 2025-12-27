@@ -76,7 +76,7 @@ class ProductEditModal {
 
             // Obtener datos del producto desde el Map global
             const product = window.productosTable?.productDataMap?.get(productId);
-
+            console.log('Datos de producto al abrir modal:', product); // <-- DEBUG
             if (!product) {
                 throw new Error("Datos del producto no encontrados. El mapa de datos puede no estar sincronizado.");
             }
@@ -89,7 +89,8 @@ class ProductEditModal {
             document.getElementById("editarStock").value = product.stock || product.Stock || 0;
             document.getElementById("editarDescripcion").value = product.descripcion || "";
             this.categoriaSelect.value = product.id_categoria || "";
-            document.getElementById("editarEstado").value = product.estado || "Activo";
+            const currentStatus = product.estado || "activo"; // Default to 'activo'
+            document.getElementById("editarEstado").value = currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1);
 
             // Cargar familias dinámicamente y preseleccionar la correcta
             this.updateFamiliaDropdown(product.id_categoria, product.id_familia);
@@ -244,11 +245,8 @@ class ProductEditModal {
 
             // Cerrar modal y recargar tabla
             this.close();
-            if (typeof window.reloadProductTable === 'function') {
-                window.reloadProductTable();
-            } else {
-                location.reload();
-            }
+            // Recargar la tabla de productos usando el método expuesto globalmente
+            window.reloadProductTable();
 
         } catch (error) {
             console.error("Error al guardar cambios:", error);

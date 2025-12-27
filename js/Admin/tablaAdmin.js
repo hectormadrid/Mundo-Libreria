@@ -9,7 +9,7 @@ class ProductosDataTable {
   init() {
     this.dataTable = this.table.DataTable({
       ajax: {
-        url: "obtener_productos.php",
+        url: "obtener_productos.php?_t=" + new Date().getTime(), // Cache-busting
         type: "GET",
         dataSrc: (json) => {
           this.productDataMap.clear(); // Limpiar el mapa antes de llenarlo
@@ -245,6 +245,7 @@ setInterval(updateTime, 1000);
 document.addEventListener("DOMContentLoaded", () => {
   if ($("#productosTable").length) {
     window.productosTable = new ProductosDataTable("#productosTable");
+    window.reloadProductTable = () => window.productosTable.reload(); // Exponer el método de recarga
     console.log("✅ DataTable inicializado y refactorizado:", window.productosTable);
   }
 });
