@@ -45,6 +45,8 @@ CREATE TABLE `productos` (
     `id_categoria` INT NULL,
     `imagen` VARCHAR(255) DEFAULT NULL,
     `descripcion` TEXT,
+    `marca` VARCHAR(255) NULL DEFAULT NULL,
+    `color` VARCHAR(255) NULL DEFAULT NULL,
     `precio` DECIMAL(10,2) NOT NULL,
     `stock` INT DEFAULT 0,
     `estado` ENUM('activo', 'inactivo') DEFAULT 'activo',
@@ -101,5 +103,6 @@ INSERT INTO `Administrador` (`id`, `nombre`, `tipo`, `password`) VALUES
 (NULL, 'ingrid', 'administrador', '$2y$10$UAW3EuwP8tN.eToRjgS0TeiWCX7c/IegE2xE0nkFM69YFPXoM3gg6');
 
 use Mundo_libreria;
-
+select * from productos;
+select * from Administrador;
 show tables

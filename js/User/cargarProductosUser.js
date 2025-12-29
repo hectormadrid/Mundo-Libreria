@@ -25,7 +25,22 @@ const createProductCard = (producto) => {
                 <h3 class="font-bold text-gray-900 line-clamp-1">${
                   producto.nombre
                 }</h3>
-                <p class="text-gray-600 text-sm mt-1 line-clamp-2">${
+                <div class="flex items-center gap-2 mt-1.5">
+                  ${
+                    producto.marca
+                      ? `<span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">${producto.marca}</span>`
+                      : ""
+                  }
+                  ${
+                    producto.color
+                      ? `<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                           <span class="w-2 h-2 rounded-full" style="background-color: ${producto.color.toLowerCase()}"></span>
+                           ${producto.color}
+                         </span>`
+                      : ""
+                  }
+                </div>
+                <p class="text-gray-600 text-sm mt-2 line-clamp-2">${
                   producto.descripcion || ""
                 }</p>
             </div>

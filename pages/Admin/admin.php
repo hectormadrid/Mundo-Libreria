@@ -258,7 +258,7 @@ unset($_SESSION['flash']);
     </section>
     <!-- Modal Agregar -->
     <div id="modalAgregar" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-xl">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl">
             <div class="p-6">
                 <h2 class="text-2xl font-bold mb-4">Agregar Producto</h2>
                 <form id="formAgregarProducto" enctype="multipart/form-data" method="POST">
@@ -290,6 +290,16 @@ unset($_SESSION['flash']);
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2">Descripción</label>
                         <textarea name="descripcion" class="w-full px-3 py-2 border rounded"></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Marca</label>
+                            <input type="text" name="marca" class="w-full px-3 py-2 border rounded" placeholder="Ej: Faber-Castell">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Color</label>
+                            <input type="text" name="color" class="w-full px-3 py-2 border rounded" placeholder="Ej: Azul">
+                        </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
@@ -329,7 +339,7 @@ unset($_SESSION['flash']);
     </div>
     <!-- Modal Editar -->
     <div id="modalEditar" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 relative">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl p-6 relative">
             <h2 class="text-2xl font-bold mb-4">Editar Producto</h2>
 
             <form id="formEditarProducto" enctype="multipart/form-data" class="space-y-4">
@@ -361,6 +371,17 @@ unset($_SESSION['flash']);
                 <div>
                     <label for="editarDescripcion" class="block text-sm font-medium">Descripción</label>
                     <textarea id="editarDescripcion" name="descripcion" class="w-full border rounded px-3 py-2"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="editarMarca" class="block text-sm font-medium">Marca</label>
+                        <input type="text" id="editarMarca" name="marca" class="w-full border rounded px-3 py-2" placeholder="Ej: Faber-Castell">
+                    </div>
+                    <div>
+                        <label for="editarColor" class="block text-sm font-medium">Color</label>
+                        <input type="text" id="editarColor" name="color" class="w-full border rounded px-3 py-2" placeholder="Ej: Azul">
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

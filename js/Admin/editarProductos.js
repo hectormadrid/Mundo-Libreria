@@ -84,6 +84,8 @@ class ProductEditModal {
             // Llenar formulario
             document.getElementById("editarId").value = product.id;
             document.getElementById("editarNombre").value = product.nombre;
+            document.getElementById("editarMarca").value = product.marca || "";
+            document.getElementById("editarColor").value = product.color || "";
             document.getElementById("editarCodigoBarras").value = product.codigo_barras || "";
             document.getElementById("editarPrecio").value = product.precio;
             document.getElementById("editarStock").value = product.stock || product.Stock || 0;

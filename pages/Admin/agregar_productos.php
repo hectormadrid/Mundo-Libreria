@@ -101,7 +101,7 @@ try {
     }
 
     // Insertar en la base de datos
-    $query = "INSERT INTO productos (nombre, codigo_barras, id_categoria, id_familia, precio, descripcion, estado, imagen, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO productos (nombre, codigo_barras, id_categoria, id_familia, precio, descripcion, marca, color, estado, imagen, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conexion->prepare($query);
 
     if (!$stmt) {
@@ -112,6 +112,8 @@ try {
     $nombre = trim($_POST['nombre']);
     $precio = (float)$_POST['precio'];
     $descripcion = trim($_POST['descripcion']);
+    $marca = isset($_POST['marca']) && !empty(trim($_POST['marca'])) ? trim($_POST['marca']) : null;
+    $color = isset($_POST['color']) && !empty(trim($_POST['color'])) ? trim($_POST['color']) : null;
     $id_categoria = (int)$_POST['id_categoria'];
     $id_familia = isset($_POST['id_familia']) && !empty($_POST['id_familia']) ? (int)$_POST['id_familia'] : null;
     
@@ -124,13 +126,15 @@ try {
     $Stock = (int)$_POST['Stock'];
 
     $stmt->bind_param(
-        "ssiidsssi",
+        "ssiidsisssi",
         $nombre,
         $codigo_barras,
         $id_categoria,
         $id_familia,
         $precio,
         $descripcion,
+        $marca,
+        $color,
         $estado,
         $nombreImagen,
         $Stock
@@ -159,6 +163,8 @@ try {
                 'nombre' => $nombre,
                 'precio' => $precio,
                 'descripcion' => $descripcion,
+                'marca' => $marca,
+                'color' => $color,
                 'id_categoria' => $id_categoria,
                 'categoria' => $categoriaNombre, // Enviar también el nombre para la tabla
                 'estado' => $estado,

@@ -8,7 +8,7 @@ try {
 
     $query = "
         SELECT 
-            p.id, p.nombre, p.imagen, p.precio, p.descripcion, p.stock, c.nombre AS categoria 
+            p.id, p.nombre, p.imagen, p.precio, p.descripcion, p.stock, p.marca, p.color, c.nombre AS categoria 
         FROM 
             productos p
         LEFT JOIN 

@@ -35,6 +35,8 @@ $stock = filter_input(INPUT_POST, 'stock', FILTER_VALIDATE_INT);
 $id_categoria = filter_input(INPUT_POST, 'id_categoria', FILTER_VALIDATE_INT);
 $id_familia = filter_input(INPUT_POST, 'id_familia', FILTER_VALIDATE_INT);
 $codigo_barras = trim($_POST['codigo_barras'] ?? '');
+$marca = trim($_POST['marca'] ?? '');
+$color = trim($_POST['color'] ?? '');
 $estado = trim(strtolower($_POST['estado'] ?? '')); // ¡Capturando y normalizando el estado!
 
 // Validar que el estado sea 'activo' o 'inactivo'
@@ -57,6 +59,8 @@ try {
                 id_categoria = ?,
                 id_familia = ?,
                 codigo_barras = ?,
+                marca = ?,
+                color = ?,
                 estado = ?
             WHERE id = ?";
 
@@ -65,9 +69,9 @@ try {
     // Asignar null si la familia no se seleccionó
     $id_familia_final = $id_familia ?: null;
 
-    // "sdsiiissi" -> string, double, string, integer, integer, integer, string, string, integer
+    // "ssdiisssssi" -> string, string, double, integer, integer, integer, string, string, string, string, integer
     $stmt->bind_param(
-        "ssdiisssi",
+        "ssdiisssssi",
         $nombre,
         $descripcion,
         $precio,
@@ -75,6 +79,8 @@ try {
         $id_categoria,
         $id_familia_final,
         $codigo_barras,
+        $marca,
+        $color,
         $estado,
         $id
     );

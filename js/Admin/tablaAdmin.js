@@ -136,6 +136,8 @@ class ProductosDataTable {
         <p><b>Precio:</b> $${producto.precio}</p>
         <p><b>Stock:</b> ${producto.stock}</p>
         <p><b>Categoría:</b> ${producto.categoria}</p>
+        <p><b>Marca:</b> ${producto.marca || 'N/A'}</p>
+        <p><b>Color:</b> ${producto.color || 'N/A'}</p>
         <p><b>Estado:</b> ${producto.estado}</p>
         <p><b>Descripción:</b> ${producto.descripcion || 'N/A'}</p>
       `,
