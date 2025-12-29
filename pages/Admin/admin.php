@@ -343,7 +343,7 @@ unset($_SESSION['flash']);
 
                     <div>
                         <label for="editarCodigoBarras" class="block text-sm font-medium">Código de Barras</label>
-                        <input type="text" id="editarCodigoBarras" name="codigo_barras" class="w-full border rounded px-3 py-2">
+                        <input type="text" id="editarCodigoBarras" name="codigo_barras" class="w-full border rounded px-3 py-2" readonly> 
                     </div>
                 </div>
 

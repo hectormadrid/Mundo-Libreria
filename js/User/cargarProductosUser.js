@@ -18,11 +18,6 @@ const createProductCard = (producto) => {
                     class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                     loading="lazy">
             </div>
-            <button class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm p-2 rounded-full hover:bg-lib-red hover:text-white transition-all">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                </svg>
-            </button>
         </div>
 
         <div class="p-4 border-t border-gray-100">
@@ -42,7 +37,6 @@ const createProductCard = (producto) => {
                     )}
                     <svg class="w-4 h-4 fill-current text-gray-300" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
                 </div>
-                <span class="text-gray-500 text-xs ml-2">(24 reseñas)</span>
             </div>
 
             <div class="flex items-center justify-between">
