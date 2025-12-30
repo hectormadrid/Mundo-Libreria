@@ -265,3 +265,11 @@ input:disabled + .slider {
 .estado-inactivo {
   color: #EF4444;
 }
+
+/* Estilo para el scroll en modales */
+.modal-form-scrollable {
+    max-height: 70vh; /* p. ej., 70% de la altura de la ventana */
+    overflow-y: auto;
+    padding: 0 1rem; /* Espacio para que la barra de scroll no se pegue al contenido */
+    margin: 0 -1rem; /* Compensa el padding para mantener la alineación */
+}

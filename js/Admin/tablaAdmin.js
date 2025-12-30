@@ -31,8 +31,26 @@ class ProductosDataTable {
       },
       columns: this.getColumns(),
       language: this.getLanguageSettings(),
-      dom: "Bfrtip",
-      responsive: true,
+      responsive: {
+        details: {
+          type: 'column',
+          target: 0
+        }
+      },
+      columnDefs: [
+        { className: 'dtr-control', orderable: false, targets: 0 },
+        { responsivePriority: 1, targets: 1 },    // Nombre
+        { responsivePriority: 2, targets: 8 },    // Estado
+        { responsivePriority: 3, targets: 10 },   // Acciones
+        { responsivePriority: 4, targets: 7 },    // Stock
+        { responsivePriority: 5, targets: 4 },    // Precio
+        { responsivePriority: 6, targets: 3 },    // Imagen
+        { responsivePriority: 7, targets: 6 },    // Categoria
+        { responsivePriority: 100, targets: 2 },  // Código de Barras
+        { responsivePriority: 101, targets: 5 },  // Descripción
+        { responsivePriority: 102, targets: 9 },  // Fecha
+        { responsivePriority: 103, targets: 0 }   // ID (ya es control)
+      ],
       autoWidth: false,
       ...this.options.customSettings,
     });
@@ -52,9 +70,9 @@ class ProductosDataTable {
           const path = `${baseUrl}/uploads/productos/${data}`;
           return `
             <img src="${path}" 
-                 alt="Imagen producto" 
+                alt="Imagen producto" 
                  class="h-12 w-12 object-cover rounded cursor-pointer hover:scale-150 transition-all"
-                 onclick="ProductosDataTable.showFullImage('${path}')">
+                onclick="ProductosDataTable.showFullImage('${path}')">
           `;
         },
       },
@@ -84,7 +102,7 @@ class ProductosDataTable {
             <div class="switch-container">
               <label class="switch">
                 <input type="checkbox" ${isActive ? "checked" : ""} 
-                       onchange="ProductosDataTable.toggleEstado(${row.id}, this.checked)">
+                      onchange="ProductosDataTable.toggleEstado(${row.id}, this.checked)">
                 <span class="slider"></span>
               </label>
               <span class="estado-label ${isActive ? "estado-activo" : "estado-inactivo"}">

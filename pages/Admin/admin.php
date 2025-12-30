@@ -185,12 +185,14 @@ unset($_SESSION['flash']);
     <?php include '_sidebar.php'; ?>
 
     <section class="home-section">
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <h1 class="text-3xl font-bold">Panel de Administración</h1>
-            <div class="flex items-center gap-4">
-                <div class="text-gray-600">Fecha: <span id="currentTime"></span></div>
-                <button id="btnGestionarAdmins" class="bg-purple-600 text-white px-4 py-2 rounded">Gestionar Admins</button>
-                <button id="btnAgregarProducto" class="bg-blue-600 text-white px-4 py-2 rounded">+ Nuevo Producto</button>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div class="text-gray-600 text-sm sm:text-base">Fecha: <span id="currentTime"></span></div>
+                <div class="flex items-center gap-2">
+                    <button id="btnGestionarAdmins" class="bg-purple-600 text-white px-4 py-2 rounded w-full sm:w-auto">Gestionar Admins</button>
+                    <button id="btnAgregarProducto" class="bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto">+ Nuevo Producto</button>
+                </div>
             </div>
         </div>
 
@@ -258,10 +260,11 @@ unset($_SESSION['flash']);
     </section>
     <!-- Modal Agregar -->
     <div id="modalAgregar" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-lg lg:max-w-3xl xl:max-w-5xl">
             <div class="p-6">
                 <h2 class="text-2xl font-bold mb-4">Agregar Producto</h2>
                 <form id="formAgregarProducto" enctype="multipart/form-data" method="POST">
+                    <div class="modal-form-scrollable">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-gray-700 mb-2">Nombre</label>
@@ -325,6 +328,7 @@ unset($_SESSION['flash']);
                             </select>
                         </div>
                     </div>
+                </div>
                     <div class="flex justify-end gap-2">
                         <button type="button" id="btnCancelar" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
                             Cancelar
@@ -339,10 +343,11 @@ unset($_SESSION['flash']);
     </div>
     <!-- Modal Editar -->
     <div id="modalEditar" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl p-6 relative">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-lg lg:max-w-3xl xl:max-w-5xl p-6 relative">
             <h2 class="text-2xl font-bold mb-4">Editar Producto</h2>
 
             <form id="formEditarProducto" enctype="multipart/form-data" class="space-y-4">
+                <div class="modal-form-scrollable">
                 <input type="hidden" id="editarId" name="id">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -419,6 +424,7 @@ unset($_SESSION['flash']);
                 <div>
                     <label for="editarImagen" class="block text-sm font-medium">Nueva imagen (opcional)</label>
                     <input type="file" id="editarImagen" name="imagen" accept="image/*" class="w-full border rounded px-3 py-2">
+                </div>
                 </div>
 
                 <!-- Botones -->
