@@ -17,7 +17,7 @@ class UserManager {
         
         this.table = $('#usuariosTable').DataTable({
             ajax: {
-                url: 'obtener_usuarios.php',
+                url: '/pages/Admin/obtener_usuarios.php',
                 dataSrc: 'data',
                 error: function(xhr, error, thrown) {
                     console.error('Error loading data:', error);
@@ -142,7 +142,7 @@ class UserManager {
 
     async eliminarUsuario() {
         try {
-            const response = await fetch('eliminar_usuario.php', {
+            const response = await fetch('/pages/Admin/eliminar_usuario.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

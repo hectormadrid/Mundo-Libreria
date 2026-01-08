@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     try {
-        const response = await fetch(`obtener_familias_por_categoria.php?categoria_id=${categoriaId}`);
+        const response = await fetch(`/pages/Admin/obtener_familias_por_categoria.php?categoria_id=${categoriaId}`);
         if (!response.ok) {
             throw new Error('Error al cargar las familias.');
         }
@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       const formData = new FormData(this);
 
-      const response = await fetch("agregar_productos.php", {
+      const response = await fetch("/pages/Admin/agregar_productos.php", {
         method: "POST",
         body: formData,
       });

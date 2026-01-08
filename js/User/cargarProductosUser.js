@@ -72,7 +72,7 @@ const attachEventListeners = () => {
             button.disabled = true;
 
             try {
-                const response = await fetch('../pages/agregar_al_carrito.php', {
+                const response = await fetch('/pages/agregar_al_carrito.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -97,7 +97,7 @@ const attachEventListeners = () => {
                     if (response.status === 401) {
                         showNotification('🔐 Inicia sesión para continuar', 'warning');
                         setTimeout(() => {
-                            window.location.href = '../pages/login.php';
+                            window.location.href = '/pages/login.php';
                         }, 2000);
                     }
                 }
@@ -135,7 +135,7 @@ function showNotification(message, type = "info") {
 // Función para obtener el conteo inicial al cargar la página
 const loadCartCount = async () => {
   try {
-    const response = await fetch("../pages/contador_carrito.php");
+    const response = await fetch("/pages/contador_carrito.php");
     const result = await response.json();
 
     if (result.success) {
@@ -202,7 +202,7 @@ const updateFamilyFilters = async (categoryName) => {
     }
 
     try {
-        const response = await fetch(`../pages/obtener_familias_por_categoria.php?categoria_nombre=${categoryName}`);
+        const response = await fetch(`/pages/obtener_familias_por_categoria.php?categoria_nombre=${categoryName}`);
         const familias = await response.json();
 
         if (familias.length > 0) {
@@ -212,6 +212,7 @@ const updateFamilyFilters = async (categoryName) => {
                 </a>
             `;
             familias.forEach(familia => {
+                const urlFamilia = `obtener_prductos_user.php?familia_id=${familia.id}`;
                 filtersHtml += `
                     <a href="#" data-family="${familia.id}" class="family-link bg-white/80 text-gray-700 font-semibold px-4 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-md">
                         ${familia.nombre}
@@ -235,11 +236,11 @@ const updateFamilyFilters = async (categoryName) => {
 const loadProducts = async (categoria = "", familiaId = "") => {
   console.log(`Cargando productos de categoría: '${categoria}' y familia: '${familiaId}'`);
   const container = document.getElementById("productos-container");
-  container.innerHTML = `<div class="col-span-full text-center py-10"><p class="text-gray-500">Cargando productos...</p></div>`;
+  container.innerHTML = `<div class="col-span-full text-center py-10"><p class="text-500">Cargando productos...</p></div>`;
 
 
   try {
-    let url = `../pages/obtener_prductos_user.php?categoria=${encodeURIComponent(categoria)}`;
+    let url = `/pages/obtener_prductos_user.php?categoria=${encodeURIComponent(categoria)}`;
     if (familiaId) {
         url += `&familia_id=${encodeURIComponent(familiaId)}`;
     }
@@ -269,5 +270,3 @@ const loadProducts = async (categoria = "", familiaId = "") => {
         `;
   }
 };
-
-

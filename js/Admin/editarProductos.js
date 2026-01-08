@@ -99,7 +99,7 @@ class ProductEditModal {
 
             // Manejar imagen
             if (product.imagen) {
-                this.imagenActual.src = `http://localhost/Mundo-Libreria/uploads/productos/${product.imagen}`;
+                this.imagenActual.src = `/uploads/productos/${product.imagen}`;
                 this.imagenActualContainer.classList.remove("hidden");
             } else {
                 this.imagenActualContainer.classList.add("hidden");
@@ -137,7 +137,7 @@ class ProductEditModal {
         }
 
         try {
-            const response = await fetch(`obtener_familias_por_categoria.php?categoria_id=${categoryId}`);
+            const response = await fetch(`/pages/Admin/obtener_familias_por_categoria.php?categoria_id=${categoryId}`);
             if (!response.ok) throw new Error('Error al cargar familias');
             
             const familias = await response.json();
@@ -220,7 +220,7 @@ class ProductEditModal {
             const formData = new FormData(this.form);
 
             // Enviar datos al servidor
-            const response = await fetch("editar_productos.php", {
+            const response = await fetch("/pages/Admin/editar_productos.php", {
                 method: "POST",
                 body: formData
             });

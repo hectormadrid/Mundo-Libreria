@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Inicializar DataTable solo la primera vez
                 adminsTable = $('#adminsTable').DataTable({
                     ajax: {
-                        url: 'obtener_admins.php', // Endpoint para obtener admins
+                        url: '/pages/Admin/obtener_admins.php', // Endpoint para obtener admins
                         dataSrc: 'data'
                     },
                     columns: [
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         const formData = new FormData(this);
 
-        fetch('crear_administrador.php', {
+        fetch('/pages/Admin/crear_administrador.php', {
             method: 'POST',
             body: formData
         })
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch('eliminar_administrador.php', {
+                fetch('/pages/Admin/eliminar_administrador.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

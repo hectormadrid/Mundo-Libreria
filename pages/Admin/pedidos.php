@@ -3,7 +3,7 @@ session_start();
 require_once __DIR__ . '/../../db/Conexion.php';
 // Verificar que sea administrador
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
-    header('Location: ../pages/login_admin.php');
+    header('Location: /pages/login_admin.php');
     exit;
 }
 // Traer pedidos con detalles
@@ -43,7 +43,7 @@ if (!$result) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="../../style/admin.css">
+    <link rel="stylesheet" href="/style/admin.css">
 </head>
 
 <body class="bg-gray-100">
@@ -105,8 +105,8 @@ if (!$result) {
     </div>
 
     <!-- Archivos propios -->
-     <script src="../../js/Admin/menu_admin.js"></script>
-    <script src="../../js/Admin/tablaPedidos.js"></script>
-    <script src="../../js/Admin/modalVerPedidos.js"></script>
+     <script src="/js/Admin/menu_admin.js"></script>
+    <script src="/js/Admin/tablaPedidos.js"></script>
+    <script src="/js/Admin/modalVerPedidos.js"></script>
 </body>
 </html>

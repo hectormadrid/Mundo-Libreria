@@ -13,7 +13,7 @@ function eliminarDelCarrito(idProducto) {
             const formData = new FormData();
             formData.append('id_producto', idProducto);
 
-            fetch('Eliminar_Producto_Carrito.php', {
+            fetch('/pages/Eliminar_Producto_Carrito.php', {
                 method: 'POST',
                 body: formData
             })
@@ -95,7 +95,7 @@ document.getElementById('clear-cart-btn')?.addEventListener('click', function() 
         cancelButtonText: 'Cancelar'
     }).then(result => {
         if (result.isConfirmed) {
-            fetch('Limpiar_Carrito.php', { method: 'POST' })
+            fetch('/pages/Limpiar_Carrito.php', { method: 'POST' })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -107,7 +107,7 @@ document.getElementById('clear-cart-btn')?.addEventListener('click', function() 
                         Swal.fire('Error', data.message || 'No se pudo limpiar el carrito', 'error');
                     }
                 }).catch(err => {
-                    console.error(err);
+                    console.error('Error:', err);
                     Swal.fire('Error', 'Ocurrió un error', 'error');
                 });
         }

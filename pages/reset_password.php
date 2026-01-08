@@ -48,7 +48,7 @@ if (!empty($token_from_url)) {
     <title>Restablecer Contraseña - Mundo Librería</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../style/login.css">
+    <link rel="stylesheet" href="/style/login.css">
 </head>
 
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
@@ -92,7 +92,7 @@ if (!empty($token_from_url)) {
                 <h1 class="mt-4 text-2xl font-bold text-gray-800">Enlace no Válido</h1>
                 <p class="mt-2 text-gray-600"><?php echo htmlspecialchars($error_message); ?></p>
                 <div class="mt-6">
-                    <a href="forgot_password.php" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    <a href="/pages/forgot_password.php" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                         <i class="fas fa-arrow-left mr-1"></i>
                         Volver a solicitar
                     </a>
@@ -103,7 +103,7 @@ if (!empty($token_from_url)) {
     </div>
     
     <?php if ($token_is_valid): ?>
-        <script src="../js/User/reset_password.js"></script>
+        <script src="/js/User/reset_password.js"></script>
     <?php endif; ?>
 
 </body>

@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['ID'] = $usuario['id'];
                 $_SESSION['correo'] = $usuario['correo'];
 
-                header("Location: index.php");
+                header("Location: /");
                 exit();
             } else {
                 $error = "Contraseña incorrecta.";
@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="../style/login.css">
+    <link rel="stylesheet" href="/style/login.css">
     <script>
         tailwind.config = {
             theme: {
@@ -99,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <!-- Formulario -->
             <div class="p-8">
-                <form action="login.php" method="post" class="space-y-6">
+                <form action="/pages/login.php" method="post" class="space-y-6">
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
                     <!-- Campo de email -->
@@ -142,7 +142,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     <!-- Opciones adicionales -->
                     <div class="flex items-center justify-between text-sm">
-                        <a href="forgot_password.php" class="text-lib-red hover:text-red-700 font-semibold transition-colors">
+                        <a href="/pages/forgot_password.php" class="text-lib-red hover:text-red-700 font-semibold transition-colors">
                             ¿Olvidaste tu contraseña?
                         </a>
                     </div>
@@ -154,7 +154,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </button>
                 </form>
                 <div class="space-y-4 p-6">
-                    <a href="index.php" class="admin-hover flex items-center justify-center w-full py-3 px-6 bg-gray-100 border-2 border-gray-300 rounded-2xl font-bold text-gray-700 hover:bg-gray-200 hover:border-gray-400 transition-all duration-300">
+                    <a href="/" class="admin-hover flex items-center justify-center w-full py-3 px-6 bg-gray-100 border-2 border-gray-300 rounded-2xl font-bold text-gray-700 hover:bg-gray-200 hover:border-gray-400 transition-all duration-300">
                         <i class="fas fa-arrow-left mr-3 text-lib-blue"></i>
                         Volver al Sitio Principal
                     </a>
@@ -173,7 +173,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <p class="text-gray-600 font-medium">
                         ¿Primera vez aquí?
                     </p>
-                    <a href="registrar.php" class="inline-flex items-center justify-center w-full py-3 px-6 neon-border rounded-2xl font-bold text-gray-700 hover:bg-gray-50 transition-all duration-300">
+                    <a href="/pages/registrar.php" class="inline-flex items-center justify-center w-full py-3 px-6 neon-border rounded-2xl font-bold text-gray-700 hover:bg-gray-50 transition-all duration-300">
                         <i class="fas fa-user-plus mr-2 text-lib-blue"></i>
                         Crear cuenta nueva
                     </a>
@@ -188,7 +188,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 
-   <script src="../js/login.js"></script>
+   <script src="/js/login.js"></script>
    <?php if (!empty($error)): ?>
     <script>
         Swal.fire({

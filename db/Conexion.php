@@ -1,29 +1,17 @@
 <?php
-// Incluir el archivo de configuración de la base de datos
-require_once __DIR__ . '/../db_config.php';
+// Datos de conexión a la base de datos
+define('DB_SERVER', 'localhost');
+define('DB_USERNAME', 'ingrid');
+define('DB_PASSWORD', 'Hectorpola2505!');
+define('DB_NAME', 'Mundo_libreria');
 
-// Crear la conexión a la base de datos utilizando las constantes
-$conexion = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+// Intentar conectar a la base de datos MySQL
+$conexion = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
-// Verificar la conexión
+// Comprobar conexión
 if ($conexion->connect_error) {
-    // Si estamos en modo de depuración, mostrar el error detallado
-    if (defined('DEBUG_MODE') && DEBUG_MODE === true) {
-        $error_message = 'Error de conexión a la base de datos: ' . $conexion->connect_error;
-    } else {
-        // En producción, mostrar un mensaje genérico
-        $error_message = 'Error de conexión a la base de datos. Por favor, inténtelo más tarde.';
-    }
-    
-    // Devolver una respuesta de error genérica
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'error' => $error_message
-    ]);
-    exit;
+    die("Error de conexión: " . $conexion->connect_error);
 }
-
-// Establecer el juego de caracteres a UTF-8
+// Establecer el juego de caracteres a utf8 para evitar problemas con tildes y eñes
 $conexion->set_charset("utf8");
 ?>

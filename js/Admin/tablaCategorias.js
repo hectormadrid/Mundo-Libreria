@@ -14,7 +14,7 @@ class CategoriasManager {
     initDataTable() {
         this.dataTable = $('#categoriasTable').DataTable({
             ajax: {
-                url: 'obtener_categorias.php',
+                url: '/pages/Admin/obtener_categorias.php',
                 dataSrc: 'data'
             },
             columns: [
@@ -62,7 +62,7 @@ class CategoriasManager {
     async handleSubmit(e) {
         e.preventDefault();
         const id = this.idInput.value;
-        const url = id ? 'editar_categoria.php' : 'agregar_categoria.php';
+        const url = id ? '/pages/Admin/editar_categoria.php' : '/pages/Admin/agregar_categoria.php';
         const formData = new FormData(this.form);
 
         try {
@@ -97,7 +97,7 @@ class CategoriasManager {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const response = await fetch('eliminar_categoria.php', {
+                    const response = await fetch('/pages/Admin/eliminar_categoria.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: `id=${id}`
