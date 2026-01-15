@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/assets/MUNDO-WEB.ico">
+    <link rel="icon" href="../assets/MUNDO-WEB.ico">
     <title>Carrito de Compras - Mundo Librería</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/style/carrito.css">
+    <link rel="stylesheet" href="../style/carrito.css">
     <script>
         tailwind.config = {
             theme: {
@@ -29,19 +29,19 @@
 <header class="gradient-header shadow-2xl sticky top-0 z-50">
     <div class="container mx-auto px-6 py-4">
         <div class="flex justify-between items-center">
-            <a href="/" class="flex items-center group">
+            <a href="index.php" class="flex items-center group">
                 <div class="ml-4">
                     <h1 class="text-3xl font-bold text-white">Mundo <span class="text-lib-yellow">Librería</span></h1>
                     <p class="text-blue-100 text-sm">Tu carrito de compras</p>
                 </div>
             </a>
             <nav class="flex items-center space-x-6">
-                <a href="/" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
+                <a href="index.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
                     <i class="fas fa-home mr-2"></i>
                     Inicio
                 </a>
 
-                <a href="/db/Cerrar_sesion.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
+                <a href="../db/Cerrar_sesion.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
                     <i class="fas fa-sign-out-alt mr-2"></i>
                     Salir
                 </a>
@@ -73,7 +73,7 @@
         <i class="fas fa-shopping-cart text-6xl text-gray-400 mb-4"></i>
         <h2 class="text-2xl font-bold text-gray-700 mb-2">¡Tu carrito está vacío!</h2>
         <p class="text-gray-500 mb-6">Agrega productos para continuar con tu compra.</p>
-        <a href="/" class="btn-primary px-6 py-3 rounded-lg text-white">
+        <a href="index.php" class="btn-primary px-6 py-3 rounded-lg text-white">
             <i class="fas fa-store mr-2"></i> Explorar productos
         </a>
     </div>
@@ -98,7 +98,7 @@
 
                             <div class="flex items-center bg-white rounded-2xl p-6 shadow-lg card-hover border border-gray-100" id="item-<?= $pid ?>" data-qty="<?= $cantidad ?>">
                                 <div class="relative">
-                                    <img src="/uploads/productos/<?= $imagen ?>"
+                                    <img src="../uploads/productos/<?= $imagen ?>"
                                         alt="<?= $nombre ?>"
                                         class="product-image w-24 h-24 object-cover rounded-xl border-2 border-gray-200">
                                 </div>
@@ -124,7 +124,7 @@
                 </div>
 
                 <div class="flex justify-between mt-6">
-                    <a href="/" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold flex items-center">
+                    <a href="index.php" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold flex items-center">
                         <i class="fas fa-arrow-left mr-2"></i> Seguir Comprando
                     </a>
                     <button id="clear-cart-btn" class="bg-lib-yellow text-gray-800 px-6 py-3 rounded-xl font-semibold hover:bg-yellow-500 transition-all duration-300">
@@ -160,7 +160,7 @@
                             </div>
                         </div>
 
-                        <a href="/pages/checkout.php" class="block">
+                        <a href="checkout.php" class="block">
                             <button class="btn-success text-white w-full py-4 rounded-2xl font-bold text-lg"><i class="fas fa-credit-card mr-2"></i> Proceder al Pago</button>
                         </a>
                     </div>
@@ -169,6 +169,6 @@
         </div>
     </div>
 </main>
-<script src="/js/eliminarProductoCarrito.js"></script>
+<script src="../js/eliminarProductoCarrito.js"></script>
 </body>
 </html>

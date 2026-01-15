@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="/assets/MUNDO-WEB.ico">
+  <link rel="icon" href="../assets/MUNDO-WEB.ico">
   <title>Mundo Libreria</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link rel="stylesheet" href="/style/index.css">
+  <link rel="stylesheet" href="../style/index.css">
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <!-- Configuración personalizada de Tailwind -->
   <script>
@@ -46,7 +46,7 @@
         <!-- Logo mejorado -->
         <div class="flex items-center mb-4 md:mb-0 group">
           <div class="bg-white p-2 rounded-full shadow-lg mr-3 group-hover:scale-110 transition-transform duration-300">
-            <img src="/assets/MUNDO-WEB.ico" alt="Logo" class="h-8 w-8">
+            <img src="../assets/MUNDO-WEB.ico" alt="Logo" class="h-8 w-8">
           </div>
           <h1 class="text-3xl font-bold">
             Mundo <span class="text-lib-yellow animate-pulse">Librería</span>
@@ -75,15 +75,15 @@
                 <span class="text-lib-blue font-bold text-sm"><?= strtoupper(substr($_SESSION['nombre'], 0, 1)) ?></span>
               </div>
               <div>
-                <a href="/pages/perfilUser.php">perfil </a>
+                <a href="perfilUser.php">perfil </a>
               </div>
               <span class="text-white font-semibold hidden md:inline">¡Hola, <?= htmlspecialchars($_SESSION['nombre']) ?>!</span>
-              <a href="/db/Cerrar_sesion.php" class="bg-lib-red px-4 py-2 rounded-full text-white hover:bg-red-600 transition-all duration-300 hover:scale-105 shadow-lg">
+              <a href="../db/Cerrar_sesion.php" class="bg-lib-red px-4 py-2 rounded-full text-white hover:bg-red-600 transition-all duration-300 hover:scale-105 shadow-lg">
                 Salir
               </a>
             </div>
           <?php else: ?>
-            <a href="/pages/login.php" class="bg-lib-yellow text-lib-blue px-6 py-3 rounded-full hover:bg-yellow-400 transition-all duration-300 font-medium flex items-center space-x-2 shadow-lg hover:shadow-xl hover:scale-105">
+            <a href="login.php" class="bg-lib-yellow text-lib-blue px-6 py-3 rounded-full hover:bg-yellow-400 transition-all duration-300 font-medium flex items-center space-x-2 shadow-lg hover:shadow-xl hover:scale-105">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
@@ -92,7 +92,7 @@
           <?php endif; ?>
           
           <!-- Carrito -->
-         <a href="/pages/Carrito.php" class="fixed bottom-6 right-6 z-50 bg-blue-600 p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 hover:scale-110 group">
+         <a href="Carrito.php" class="fixed bottom-6 right-6 z-50 bg-blue-600 p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 hover:scale-110 group">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white group-hover:animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293 c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4  2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
     </svg>
@@ -114,7 +114,7 @@
   <div class="container mx-auto px-4 py-3 relative z-10">
     <div class="flex flex-wrap justify-center gap-3 text-sm">
       <!-- Inicio -->
-      <a href="/" data-category="all"
+      <a href="index.php" data-category="all"
          class="category-link bg-white/90 text-red-700 font-semibold px-6 py-2 rounded-full transition-all duration-300 hover:scale-110   shadow-lg">
         🏠 Inicio
       </a>
@@ -271,7 +271,7 @@
       <div class="md:col-span-2">
   <div class="flex items-center mb-4">
     <div class="bg-white p-2 rounded-full shadow-lg mr-3">
-      <img src="/assets/MUNDO-WEB.ico" alt="Logo" class="h-8 w-8">
+      <img src="../assets/MUNDO-WEB.ico" alt="Logo" class="h-8 w-8">
     </div>
       <h1 class="text-3xl font-bold">
             Mundo <span class="text-lib-yellow animate-pulse">Librería</span>
@@ -353,10 +353,10 @@
 </div>
 
   <!-- Scripts -->
-  <script src="/js/User/carousel.js"></script>
-  <script src="/js/User/components.js"></script>
-  <script src="/js/User/cargarProductosUser.js"></script>
-  <script src="/js/User/contacto.js"></script>
+  <script src="../js/User/carousel.js"></script>
+  <script src="../js/User/components.js"></script>
+  <script src="../js/User/cargarProductosUser.js"></script>
+  <script src="../js/User/contacto.js"></script>
 
   <script>
     // Animaciones adicionales cuando el DOM esté listo

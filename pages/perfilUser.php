@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/assets/MUNDO-WEB.ico">
+    <link rel="icon" href="../assets/MUNDO-WEB.ico">
     <title>Mi Perfil - Mundo Librería</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="/style/perfil.css">
+    <link rel="stylesheet" href="../style/perfil.css">
     <script>
         tailwind.config = {
             theme: {
@@ -42,22 +42,22 @@
     <header class="gradient-header shadow-2xl sticky top-0 z-50">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
-                <a href="/" class="flex items-center group pulse">
+                <a href="index.php" class="flex items-center group pulse">
                     <div class="ml-4">
                         <h1 class="text-3xl font-bold text-white">Mundo <span class="text-lib-yellow">Librería</span></h1>
                         <p class="text-blue-100 text-sm">Gestión de tu perfil personal</p>
                     </div>
                 </a>
                 <nav class="flex items-center space-x-6">
-                    <a href="/" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
+                    <a href="index.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
                         <i class="fas fa-home mr-2"></i>
                         Inicio
                     </a>
-                    <a href="/pages/Carrito.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
+                    <a href="carrito.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
                         <i class="fas fa-shopping-cart mr-2"></i>
                         Carrito
                     </a>
-                    <a href="/db/Cerrar_sesion.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
+                    <a href="../db/Cerrar_sesion.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
                         <i class="fas fa-sign-out-alt mr-2"></i>
                         Salir
                     </a>
@@ -71,7 +71,7 @@
         <!-- Breadcrumb -->
         <div class="flex items-center space-x-2 text-gray-600 mb-8">
             <i class="fas fa-home text-lib-blue"></i>
-            <a href="/" class="hover:text-lib-red transition-colors">Inicio</a>
+            <a href="index.php" class="hover:text-lib-red transition-colors">Inicio</a>
             <i class="fas fa-chevron-right text-xs text-lib-red"></i>
             <span class="text-dual-gradient font-semibold">Mi Perfil</span>
         </div>
@@ -108,7 +108,7 @@
                         </h3>
                     </div>
                     <div class="p-6">
-                        <form action="/pages/perfilUser.php" method="POST" class="space-y-6">
+                        <form action="perfilUser.php" method="POST" class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -164,7 +164,7 @@
                             </div>
 
                             <div class="flex justify-end space-x-4 pt-4">
-                                <a href="/" 
+                                <a href="index.php" 
                                    class="btn-secondary text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-300">
                                     <i class="fas fa-arrow-left mr-2"></i>Volver al Inicio
                                 </a>
@@ -220,21 +220,21 @@
                     </div>
                     <div class="p-6">
                         <div class="space-y-3">
-                            <a href="/pages/Carrito.php" 
+                            <a href="carrito.php" 
                                class="flex items-center p-3 bg-gradient-to-r from-blue-50 to-red-50 text-gray-800 rounded-xl quick-action transition-all duration-300 hover:shadow-lg border-l-4 border-lib-blue">
                                 <i class="fas fa-shopping-cart mr-3 text-lg text-lib-blue"></i>
                                 <span>Ver Carrito</span>
                                 <i class="fas fa-arrow-right ml-auto text-lib-red"></i>
                             </a>
                             
-                            <a href="/pages/historial_pedidos.php" 
+                            <a href="historial_pedidos.php" 
                                class="flex items-center p-3 bg-gradient-to-r from-red-50 to-blue-50 text-gray-800 rounded-xl quick-action transition-all duration-300 hover:shadow-lg border-l-4 border-lib-red">
                                 <i class="fas fa-history mr-3 text-lg text-lib-red"></i>
                                 <span>Historial de Pedidos</span>
                                 <i class="fas fa-arrow-right ml-auto text-lib-blue"></i>
                             </a>
                             
-                            <a href="/db/Cerrar_sesion.php" 
+                            <a href="../db/Cerrar_sesion.php" 
                                class="flex items-center p-3 bg-gradient-to-r from-blue-50 to-red-50 text-gray-800 rounded-xl quick-action transition-all duration-300 hover:shadow-lg border-l-4 border-lib-blue">
                                 <i class="fas fa-sign-out-alt mr-3 text-lg text-lib-blue"></i>
                                 <span>Cerrar Sesión</span>

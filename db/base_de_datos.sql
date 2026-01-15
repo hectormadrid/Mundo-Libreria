@@ -14,13 +14,14 @@ CREATE TABLE `categorias` (
 -- Estructura de la tabla `familias`
 --
 CREATE TABLE `familias` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `nombre` VARCHAR(100) NOT NULL,
-  `id_categoria` INT NOT NULL,
-  `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (`id_categoria`) REFERENCES `categorias`(`id`) ON DELETE CASCADE
-);
-
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+      `nombre` VARCHAR(100) NOT NULL,
+        `id_categoria` INT NOT NULL,
+          `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (`id_categoria`) REFERENCES `categorias`(`id`) ON DELETE CASCADE
+            );
+            
+)
 --
 -- Estructura de la tabla `usuario`
 --

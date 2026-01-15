@@ -13,7 +13,7 @@ function eliminarDelCarrito(idProducto) {
             const formData = new FormData();
             formData.append('id_producto', idProducto);
 
-            fetch('/pages/Eliminar_Producto_Carrito.php', {
+            fetch('Eliminar_Producto_Carrito.php', {
                 method: 'POST',
                 body: formData
             })
@@ -95,7 +95,7 @@ document.getElementById('clear-cart-btn')?.addEventListener('click', function() 
         cancelButtonText: 'Cancelar'
     }).then(result => {
         if (result.isConfirmed) {
-            fetch('/pages/Limpiar_Carrito.php', { method: 'POST' })
+            fetch('Limpiar_Carrito.php', { method: 'POST' })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {

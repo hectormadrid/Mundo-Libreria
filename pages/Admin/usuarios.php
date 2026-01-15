@@ -6,7 +6,7 @@ session_start();
 require_once __DIR__ . '/../../db/Conexion.php';
 // Verificar que sea administrador
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
-    header('Location: /pages/login_admin.php');
+    header('Location: ../pages/login_admin.php');
     exit;
 }
 $stmt = $conexion->prepare("SELECT nombre FROM Administrador WHERE id = ?");
@@ -29,7 +29,7 @@ if ($row = $result->fetch_assoc()) {
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/style/admin.css">
+    <link rel="stylesheet" href="../../style/admin.css">
 </head>
 
 <body class="bg-gray-100">
@@ -82,8 +82,8 @@ if ($row = $result->fetch_assoc()) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/js/Admin/tablaGestionUsuario.js"></script>
-    <script src="/js/Admin/menu_admin.js"></script>
+    <script src="../../js/Admin/tablaGestionUsuario.js"></script>
+    <script src="../../js/Admin/menu_admin.js"></script>
 </body>
 
 </html>

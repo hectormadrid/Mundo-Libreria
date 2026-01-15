@@ -4,7 +4,7 @@ require_once __DIR__ . '/../../db/Conexion.php';
 
 // Verificar que sea administrador
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
-    header('Location: /pages/login_admin.php');
+    header('Location: ../login_admin.php');
     exit;
 }
 
@@ -177,7 +177,7 @@ unset($_SESSION['flash']);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="/style/admin.css">
+    <link rel="stylesheet" href="../../style/admin.css">
 </head>
 
 <body class="bg-gray-100">
@@ -463,11 +463,11 @@ unset($_SESSION['flash']);
         </div>
     </div>
 
-    <script src="/js/Admin/menu_admin.js"></script>
-    <script src="/js/Admin/tablaAdmin.js"></script>
-    <script src="/js/Admin/agregarProductos.js"></script>
-    <script src="/js/Admin/editarProductos.js"></script>
-    <script src="/js/Admin/gestionAdmins.js"></script>
+    <script src="../../js/Admin/menu_admin.js"></script>
+    <script src="../../js/Admin/tablaAdmin.js"></script>
+    <script src="../../js/Admin/agregarProductos.js"></script>
+    <script src="../../js/Admin/editarProductos.js"></script>
+    <script src="../../js/Admin/gestionAdmins.js"></script>
 </body>
 
 </html>
