@@ -50,8 +50,8 @@ try {
     $productos = [];
     while($row = $result->fetch_assoc()) {
         $row['imagen_url'] = !empty($row['imagen']) 
-            ? '/Mundo-Libreria/uploads/productos/' . $row['imagen'] 
-            : '/Mundo-Libreria/assets/placeholder-producto.jpg';
+            ? '/uploads/productos/' . $row['imagen'] 
+            : '/assets/placeholder-producto.jpg';
         $productos[] = $row;
     }
 

@@ -11,6 +11,17 @@ CREATE TABLE `categorias` (
 );
 
 --
+-- Estructura de la tabla `familias`
+--
+CREATE TABLE `familias` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `nombre` VARCHAR(100) NOT NULL,
+  `id_categoria` INT NOT NULL,
+  `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`id_categoria`) REFERENCES `categorias`(`id`) ON DELETE CASCADE
+);
+
+--
 -- Estructura de la tabla `usuario`
 --
 CREATE TABLE `usuario` (
@@ -43,6 +54,7 @@ CREATE TABLE `productos` (
     `nombre` VARCHAR(100) NOT NULL,
     `codigo_barras` VARCHAR(255) UNIQUE DEFAULT NULL,
     `id_categoria` INT NULL,
+    `id_familia` INT NULL DEFAULT NULL,
     `imagen` VARCHAR(255) DEFAULT NULL,
     `descripcion` TEXT,
     `marca` VARCHAR(255) NULL DEFAULT NULL,
@@ -51,7 +63,8 @@ CREATE TABLE `productos` (
     `stock` INT DEFAULT 0,
     `estado` ENUM('activo', 'inactivo') DEFAULT 'activo',
     `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (`id_categoria`) REFERENCES `categorias`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
+    FOREIGN KEY (`id_categoria`) REFERENCES `categorias`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (`id_familia`) REFERENCES `familias`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 --
@@ -101,4 +114,3 @@ INSERT INTO `categorias` (`nombre`) VALUES
 
 INSERT INTO `Administrador` (`id`, `nombre`, `tipo`, `password`) VALUES
 (NULL, 'ingrid', 'administrador', '$2y$10$UAW3EuwP8tN.eToRjgS0TeiWCX7c/IegE2xE0nkFM69YFPXoM3gg6');
-
