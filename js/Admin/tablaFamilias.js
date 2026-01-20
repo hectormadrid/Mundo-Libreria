@@ -141,7 +141,8 @@ class FamiliasManager {
 
 // Iniciar el manejador de familias cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-    const familiasManager = new FamiliasManager();
+    window.familiasManager = new FamiliasManager();
+
 });
 
 

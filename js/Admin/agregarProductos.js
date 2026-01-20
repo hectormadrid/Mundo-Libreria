@@ -7,29 +7,49 @@ document.addEventListener("DOMContentLoaded", function () {
   const fileInput = document.querySelector('input[name="imagen"]');
   const submitBtn = formProducto.querySelector('button[type="submit"]');
 
-  // --- NUEVO: Elementos para dropdowns dinámicos ---
+  // --- NUEVO: Elementos para dropdowns dinámicos y checkbox "sin familia" ---
   const categoriaSelect = formProducto.querySelector('select[name="id_categoria"]');
   const familiaSelect = formProducto.querySelector('select[name="id_familia"]');
+  const sinFamiliaCheckbox = document.getElementById("sinFamiliaCheckbox");
   // --- FIN NUEVO ---
 
-  if (!btnAgregar || !btnCancelar || !formProducto || !modal || !fileInput) {
+  // --- NUEVO: Elementos para código de barras y botón generar ---
+  const agregarCodigoBarrasInput = document.getElementById("agregarCodigoBarras");
+  const btnGenerarCodigoBarras = document.getElementById("btnGenerarCodigoBarras");
+  // --- FIN NUEVO ---
+
+  if (!btnAgregar || !btnCancelar || !formProducto || !modal || !fileInput || !sinFamiliaCheckbox || !agregarCodigoBarrasInput || !btnGenerarCodigoBarras) {
     console.error("Error: Elementos del formulario no encontrados");
     return;
   }
 
-  // --- NUEVO: Lógica para dropdowns dinámicos ---
-  categoriaSelect.addEventListener('change', async function() {
-    const categoriaId = this.value;
-    familiaSelect.innerHTML = '<option value="">Cargando...</option>'; // Placeholder
+  // --- NUEVO: Función para generar código de barras ---
+  const generateBarcode = () => {
+    // Generar 11 dígitos aleatorios
+    const randomDigits = Math.floor(10000000000 + Math.random() * 90000000000).toString();
+    const barcode = 'ML' + randomDigits;
+    agregarCodigoBarrasInput.value = barcode;
+  };
+  // --- FIN NUEVO ---
 
-    if (!categoriaId) {
+  // --- Lógica para dropdowns dinámicos y checkbox "sin familia" ---
+  const updateFamiliaState = async (categoryId) => {
+    if (sinFamiliaCheckbox.checked) {
+      familiaSelect.innerHTML = '<option value="">Producto sin familia</option>';
+      familiaSelect.disabled = true;
+      return;
+    }
+
+    familiaSelect.innerHTML = '<option value="">Cargando...</option>'; // Placeholder
+    familiaSelect.disabled = true;
+
+    if (!categoryId) {
         familiaSelect.innerHTML = '<option value="">Seleccione una categoría primero</option>';
-        familiaSelect.disabled = true;
         return;
     }
 
     try {
-        const response = await fetch(`obtener_familias_por_categoria.php?categoria_id=${categoriaId}`);
+        const response = await fetch(`obtener_familias_por_categoria.php?categoria_id=${categoryId}`);
         if (!response.ok) {
             throw new Error('Error al cargar las familias.');
         }
@@ -44,31 +64,38 @@ document.addEventListener("DOMContentLoaded", function () {
             familiaSelect.disabled = false;
         } else {
             familiaSelect.innerHTML = '<option value="">No hay familias en esta categoría</option>';
-            familiaSelect.disabled = true;
         }
     } catch (error) {
         console.error('Error:', error);
         familiaSelect.innerHTML = '<option value="">Error al cargar</option>';
-        familiaSelect.disabled = true;
     }
-  });
+  };
+
+  categoriaSelect.addEventListener('change', () => updateFamiliaState(categoriaSelect.value));
+  
+  sinFamiliaCheckbox.addEventListener('change', () => updateFamiliaState(categoriaSelect.value));
   // --- FIN NUEVO ---
 
   btnAgregar.addEventListener("click", () => {
       // Resetear el form y los selects al abrir
       formProducto.reset();
-      familiaSelect.innerHTML = '<option value="">Seleccione una categoría primero</option>';
-      familiaSelect.disabled = true;
+      sinFamiliaCheckbox.checked = false; // Asegurarse de que esté desmarcado por defecto
+      updateFamiliaState(categoriaSelect.value); // Actualizar estado de familia
+      generateBarcode(); // Generar código de barras al abrir el modal
       modal.classList.remove("hidden");
   });
 
   btnCancelar.addEventListener("click", () => {
     modal.classList.add("hidden");
     formProducto.reset();
-    // También resetear el select de familia al cancelar
-    familiaSelect.innerHTML = '<option value="">Seleccione una categoría primero</option>';
-    familiaSelect.disabled = true;
+    sinFamiliaCheckbox.checked = false; // Resetear el checkbox al cancelar
+    updateFamiliaState(categoriaSelect.value); // Resetear estado de familia
+    agregarCodigoBarrasInput.value = ''; // Limpiar el código de barras al cancelar
   });
+
+  // --- NUEVO: Event listener para el botón generar código de barras ---
+  btnGenerarCodigoBarras.addEventListener('click', generateBarcode);
+  // --- FIN NUEVO ---
 
   fileInput.addEventListener("change", function () {
     const file = this.files[0];
@@ -112,6 +139,19 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
     }
+    
+    // --- NUEVO: Validar si la categoría está seleccionada cuando no es "sin familia"
+    if (!sinFamiliaCheckbox.checked && !categoriaSelect.value) {
+        await Swal.fire({
+            icon: "warning",
+            title: "Campo requerido",
+            text: "Por favor selecciona una categoría para el producto.",
+            confirmButtonColor: "#d33",
+        });
+        categoriaSelect.focus();
+        return;
+    }
+    // --- FIN NUEVO ---
 
     const estado = document.querySelector('select[name="estado"]').value;
     if (!["Activo", "Inactivo"].includes(estado)) {
@@ -130,6 +170,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     try {
       const formData = new FormData(this);
+
+      // --- NUEVO: Si "sin familia" está marcado, asegúrate de que id_familia no se envíe o sea vacío ---
+      if (sinFamiliaCheckbox.checked) {
+          formData.set('id_familia', ''); // O .delete('id_familia') si prefieres
+      }
+      // --- FIN NUEVO ---
 
       const response = await fetch("agregar_productos.php", {
         method: "POST",
@@ -150,6 +196,9 @@ document.addEventListener("DOMContentLoaded", function () {
         $("#productosTable").DataTable().ajax.reload();
         modal.classList.add("hidden");
         formProducto.reset();
+        sinFamiliaCheckbox.checked = false; // Resetear al cerrar
+        updateFamiliaState(categoriaSelect.value); // Restablecer estado del dropdown
+        agregarCodigoBarrasInput.value = ''; // Limpiar el código de barras al cerrar
       } else {
         throw new Error(data.error || "Error desconocido");
       }

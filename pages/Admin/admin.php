@@ -312,7 +312,12 @@ unset($_SESSION['flash']);
                         </div>
                         <div>
                             <label class="block text-gray-700 mb-2">Código de Barras</label>
-                            <input type="text" name="codigo_barras" class="w-full px-3 py-2 border rounded" placeholder="Opcional: se generará uno si se deja vacío">
+                            <div class="flex">
+                                <input type="text" name="codigo_barras" id="agregarCodigoBarras" class="w-full px-3 py-2 border rounded-l" placeholder="Opcional: se generará uno si se deja vacío" readonly>
+                                <button type="button" id="btnGenerarCodigoBarras" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r inline-flex items-center">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="mb-4">
@@ -359,6 +364,10 @@ unset($_SESSION['flash']);
                             <select name="id_familia" class="w-full px-3 py-2 border rounded" disabled>
                                 <option value="">Seleccione una categoría primero</option>
                             </select>
+                        </div>
+                        <div class="flex items-center pt-7">
+                            <input type="checkbox" id="sinFamiliaCheckbox" name="sin_familia" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="sinFamiliaCheckbox" class="ml-2 block text-sm text-gray-900">Producto sin familia</label>
                         </div>
                         <div>
                             <label class="block text-gray-700 mb-2">Estado</label>
