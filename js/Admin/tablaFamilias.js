@@ -143,3 +143,5 @@ class FamiliasManager {
 document.addEventListener('DOMContentLoaded', () => {
     const familiasManager = new FamiliasManager();
 });
+
+

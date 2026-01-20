@@ -269,3 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ DataTable inicializado y refactorizado:", window.productosTable);
   }
 });
+
+
+
+

@@ -31,30 +31,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $action = $_POST['action'];
 
     if ($action === 'add_product') {
+        // --- Recolección de datos del formulario ---
         $nombre = clean($_POST['nombre'] ?? '');
+        $codigo_barras = clean($_POST['codigo_barras'] ?? null);
         $precio = isset($_POST['precio']) ? (float)$_POST['precio'] : 0.0;
+        $stock = isset($_POST['Stock']) ? (int)$_POST['Stock'] : 0; // 'Stock' con mayúscula en el form
         $descripcion = clean($_POST['descripcion'] ?? '');
-        $categoria = clean($_POST['categoria'] ?? '');
-        $Stock = isset($_POST['Stock']) ? (int)$_POST['Stock'] : 0;
-        $estado = clean($_POST['estado'] ?? 'Activo');
+        $marca = clean($_POST['marca'] ?? '');
+        $color = clean($_POST['color'] ?? '');
+        $id_categoria = isset($_POST['id_categoria']) ? (int)$_POST['id_categoria'] : null;
+        $id_familia = isset($_POST['id_familia']) && !empty($_POST['id_familia']) ? (int)$_POST['id_familia'] : null;
+        $estado = clean($_POST['estado'] ?? 'activo');
 
-        // Procesar imagen
+        // --- Procesamiento de la imagen ---
         $imagenNombre = null;
         if (!empty($_FILES['imagen']['name']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+            if ($_FILES['imagen']['size'] > 2 * 1024 * 1024) { // Límite de 2MB
+                set_flash('error', 'El archivo de imagen es demasiado grande. El límite es 2MB.');
+                header('Location: ' . $_SERVER['PHP_SELF']);
+                exit;
+            }
             $tmp = $_FILES['imagen']['tmp_name'];
-            $orig = basename($_FILES['imagen']['name']);
-            $ext = strtolower(pathinfo($orig, PATHINFO_EXTENSION));
+            $ext = strtolower(pathinfo(basename($_FILES['imagen']['name']), PATHINFO_EXTENSION));
             $allowed = ['jpg', 'jpeg', 'png', 'webp'];
             if (in_array($ext, $allowed)) {
-                $imagenNombre = time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-                move_uploaded_file($tmp, $upload_dir . $imagenNombre);
+                // Crear un nombre de archivo único y seguro
+                $imagenNombre = 'producto_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
+                if (!move_uploaded_file($tmp, $upload_dir . $imagenNombre)) {
+                    set_flash('error', 'Error al mover el archivo de imagen.');
+                    header('Location: ' . $_SERVER['PHP_SELF']);
+                    exit;
+                }
+            } else {
+                set_flash('error', 'Formato de imagen no permitido. Use JPG, JPEG, PNG o WEBP.');
+                header('Location: ' . $_SERVER['PHP_SELF']);
+                exit;
             }
         }
-
-        $sql = "INSERT INTO productos (nombre, imagen, precio, descripcion, categoria, Stock, estado, fecha_creacion) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+        
+        // --- Inserción en la base de datos ---
+        $sql = "INSERT INTO productos 
+                    (nombre, codigo_barras, id_categoria, id_familia, imagen, descripcion, marca, color, precio, stock, estado, fecha_creacion) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+        
         $stmt = $conexion->prepare($sql);
-        $t = "ssdssis"; // nombre(s), imagen(s), precio(d), descripcion(s), categoria(s), Stock(i), estado(s) -> total 7
-        $stmt->bind_param($t, $nombre, $imagenNombre, $precio, $descripcion, $categoria, $Stock, $estado);
+        
+        // s: string, i: integer, d: double
+        $types = "ssiisssd-iss";
+        $bind_types = "ssiisssdids";
+
+        $stmt->bind_param(
+            $bind_types,
+            $nombre,
+            $codigo_barras,
+            $id_categoria,
+            $id_familia,
+            $imagenNombre,
+            $descripcion,
+            $marca,
+            $color,
+            $precio,
+            $stock,
+            $estado
+        );
+
         if ($stmt->execute()) {
             set_flash('success', 'Producto agregado correctamente');
         } else {
@@ -471,3 +511,5 @@ unset($_SESSION['flash']);
 </body>
 
 </html>
+
+

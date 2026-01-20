@@ -21,7 +21,7 @@ CREATE TABLE `familias` (
             FOREIGN KEY (`id_categoria`) REFERENCES `categorias`(`id`) ON DELETE CASCADE
             );
             
-)
+
 --
 -- Estructura de la tabla `usuario`
 --

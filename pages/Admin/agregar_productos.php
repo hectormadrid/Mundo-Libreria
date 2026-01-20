@@ -126,7 +126,7 @@ try {
     $Stock = (int)$_POST['Stock'];
 
     $stmt->bind_param(
-        "ssiidsisssi",
+        "ssiidsssssi",
         $nombre,
         $codigo_barras,
         $id_categoria,

@@ -32,9 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['nombre'] = $usuario['nombre'];
                 $_SESSION['ID'] = $usuario['id'];
                  $_SESSION['tipo'] = 'administrador'; 
-                 $_SESSION['password'] = $usuario['password'];
-            
-
+                 
                 header("Location: Admin/admin.php");
                 exit();
             } else {

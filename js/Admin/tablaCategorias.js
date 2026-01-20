@@ -118,3 +118,5 @@ class CategoriasManager {
 }
 
 const categoriasManager = new CategoriasManager();
+
+

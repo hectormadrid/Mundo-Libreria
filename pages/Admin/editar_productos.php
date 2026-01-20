@@ -48,9 +48,47 @@ if (!in_array($estado, ['activo', 'inactivo'])) {
 
 // --- Lógica de la base de datos ---
 try {
-    // Manejo de imagen (simplificado para el ejemplo, puedes expandirlo)
-    // Por ahora, esta query no actualiza la imagen para enfocarnos en el bug principal.
+    $uploadDir = __DIR__ . '/../../uploads/productos/';
+    $imagenNombre = null;
+    $imagenCambiada = false;
+
+    // 1. OBTENER IMAGEN ACTUAL ANTES DE CUALQUIER CAMBIO
+    $stmt_get = $conexion->prepare("SELECT imagen FROM productos WHERE id = ?");
+    $stmt_get->bind_param('i', $id);
+    $stmt_get->execute();
+    $res_get = $stmt_get->get_result();
+    $producto_actual = $res_get->fetch_assoc();
+    $imagenAntigua = $producto_actual['imagen'] ?? null;
+    $stmt_get->close();
     
+    $imagenNombre = $imagenAntigua; // Por defecto, mantenemos la imagen antigua
+
+    // 2. VERIFICAR SI SE SUBIÓ UNA NUEVA IMAGEN
+    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+        $imagenCambiada = true;
+        // Validar y mover la nueva imagen
+        $tmp_name = $_FILES['imagen']['tmp_name'];
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $tmp_name);
+        $allowedTypes = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+
+        if (!array_key_exists($mimeType, $allowedTypes)) {
+            throw new Exception("Tipo de archivo no permitido.");
+        }
+        if ($_FILES['imagen']['size'] > 2 * 1024 * 1024) { // 2MB
+            throw new Exception("La imagen excede el límite de 2MB.");
+        }
+
+        $extension = $allowedTypes[$mimeType];
+        $nuevoNombre = 'producto_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $extension;
+        
+        if (!move_uploaded_file($tmp_name, $uploadDir . $nuevoNombre)) {
+            throw new Exception("Error al guardar la nueva imagen.");
+        }
+        $imagenNombre = $nuevoNombre; // Usamos el nuevo nombre para la DB
+    }
+
+    // 3. CONSTRUIR Y EJECUTAR LA ACTUALIZACIÓN
     $sql = "UPDATE productos SET 
                 nombre = ?,
                 descripcion = ?,
@@ -61,17 +99,16 @@ try {
                 codigo_barras = ?,
                 marca = ?,
                 color = ?,
-                estado = ?
+                estado = ?,
+                imagen = ? 
             WHERE id = ?";
 
     $stmt = $conexion->prepare($sql);
     
-    // Asignar null si la familia no se seleccionó
     $id_familia_final = $id_familia ?: null;
 
-    // "ssdiisssssi" -> string, string, double, integer, integer, integer, string, string, string, string, integer
     $stmt->bind_param(
-        "ssdiisssssi",
+        "ssdiissssssi", // s para la imagen al final
         $nombre,
         $descripcion,
         $precio,
@@ -82,17 +119,26 @@ try {
         $marca,
         $color,
         $estado,
+        $imagenNombre, // La variable que contiene el nombre de la imagen (nueva o antigua)
         $id
     );
 
     if (!$stmt->execute()) {
+        // Si la actualización falla, y subimos una nueva imagen, la borramos
+        if ($imagenCambiada && file_exists($uploadDir . $imagenNombre)) {
+            @unlink($uploadDir . $imagenNombre);
+        }
         throw new Exception("Error al ejecutar la actualización: " . $stmt->error);
+    }
+
+    // 4. SI TODO FUE BIEN Y LA IMAGEN CAMBIÓ, BORRAR LA ANTIGUA
+    if ($imagenCambiada && $imagenAntigua && file_exists($uploadDir . $imagenAntigua)) {
+        @unlink($uploadDir . $imagenAntigua);
     }
 
     echo json_encode([
         'success' => true,
         'message' => 'Producto actualizado correctamente.',
-        'data_received' => $_POST // Devolver lo que se recibió para depurar
     ]);
 
 } catch (Exception $e) {

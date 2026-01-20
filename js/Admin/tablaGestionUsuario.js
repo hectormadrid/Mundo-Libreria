@@ -231,3 +231,4 @@ function cerrarModal(modalId) {
 function abrirModal(modalId) {
     $(`#${modalId}`).removeClass('hidden');
 }
+

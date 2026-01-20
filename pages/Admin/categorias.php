@@ -77,3 +77,5 @@ if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
 </body>
 
 </html>
+
+
