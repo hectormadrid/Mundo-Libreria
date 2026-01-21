@@ -9,7 +9,7 @@ class ProductosDataTable {
   init() {
     this.dataTable = this.table.DataTable({
       ajax: {
-        url: "obtener_productos.php?_t=" + new Date().getTime(), // Cache-busting
+        url: "/pages/Admin/obtener_productos.php?_t=" + new Date().getTime(), // Cache-busting
         type: "GET",
         dataSrc: (json) => {
           this.productDataMap.clear(); // Limpiar el mapa antes de llenarlo
@@ -67,7 +67,7 @@ class ProductosDataTable {
         data: "imagen",
         render: (data) => {
           if (!data) return '<span class="text-gray-400">Sin imagen</span>';
-          const path = `/Mundo-Libreria/uploads/productos/${data}`;
+          const path = `/uploads/productos/${data}`;
           return `
             <img src="${path}" 
                 alt="Imagen producto" 
@@ -178,7 +178,7 @@ class ProductosDataTable {
 
   static async toggleEstado(productId, nuevoEstado) {
     try {
-      const response = await fetch("actualizar_estado_producto.php", {
+      const response = await fetch("/pages/Admin/actualizar_estado_producto.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: productId, estado: nuevoEstado ? "activo" : "inactivo" }),
@@ -218,7 +218,7 @@ class ProductosDataTable {
 
   static async updateDashboardMetrics() {
     try {
-      const response = await fetch("obtener_metricas.php");
+      const response = await fetch("/pages/Admin/obtener_metricas.php");
       if (!response.ok) throw new Error('No se pudo obtener las métricas.');
       const result = await response.json();
 
@@ -269,6 +269,11 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ DataTable inicializado y refactorizado:", window.productosTable);
   }
 });
+
+
+
+
+
 
 
 

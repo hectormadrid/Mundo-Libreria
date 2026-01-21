@@ -4,7 +4,7 @@ require_once __DIR__ . '/../../db/Conexion.php';
 
 // Verificar que sea administrador
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
-    header('Location: ../login_admin.php');
+    header('Location: /pages/login_admin.php');
     exit;
 }
 
@@ -217,7 +217,7 @@ unset($_SESSION['flash']);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="../../style/admin.css">
+    <link rel="stylesheet" href="/style/admin.css">
 </head>
 
 <body class="bg-gray-100">
@@ -454,6 +454,10 @@ unset($_SESSION['flash']);
                             <option value="">-- Sin Familia --</option>
                         </select>
                     </div>
+                    <div class="flex items-center pt-5">
+                            <input type="checkbox" id="editarSinFamiliaCheckbox" name="sin_familia" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="editarSinFamiliaCheckbox" class="ml-2 block text-sm text-gray-900">Producto sin familia</label>
+                        </div>
                     <div>
                         <label for="editarEstado" class="block text-sm font-medium">Estado</label>
                         <select id="editarEstado" name="estado" class="w-full border rounded px-3 py-2" required>
@@ -520,5 +524,8 @@ unset($_SESSION['flash']);
 </body>
 
 </html>
+
+
+
 
 

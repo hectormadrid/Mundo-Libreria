@@ -33,7 +33,15 @@ $descripcion = trim($_POST['descripcion'] ?? ''); // ¡Capturando la descripció
 $precio = filter_input(INPUT_POST, 'precio', FILTER_VALIDATE_FLOAT);
 $stock = filter_input(INPUT_POST, 'stock', FILTER_VALIDATE_INT);
 $id_categoria = filter_input(INPUT_POST, 'id_categoria', FILTER_VALIDATE_INT);
-$id_familia = filter_input(INPUT_POST, 'id_familia', FILTER_VALIDATE_INT);
+
+// --- Corrección para 'id_familia' ---
+// Si 'id_familia' se envía vacío (cuando 'sin familia' está marcado), debe ser NULL
+$id_familia = null;
+if (isset($_POST['id_familia']) && !empty($_POST['id_familia'])) {
+    $id_familia = (int)$_POST['id_familia'];
+}
+// --- Fin de la corrección ---
+
 $codigo_barras = trim($_POST['codigo_barras'] ?? '');
 $marca = trim($_POST['marca'] ?? '');
 $color = trim($_POST['color'] ?? '');
@@ -105,8 +113,6 @@ try {
 
     $stmt = $conexion->prepare($sql);
     
-    $id_familia_final = $id_familia ?: null;
-
     $stmt->bind_param(
         "ssdiissssssi", // s para la imagen al final
         $nombre,
@@ -114,7 +120,7 @@ try {
         $precio,
         $stock,
         $id_categoria,
-        $id_familia_final,
+        $id_familia, // Usar la variable corregida
         $codigo_barras,
         $marca,
         $color,

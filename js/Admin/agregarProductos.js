@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       // --- FIN NUEVO ---
 
-      const response = await fetch("agregar_productos.php", {
+      const response = await fetch("/pages/Admin/agregar_productos.php", {
         method: "POST",
         body: formData,
       });
@@ -216,3 +216,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+

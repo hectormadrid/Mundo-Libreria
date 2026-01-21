@@ -6,10 +6,10 @@ class ProductEditModal {
     static imagenActualContainer = null;
     static imagenActual = null;
     static submitBtn = null;
-    // --- NUEVO ---
+    static checkboxSinFamilia = null; // Corrected variable name
     static categoriaSelect = null;
     static familiaSelect = null;
-    // --- FIN NUEVO ---
+    
 
     static init() {
         this.modal = document.getElementById("modalEditar");
@@ -19,25 +19,28 @@ class ProductEditModal {
         this.imagenActualContainer = document.getElementById("imagenActualContainer");
         this.imagenActual = document.getElementById("imagenActual");
         this.submitBtn = this.form?.querySelector('button[type="submit"]');
-        // --- NUEVO ---
         this.categoriaSelect = document.getElementById("editarCategoria");
         this.familiaSelect = document.getElementById("editarFamilia");
-        // --- FIN NUEVO ---
+        // Corrected ID to match the one in admin.php
+        this.checkboxSinFamilia = document.getElementById("editarSinFamiliaCheckbox"); 
+       
 
-        if (!this.modal || !this.form) {
-            console.error("Error: Elementos esenciales del modal no encontrados");
+        if (!this.modal || !this.form || !this.checkboxSinFamilia) {
+            console.error("Error: Elementos esenciales del modal de edición no encontrados");
             return;
         }
 
         this.btnCancelar?.addEventListener('click', () => this.close());
-
-        // --- NUEVO ---
+        
+        // Moved listeners to init to avoid re-binding
         this.categoriaSelect?.addEventListener('change', () => {
-            // Al cambiar la categoría, actualizamos las familias, pero sin una familia preseleccionada.
-            this.updateFamiliaDropdown(this.categoriaSelect.value);
+            this.updateFamiliaState(this.categoriaSelect.value);
         });
-        // --- FIN NUEVO ---
 
+        this.checkboxSinFamilia.addEventListener('change', () => {
+            this.updateFamiliaState(this.categoriaSelect.value);
+        });
+        
         this.imagenInput?.addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
@@ -74,14 +77,12 @@ class ProductEditModal {
         try {
             if (!this.modal) throw new Error("Modal no inicializado.");
 
-            // Obtener datos del producto desde el Map global
             const product = window.productosTable?.productDataMap?.get(productId);
-            console.log('Datos de producto al abrir modal:', product); // <-- DEBUG
             if (!product) {
-                throw new Error("Datos del producto no encontrados. El mapa de datos puede no estar sincronizado.");
+                throw new Error("Datos del producto no encontrados.");
             }
 
-            // Llenar formulario
+            // Fill form
             document.getElementById("editarId").value = product.id;
             document.getElementById("editarNombre").value = product.nombre;
             document.getElementById("editarMarca").value = product.marca || "";
@@ -91,15 +92,17 @@ class ProductEditModal {
             document.getElementById("editarStock").value = product.stock || product.Stock || 0;
             document.getElementById("editarDescripcion").value = product.descripcion || "";
             this.categoriaSelect.value = product.id_categoria || "";
-            const currentStatus = product.estado || "activo"; // Default to 'activo'
+            const currentStatus = product.estado || "activo";
             document.getElementById("editarEstado").value = currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1);
+            
+            // Set checkbox state FIRST
+            this.checkboxSinFamilia.checked = !product.id_familia;
 
-            // Cargar familias dinámicamente y preseleccionar la correcta
-            this.updateFamiliaDropdown(product.id_categoria, product.id_familia);
+            // Update family dropdown state based on checkbox and category
+            this.updateFamiliaState(product.id_categoria, product.id_familia);
 
-            // Manejar imagen
             if (product.imagen) {
-                this.imagenActual.src = `/Mundo-Libreria/uploads/productos/${product.imagen}`;
+                this.imagenActual.src = `/uploads/productos/${product.imagen}`;
                 this.imagenActualContainer.classList.remove("hidden");
             } else {
                 this.imagenActualContainer.classList.add("hidden");
@@ -117,17 +120,21 @@ class ProductEditModal {
             });
         }
     }
-
+    
     static close() {
         this.modal.classList.add("hidden");
         this.form.reset();
-        // --- NUEVO ---
-        this.familiaSelect.innerHTML = '<option value="">-- Sin Familia --</option>'; // Limpiar al cerrar
-        // --- FIN NUEVO ---
+        this.familiaSelect.innerHTML = '<option value="">-- Sin Familia --</option>';
     }
     
-    // --- NUEVO MÉTODO ---
-    static async updateFamiliaDropdown(categoryId, selectedFamilyId = null) {
+    // Unified function to manage family dropdown state
+    static async updateFamiliaState(categoryId, selectedFamilyId = null) {
+        if (this.checkboxSinFamilia.checked) {
+            this.familiaSelect.innerHTML = '<option value="">Producto sin familia</option>';
+            this.familiaSelect.disabled = true;
+            return;
+        }
+
         this.familiaSelect.innerHTML = '<option value="">Cargando...</option>';
         this.familiaSelect.disabled = true;
 
@@ -161,74 +168,27 @@ class ProductEditModal {
             this.familiaSelect.innerHTML = '<option value="">Error al cargar</option>';
         }
     }
-    // --- FIN NUEVO MÉTODO ---
 
     static async submitForm() {
         this.submitBtn.disabled = true;
         this.submitBtn.innerHTML = 'Guardando... <i class="bx bx-loader-alt animate-spin"></i>';
 
         try {
-            // Validar campos requeridos
-            const requiredFields = [
-                { id: "editarNombre", name: "Nombre" },
-                { id: "editarPrecio", name: "Precio" },
-                { id: "editarStock", name: "Stock" },
-                { id: "editarCategoria", name: "Categoría" }
-            ];
-
-            for (const field of requiredFields) {
-                const element = document.getElementById(field.id);
-                if (!element.value.trim()) {
-                    await Swal.fire({
-                        icon: 'warning',
-                        title: 'Campo requerido',
-                        text: `Por favor complete el campo ${field.name}`,
-                        confirmButtonColor: '#d33'
-                    });
-                    element.focus();
-                    return;
-                }
-            }
-
-            // Validar tipos de datos
-            const precio = parseFloat(document.getElementById("editarPrecio").value);
-            const stock = parseInt(document.getElementById("editarStock").value);
-
-            if (isNaN(precio) || precio <= 0) {
-                await Swal.fire({
-                    icon: 'warning',
-                    title: 'Precio inválido',
-                    text: 'El precio debe ser un número positivo',
-                    confirmButtonColor: '#d33'
-                });
-                document.getElementById("editarPrecio").focus();
-                return;
-            }
-
-            if (isNaN(stock) || stock < 0) {
-                await Swal.fire({
-                    icon: 'warning',
-                    title: 'Stock inválido',
-                    text: 'El stock debe ser un número entero no negativo',
-                    confirmButtonColor: '#d33'
-                });
-                document.getElementById("editarStock").focus();
-                return;
-            }
-
-            // Preparar datos del formulario
             const formData = new FormData(this.form);
 
-            // Enviar datos al servidor
-            const response = await fetch("editar_productos.php", {
+            // If "sin familia" is checked, ensure id_familia is not sent or is empty
+            if (this.checkboxSinFamilia.checked) {
+                formData.set('id_familia', '');
+            }
+
+            const response = await fetch("/pages/Admin/editar_productos.php", {
                 method: "POST",
                 body: formData
             });
 
-            // Procesar respuesta
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || "Error en el servidor");
+                const errorData = await response.json().catch(() => ({ error: 'Error desconocido en el servidor' }));
+                throw new Error(errorData.error);
             }
 
             const data = await response.json();
@@ -237,7 +197,6 @@ class ProductEditModal {
                 throw new Error(data.error || "Error al actualizar el producto");
             }
 
-            // Mostrar éxito y recargar datos
             await Swal.fire({
                 icon: 'success',
                 title: 'Éxito',
@@ -245,9 +204,7 @@ class ProductEditModal {
                 confirmButtonColor: '#3085d6'
             });
 
-            // Cerrar modal y recargar tabla
             this.close();
-            // Recargar la tabla de productos usando el método expuesto globalmente
             window.reloadProductTable();
 
         } catch (error) {
@@ -255,7 +212,7 @@ class ProductEditModal {
             await Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                html: `<small>${error.message}</small>`,
+                text: error.message,
                 confirmButtonColor: '#d33'
             });
         } finally {
@@ -265,8 +222,9 @@ class ProductEditModal {
     }
 }
 
-// Inicializar cuando el DOM esté listo
 document.addEventListener("DOMContentLoaded", () => {
     ProductEditModal.init();
     window.ProductEditModal = ProductEditModal;
 });
+
+

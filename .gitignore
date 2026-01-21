@@ -3,3 +3,5 @@ db_config.php
 
 # Dependencias de Node.js
 node_modules/
+
+uploads/productos

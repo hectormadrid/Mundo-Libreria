@@ -72,7 +72,7 @@ const attachEventListeners = () => {
             button.disabled = true;
 
             try {
-                const response = await fetch('agregar_al_carrito.php', {
+                const response = await fetch('/pages/agregar_al_carrito.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -97,7 +97,7 @@ const attachEventListeners = () => {
                     if (response.status === 401) {
                         showNotification('🔐 Inicia sesión para continuar', 'warning');
                         setTimeout(() => {
-                            window.location.href = 'login.php';
+                            window.location.href = '/pages/login.php';
                         }, 2000);
                     }
                 }
@@ -135,7 +135,7 @@ function showNotification(message, type = "info") {
 // Función para obtener el conteo inicial al cargar la página
 const loadCartCount = async () => {
   try {
-    const response = await fetch("contador_carrito.php");
+    const response = await fetch("/pages/contador_carrito.php");
     const result = await response.json();
 
     if (result.success) {
@@ -270,6 +270,11 @@ const loadProducts = async (categoria = "", familiaId = "") => {
         `;
   }
 };
+
+
+
+
+
 
 
 
