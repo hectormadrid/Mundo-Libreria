@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $insert->bind_param("sssss",$rut, $nombre, $correo,$telefono, $hashed_password);
             if ($insert->execute()) {
                 $success = "Registro exitoso. Puedes iniciar sesión.";
-                header("Refresh: 2; URL=/pages/login.php");
+                header("Refresh: 2; URL=login.php");
             } else {
                 $error = "Error al registrar usuario.";
             }
@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Registrarse - Mundo Librería</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/style/registrar.css">
+    <link rel="stylesheet" href="../style/registrar.css">
     <script>
         tailwind.config = {
             theme: {
@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             <!-- Formulario -->
             <div class="p-8">
-                <form action="/pages/registrar.php" method="post" class="space-y-6">
+                <form action="registrar.php" method="post" class="space-y-6">
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
                     <!-- Grid de campos -->
@@ -249,7 +249,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 <!-- Login -->
                 <div class="text-center">
-                    <a href="/pages/login.php" class="inline-flex items-center justify-center w-full py-3 px-6 neon-border rounded-2xl font-bold text-gray-700 hover:bg-gray-50 transition-all duration-300">
+                    <a href="login.php" class="inline-flex items-center justify-center w-full py-3 px-6 neon-border rounded-2xl font-bold text-gray-700 hover:bg-gray-50 transition-all duration-300">
                         <i class="fas fa-sign-in-alt mr-2 text-lib-red"></i>
                         Iniciar Sesión
                     </a>
@@ -263,11 +263,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
            
         </div>
     </div>
-<script src="/js/registrar.js"></script>
+<script src="../js/registrar.js"></script>
 
 </body>
 
 </html>
+
+
+
+
+
 
 
 

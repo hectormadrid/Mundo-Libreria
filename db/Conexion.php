@@ -27,3 +27,4 @@ if ($conexion->connect_error) {
 // Establecer el juego de caracteres a UTF-8
 $conexion->set_charset("utf8");
 ?>
+

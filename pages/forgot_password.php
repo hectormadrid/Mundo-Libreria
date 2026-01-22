@@ -14,7 +14,7 @@ if (empty($_SESSION['csrf_token'])) {
     <title>Recuperar Contraseña - Mundo Librería</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/style/login.css">
+    <link rel="stylesheet" href="../style/login.css">
 </head>
 
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
@@ -52,18 +52,21 @@ if (empty($_SESSION['csrf_token'])) {
         </form>
 
         <div class="text-center mt-4">
-            <a href="/pages/login.php" class="text-sm text-blue-600 hover:underline">
+            <a href="login.php" class="text-sm text-blue-600 hover:underline">
                 <i class="fas fa-arrow-left mr-1"></i>
                 Volver al inicio de sesión
             </a>
         </div>
     </div>
 
-    <script src="/js/User/forgot_password.js"></script>
+    <script src="../js/User/forgot_password.js"></script>
 
 </body>
 
 </html>
+
+
+
 
 
 

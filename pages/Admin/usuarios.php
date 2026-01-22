@@ -6,7 +6,7 @@ session_start();
 require_once __DIR__ . '/../../db/Conexion.php';
 // Verificar que sea administrador
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
-    header('Location: /pages/login_admin.php');
+    header('Location: ../pages/login_admin.php');
     exit;
 }
 $stmt = $conexion->prepare("SELECT nombre FROM Administrador WHERE id = ?");
@@ -29,7 +29,7 @@ if ($row = $result->fetch_assoc()) {
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/style/admin.css">
+    <link rel="stylesheet" href="../../style/admin.css">
 </head>
 
 <body class="bg-gray-100">
@@ -87,6 +87,9 @@ if ($row = $result->fetch_assoc()) {
 </body>
 
 </html>
+
+
+
 
 
 

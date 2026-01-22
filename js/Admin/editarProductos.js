@@ -102,7 +102,7 @@ class ProductEditModal {
             this.updateFamiliaState(product.id_categoria, product.id_familia);
 
             if (product.imagen) {
-                this.imagenActual.src = `/uploads/productos/${product.imagen}`;
+                this.imagenActual.src = `/Mundo-Libreria/uploads/productos/${product.imagen}`;
                 this.imagenActualContainer.classList.remove("hidden");
             } else {
                 this.imagenActualContainer.classList.add("hidden");
@@ -181,7 +181,7 @@ class ProductEditModal {
                 formData.set('id_familia', '');
             }
 
-            const response = await fetch("/pages/Admin/editar_productos.php", {
+            const response = await fetch("editar_productos.php", {
                 method: "POST",
                 body: formData
             });
@@ -226,5 +226,8 @@ document.addEventListener("DOMContentLoaded", () => {
     ProductEditModal.init();
     window.ProductEditModal = ProductEditModal;
 });
+
+
+
 
 

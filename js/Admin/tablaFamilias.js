@@ -15,7 +15,7 @@ class FamiliasManager {
     initDataTable() {
         this.dataTable = $('#familiasTable').DataTable({
             ajax: {
-                url: '/pages/Admin/obtener_familias.php', // Endpoint para obtener familias
+                url: 'obtener_familias.php', // Endpoint para obtener familias
                 dataSrc: 'data'
             },
             columns: [
@@ -78,7 +78,7 @@ class FamiliasManager {
     async handleSubmit(e) {
         e.preventDefault();
         const id = this.idInput.value;
-        const url = id ? '/pages/Admin/editar_familia.php' : '/pages/Admin/agregar_familia.php';
+        const url = id ? 'editar_familia.php' : 'agregar_familia.php';
         const formData = new FormData(this.form);
 
         // Simple validation
@@ -119,7 +119,7 @@ class FamiliasManager {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const response = await fetch('/pages/Admin/eliminar_familia.php', {
+                    const response = await fetch('eliminar_familia.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ id: id })
@@ -144,6 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.familiasManager = new FamiliasManager();
 
 });
+
+
+
 
 
 

@@ -2,7 +2,7 @@
 session_start();
 // Verificar que sea administrador
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
-    header('Location: /pages/login_admin.php');
+    header('Location: ../login_admin.php');
     exit;
 }
 require_once __DIR__ . '/../../db/Conexion.php';
@@ -24,7 +24,7 @@ while ($row = $res->fetch_assoc()) {
     <title>Generador de Códigos - Mundo Librería</title>
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/style/admin.css">
+    <link rel="stylesheet" href="../../style/admin.css">
     <style>
         #barcode-container {
             padding: 2rem;
@@ -104,6 +104,9 @@ while ($row = $res->fetch_assoc()) {
 
 </body>
 </html>
+
+
+
 
 
 

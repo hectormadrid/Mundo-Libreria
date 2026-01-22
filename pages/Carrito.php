@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/assets/MUNDO-WEB.ico">
+    <link rel="icon" href="../assets/MUNDO-WEB.ico">
     <title>Carrito de Compras - Mundo Librería</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/style/carrito.css">
+    <link rel="stylesheet" href="../style/carrito.css">
     <script>
         tailwind.config = {
             theme: {
@@ -41,7 +41,7 @@
                     Inicio
                 </a>
 
-                <a href="/db/Cerrar_sesion.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
+                <a href="../db/Cerrar_sesion.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
                     <i class="fas fa-sign-out-alt mr-2"></i>
                     Salir
                 </a>
@@ -98,7 +98,7 @@
 
                             <div class="flex items-center bg-white rounded-2xl p-6 shadow-lg card-hover border border-gray-100" id="item-<?= $pid ?>" data-qty="<?= $cantidad ?>">
                                 <div class="relative">
-                                    <img src="/uploads/productos/<?= $imagen ?>"
+                                    <img src="../uploads/productos/<?= $imagen ?>"
                                         alt="<?= $nombre ?>"
                                         class="product-image w-24 h-24 object-cover rounded-xl border-2 border-gray-200">
                                 </div>
@@ -160,7 +160,7 @@
                             </div>
                         </div>
 
-                        <a href="/pages/checkout.php" class="block">
+                        <a href="checkout.php" class="block">
                             <button class="btn-success text-white w-full py-4 rounded-2xl font-bold text-lg"><i class="fas fa-credit-card mr-2"></i> Proceder al Pago</button>
                         </a>
                     </div>
@@ -169,9 +169,16 @@
         </div>
     </div>
 </main>
-<script src="/js/eliminarProductoCarrito.js"></script>
+<script src="../js/eliminarProductoCarrito.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
 
 
 
