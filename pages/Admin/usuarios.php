@@ -50,6 +50,8 @@ if ($row = $result->fetch_assoc()) {
                         <th class="p-3">RUT</th>
                         <th class="p-3">Nombre</th>
                         <th class="p-3">Correo</th>
+                        <th class="p-3">Teléfono</th>
+                        <th class="p-3">Dirección</th>
                         <th class="p-3">Acciones</th>
                     </tr>
                 </thead>
@@ -76,6 +78,46 @@ if ($row = $result->fetch_assoc()) {
                     Eliminar
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Usuario -->
+    <div id="modalEditarUsuario" class="fixed inset-0 hidden bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+            <h3 class="text-xl font-bold mb-6">Editar Usuario</h3>
+            <form id="formEditarUsuario">
+                <input type="hidden" id="editUsuarioId" name="id">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="editRut" class="block text-sm font-medium text-gray-700">RUT</label>
+                        <input type="text" id="editRut" name="rut" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="editNombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+                        <input type="text" id="editNombre" name="nombre" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="editCorreo" class="block text-sm font-medium text-gray-700">Correo</label>
+                        <input type="email" id="editCorreo" name="correo" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="editTelefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                        <input type="text" id="editTelefono" name="telefono" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="editDireccion" class="block text-sm font-medium text-gray-700">Dirección</label>
+                        <input type="text" id="editDireccion" name="direccion" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" onclick="cerrarModal('modalEditarUsuario')" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 

@@ -12,7 +12,7 @@ if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
     exit;
 }
 try {
-    $query = "SELECT id, rut, nombre, correo FROM usuario ORDER BY id DESC";
+    $query = "SELECT id, rut, nombre, correo,telefono,direccion FROM usuario ORDER BY id DESC";
     $stmt = $conexion->prepare($query);
     $stmt->execute();
     $result = $stmt->get_result();

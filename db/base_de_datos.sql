@@ -1,6 +1,8 @@
 CREATE DATABASE IF NOT EXISTS Mundo_Libreria;
 USE Mundo_Libreria;
 
+select * from productos;
+select * from usuarios;
 --
 -- Estructura de la tabla `categorias`
 --
