@@ -150,46 +150,81 @@ const loadCartCount = async () => {
 let activeCategory = "";
 let activeFamily = "";
 
+// Función Debounce
+const debounce = (func, delay) => {
+    let timeoutId;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
+};
+
 // Al cargar la página
 document.addEventListener("DOMContentLoaded", () => {
-  loadProducts(); // Carga inicial de productos
-  loadCartCount(); // Carga inicial del contador del carrito
+    loadProducts(); // Carga inicial de productos
+    loadCartCount(); // Carga inicial del contador del carrito
 
-  // Manejador para los links de categoría
-  document.querySelectorAll(".category-link").forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const categoryName = link.getAttribute("data-category");
-      
-      // Actualizar estado
-      activeCategory = categoryName === "all" ? "" : categoryName;
-      activeFamily = ""; // Resetear familia al cambiar de categoría
+    const searchInput = document.getElementById('search-input');
+    
+    const performSearch = () => {
+        const searchTerm = searchInput.value;
+        // Al buscar, limpiamos los filtros de categoría y familia para buscar en todo el catálogo
+        activeCategory = "";
+        activeFamily = "";
+        document.querySelectorAll('.category-link, .family-link').forEach(l => l.classList.remove('active-filter'));
+        // Ocultar filtros de familia si estaban visibles
+        document.getElementById('familia-filters-container').classList.add('hidden');
 
-      // Resaltar categoría activa
-      document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active-filter'));
-      link.classList.add('active-filter');
+        loadProducts("", "", searchTerm);
+    };
 
-      // Cargar productos y luego actualizar filtros de familia
-      loadProducts(activeCategory, activeFamily);
-      updateFamilyFilters(activeCategory);
+    // Búsqueda en tiempo real con debounce
+    const debouncedSearch = debounce(performSearch, 400);
+    searchInput.addEventListener('input', debouncedSearch);
+
+    // Manejador para los links de categoría
+    document.querySelectorAll(".category-link").forEach((link) => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const categoryName = link.getAttribute("data-category");
+            
+            // Limpiar búsqueda
+            searchInput.value = "";
+            
+            // Actualizar estado
+            activeCategory = categoryName === "all" ? "" : categoryName;
+            activeFamily = ""; // Resetear familia al cambiar de categoría
+
+            // Resaltar categoría activa
+            document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active-filter'));
+            link.classList.add('active-filter');
+
+            // Cargar productos y luego actualizar filtros de familia
+            loadProducts(activeCategory, activeFamily);
+            updateFamilyFilters(activeCategory);
+        });
     });
-  });
 
-  // Manejador para los links de familia (usando delegación de eventos)
-  document.getElementById('familia-filters-container').addEventListener('click', function(e) {
-    if (e.target.classList.contains('family-link')) {
-        e.preventDefault();
-        const familyId = e.target.getAttribute('data-family');
+    // Manejador para los links de familia (usando delegación de eventos)
+    document.getElementById('familia-filters-container').addEventListener('click', function(e) {
+        if (e.target.classList.contains('family-link')) {
+            e.preventDefault();
+            const familyId = e.target.getAttribute('data-family');
+            
+            // Limpiar búsqueda
+            searchInput.value = "";
 
-        activeFamily = familyId === 'all' ? '' : familyId;
+            activeFamily = familyId === 'all' ? '' : familyId;
 
-        // Resaltar familia activa
-        document.querySelectorAll('.family-link').forEach(l => l.classList.remove('active-filter'));
-        e.target.classList.add('active-filter');
+            // Resaltar familia activa
+            document.querySelectorAll('.family-link').forEach(l => l.classList.remove('active-filter'));
+            e.target.classList.add('active-filter');
 
-        loadProducts(activeCategory, activeFamily);
-    }
-  });
+            loadProducts(activeCategory, activeFamily);
+        }
+    });
 });
 
 // NUEVA: Función para actualizar los filtros de familia
@@ -233,17 +268,18 @@ const updateFamilyFilters = async (categoryName) => {
 };
 
 // Función principal para cargar productos (MODIFICADA)
-const loadProducts = async (categoria = "", familiaId = "") => {
-  console.log(`Cargando productos de categoría: '${categoria}' y familia: '${familiaId}'`);
+const loadProducts = async (categoria = "", familiaId = "", searchTerm = "") => {
+  console.log(`Cargando: Categoria='${categoria}', Familia='${familiaId}', Busqueda='${searchTerm}'`);
   const container = document.getElementById("productos-container");
   container.innerHTML = `<div class="col-span-full text-center py-10"><p class="text-500">Cargando productos...</p></div>`;
 
-
   try {
-    let url = `obtener_prductos_user.php?categoria=${encodeURIComponent(categoria)}`;
-    if (familiaId) {
-        url += `&familia_id=${encodeURIComponent(familiaId)}`;
-    }
+    const params = new URLSearchParams();
+    if (categoria) params.append('categoria', categoria);
+    if (familiaId) params.append('familia_id', familiaId);
+    if (searchTerm) params.append('search', searchTerm);
+
+    const url = `obtener_prductos_user.php?${params.toString()}`;
     
     const response = await fetch(url);
     const data = await response.json();
@@ -270,17 +306,3 @@ const loadProducts = async (categoria = "", familiaId = "") => {
         `;
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-

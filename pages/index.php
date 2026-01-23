@@ -59,9 +59,10 @@
           <div class="flex items-center glass-effect rounded-full p-1 hover:bg-white/20 transition-all duration-300">
             <input
               type="text"
+              id="search-input"
               placeholder="¿Qué buscas hoy?"
               class="px-4 py-3 rounded-l-full text-sm focus:outline-none text-gray-800 w-48 md:w-64 bg-white/90 placeholder-gray-500">
-            <button class="bg-lib-yellow px-4 py-3 rounded-r-full hover:bg-yellow-300 transition-all duration-300 hover:scale-105 shadow-lg">
+            <button id="search-button" class="bg-lib-yellow px-4 py-3 rounded-r-full hover:bg-yellow-300 transition-all duration-300 hover:scale-105 shadow-lg">
               <svg class="w-5 h-5 text-lib-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>

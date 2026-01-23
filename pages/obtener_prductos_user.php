@@ -5,6 +5,7 @@ require_once __DIR__.'/../db/Conexion.php';
 try {
     $categoria_nombre = isset($_GET['categoria']) ? strtolower(trim($_GET['categoria'])) : '';
     $familia_id = isset($_GET['familia_id']) ? (int)$_GET['familia_id'] : 0;
+    $search_term = isset($_GET['search']) ? trim($_GET['search']) : '';
 
     $query = "
         SELECT 
@@ -18,6 +19,15 @@ try {
     $conditions = ["p.estado = 'Activo'", "p.stock > 0"];
     $params = [];
     $types = "";
+
+    if (!empty($search_term)) {
+        $conditions[] = "(p.nombre LIKE ? OR p.descripcion LIKE ? OR p.marca LIKE ?)";
+        $like_term = "%" . $search_term . "%";
+        $params[] = $like_term;
+        $params[] = $like_term;
+        $params[] = $like_term;
+        $types .= "sss";
+    }
 
     if (!empty($categoria_nombre)) {
         // Necesitamos un JOIN explícito si filtramos por nombre de categoría
@@ -40,6 +50,10 @@ try {
 
     $stmt = $conexion->prepare($query);
 
+    if (!$stmt) {
+        throw new Exception('Error preparing statement: ' . $conexion->error);
+    }
+
     if (!empty($types)) {
         $stmt->bind_param($types, ...$params);
     }
@@ -50,8 +64,8 @@ try {
     $productos = [];
     while($row = $result->fetch_assoc()) {
         $row['imagen_url'] = !empty($row['imagen']) 
-            ? '/uploads/productos/' . $row['imagen'] 
-            : '/assets/placeholder-producto.jpg';
+            ? '../uploads/productos/' . $row['imagen'] 
+            : '../assets/placeholder-producto.jpg';
         $productos[] = $row;
     }
 
