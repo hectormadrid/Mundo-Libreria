@@ -64,10 +64,12 @@
                 return;
             }
 
+            const totalText = document.getElementById('cart-total').innerText;
+
             // Confirmar pedido
             Swal.fire({
                 title: '¿Confirmar pedido?',
-                text: 'Vas a procesar el pago por $63.500',
+                text: `Vas a procesar el pago por ${totalText}`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#48BB78',
@@ -76,7 +78,6 @@
                 cancelButtonText: '<i class="fas fa-times mr-2"></i>Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Mostrar loading
                     Swal.fire({
                         title: 'Procesando pago...',
                         html: 'Por favor espera mientras procesamos tu pedido',
@@ -87,17 +88,38 @@
                         }
                     });
 
-                    // Simular procesamiento (aquí submitirías el formulario real)
-                    setTimeout(() => {
+                    const formData = new FormData(this);
+
+                    fetch('checkout_process.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: '¡Compra exitosa!',
+                                text: 'Tu pedido ha sido procesado correctamente.',
+                                icon: 'success',
+                                confirmButtonText: 'Ir al inicio'
+                            }).then(() => {
+                                window.location.href = 'index.php';
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: data.error || 'Ha ocurrido un error al procesar tu pedido.',
+                                icon: 'error'
+                            });
+                        }
+                    })
+                    .catch(error => {
                         Swal.fire({
-                            icon: 'success',
-                            title: '¡Pedido confirmado!',
-                            text: 'Tu pedido ha sido procesado exitosamente',
-                            confirmButtonColor: '#48BB78'
-                        }).then(() => {
-                            // this.submit(); // Descomentar para enviar el formulario real
+                            title: 'Error',
+                            text: 'No se pudo conectar con el servidor. Por favor, inténtalo de nuevo.',
+                            icon: 'error'
                         });
-                    }, 3000);
+                    });
                 }
             });
         });
@@ -140,13 +162,16 @@
             e.target.value = value;
         });
 
-        document.querySelector('input[name="rut"]').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/[^0-9kK]/g, '').toUpperCase();
-            if (value.length > 1) {
-                value = value.replace(/^(\d{1,8})([0-9K])$/, '$1-$2');
-            }
-            e.target.value = value;
-        });
+        const rutInput = document.querySelector('input[name="rut"]');
+        if (rutInput) {
+            rutInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^0-9kK]/g, '').toUpperCase();
+                if (value.length > 1) {
+                    value = value.replace(/^(\d{1,8})([0-9K])$/, '$1-$2');
+                }
+                e.target.value = value;
+            });
+        }
 
         // Validación en tiempo real
         document.querySelectorAll('input[required]').forEach(input => {

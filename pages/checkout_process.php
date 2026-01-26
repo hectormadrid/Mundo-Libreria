@@ -1,10 +1,12 @@
 <?php
 session_start();
+header('Content-Type: application/json');
 require_once __DIR__.'/../db/Conexion.php';
 
 // Verificar sesión
 if (!isset($_SESSION['ID'])) {
-    header('Location: login.php');
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => 'Usuario no autenticado.']);
     exit;
 }
 
@@ -24,14 +26,18 @@ $items = [];
 $total = 0;
 while ($row = $result->fetch_assoc()) {
     if ($row['cantidad'] > $row['stock']) {
-        die("No hay suficiente stock para el producto: " . htmlspecialchars($row['nombre']));
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'No hay suficiente stock para el producto: ' . htmlspecialchars($row['nombre'])]);
+        exit;
     }
     $items[] = $row;
     $total += $row['precio'] * $row['cantidad'];
 }
 
 if (empty($items)) {
-    die("Tu carrito está vacío.");
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Tu carrito está vacío.']);
+    exit;
 }
 
 // Recibir datos del formulario
@@ -41,54 +47,64 @@ $metodo_pago = $_POST['metodo_pago'] ?? '';
 
 // Validaciones simples
 if (empty($nombre) || empty($correo) || empty($metodo_pago)) {
-    die("Por favor completa todos los campos.");
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Por favor completa todos los campos.']);
+    exit;
 }
 
-// Crear pedido
-$sql = "INSERT INTO pedido (id_usuario, total, estado) VALUES (?, ?, 'pendiente')";
-$stmt = $conexion->prepare($sql);
-$stmt->bind_param("id", $id_usuario, $total);
-$stmt->execute();
-$id_pedido = $stmt->insert_id;
+try {
+    $conexion->begin_transaction();
 
-// Insertar detalle_pedido
-$sql = "INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, precio) VALUES (?, ?, ?, ?)";
-$stmt = $conexion->prepare($sql);
-foreach ($items as $item) {
-    $stmt->bind_param("iiid", $id_pedido, $item['id'], $item['cantidad'], $item['precio']);
-    $stmt->execute();
+    // Crear pedido
+    $sql_pedido = "INSERT INTO pedido (id_usuario, total, estado) VALUES (?, ?, 'pendiente')";
+    $stmt_pedido = $conexion->prepare($sql_pedido);
+    $stmt_pedido->bind_param("id", $id_usuario, $total);
+    $stmt_pedido->execute();
+    $id_pedido = $stmt_pedido->insert_id;
+    $stmt_pedido->close();
 
+    // Insertar detalle_pedido
+    $sql_detalle = "INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, precio) VALUES (?, ?, ?, ?)";
+    $stmt_detalle = $conexion->prepare($sql_detalle);
+    
     // Descontar stock
-    $update = $conexion->prepare("UPDATE productos SET stock = stock - ? WHERE id = ?");
-    $update->bind_param("ii", $item['cantidad'], $item['id']);
-    $update->execute();
-}
+    $sql_stock = "UPDATE productos SET stock = stock - ? WHERE id = ?";
+    $stmt_stock = $conexion->prepare($sql_stock);
 
-// Vaciar carrito
-$conexion->query("DELETE FROM carrito WHERE id_usuario = $id_usuario");
+    foreach ($items as $item) {
+        $stmt_detalle->bind_param("iiid", $id_pedido, $item['id'], $item['cantidad'], $item['precio']);
+        $stmt_detalle->execute();
 
-// Simulación de pago (aquí integrarías Stripe/PayPal si lo deseas)
-if ($metodo_pago === 'contra_entrega' || $metodo_pago === 'transferencia') {
-    $conexion->query("UPDATE pedido SET estado='pagado' WHERE id=$id_pedido");
+        $stmt_stock->bind_param("ii", $item['cantidad'], $item['id']);
+        $stmt_stock->execute();
+    }
+    $stmt_detalle->close();
+    $stmt_stock->close();
+
+
+    // Vaciar carrito
+    $stmt_delete_cart = $conexion->prepare("DELETE FROM carrito WHERE id_usuario = ?");
+    $stmt_delete_cart->bind_param("i", $id_usuario);
+    $stmt_delete_cart->execute();
+    $stmt_delete_cart->close();
+
+    // Simulación de pago (aquí integrarías Stripe/PayPal si lo deseas)
+    if ($metodo_pago === 'tarjeta' || $metodo_pago === 'transferencia') {
+        $stmt_update_pedido_estado = $conexion->prepare("UPDATE pedido SET estado='pagado' WHERE id=?");
+        $stmt_update_pedido_estado->bind_param("i", $id_pedido);
+        $stmt_update_pedido_estado->execute();
+        $stmt_update_pedido_estado->close();
+    }
+
+    $conexion->commit();
+    echo json_encode(['success' => true]);
+
+} catch (Exception $e) {
+    $conexion->rollback();
+    error_log('Error en checkout_process: ' . $e->getMessage()); // Guardar error real en logs
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Ocurrió un error en el servidor. Por favor, inténtelo más tarde.']);
+} finally {
+    if (isset($stmt)) $stmt->close();
+    if (isset($conexion)) $conexion->close();
 }
-?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Compra Exitosa - Mundo Librería</title>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
-<body>
-<script>
-Swal.fire({
-    title: '¡Compra exitosa!',
-    text: 'Tu pedido  ha sido procesado correctamente.',
-    icon: 'success',
-    confirmButtonText: 'Ir al inicio'
-}).then(() => {
-    window.location.href = 'index.php?success=1';
-});
-</script>
-</body>
-</html>

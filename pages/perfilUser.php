@@ -49,7 +49,7 @@
                     </div>
                 </a>
                 <nav class="flex items-center space-x-6">
-                    <a href="/" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
+                    <a href="index.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
                         <i class="fas fa-home mr-2"></i>
                         Inicio
                     </a>
@@ -71,7 +71,7 @@
         <!-- Breadcrumb -->
         <div class="flex items-center space-x-2 text-gray-600 mb-8">
             <i class="fas fa-home text-lib-blue"></i>
-            <a href="/" class="hover:text-lib-red transition-colors">Inicio</a>
+            <a href="index.php" class="hover:text-lib-red transition-colors">Inicio</a>
             <i class="fas fa-chevron-right text-xs text-lib-red"></i>
             <span class="text-dual-gradient font-semibold">Mi Perfil</span>
         </div>

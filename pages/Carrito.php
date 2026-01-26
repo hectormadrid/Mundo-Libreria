@@ -73,7 +73,7 @@
         <i class="fas fa-shopping-cart text-6xl text-gray-400 mb-4"></i>
         <h2 class="text-2xl font-bold text-gray-700 mb-2">¡Tu carrito está vacío!</h2>
         <p class="text-gray-500 mb-6">Agrega productos para continuar con tu compra.</p>
-        <a href="/" class="btn-primary px-6 py-3 rounded-lg text-white">
+        <a href="index.php" class="btn-primary px-6 py-3 rounded-lg text-white">
             <i class="fas fa-store mr-2"></i> Explorar productos
         </a>
     </div>

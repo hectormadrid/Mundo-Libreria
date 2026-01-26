@@ -69,7 +69,6 @@ $stmt_carrito->close();
           </div>
           <div>
             <h1 class="text-2xl font-bold text-white">Mundo <span class="text-yellow-300">Librería</span></h1>
-            <p class="text-blue-200 text-sm">Tu tienda de libros favorita</p>
           </div>
         </a>
 
@@ -106,7 +105,7 @@ $stmt_carrito->close();
             <h2 class="text-2xl font-bold text-gray-800">Información de Contacto</h2>
         </div>
 
-        <form action="checkout_process.php" method="POST" class="space-y-6">
+        <form action="checkout_process.php" method="POST" class="space-y-6" id="checkoutForm">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Nombre Completo *</label>
@@ -142,6 +141,7 @@ $stmt_carrito->close();
             </div>
 
             <!-- ... resto del formulario ... -->
+            <input type="hidden" name="metodo_pago" id="selectedPaymentMethod" value="transferencia">
         </form>
     </div>
 </div>
@@ -202,7 +202,7 @@ $stmt_carrito->close();
             </div>
           </div>
 
-          <input type="hidden" name="metodo_pago" id="selectedPaymentMethod" value="transferencia">
+          
         </div>
       </div>
 
