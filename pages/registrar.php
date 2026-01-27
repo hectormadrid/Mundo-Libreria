@@ -142,8 +142,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         </div>
                          <div class="input-container space-y-3">
                             <label for="telefono" class="block text-sm font-bold text-gray-700 uppercase tracking-wider">
-                                <i class="fas fa-id-card text-lib-red mr-2"></i>
-                                RUT
+                                <i class="fas fa-phone text-lib-red mr-2"></i>
+                                Teléfono
                             </label>
                             <input
                                 type="text"
