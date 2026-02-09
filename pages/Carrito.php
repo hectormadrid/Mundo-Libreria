@@ -172,23 +172,3 @@
 <script src="../js/eliminarProductoCarrito.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -11,20 +11,21 @@ const formatPrice = (price) => {
 const createProductCard = (producto) => {
   return `
     <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-        <div class="relative overflow-hidden">
-            <div class="aspect-[4/5] flex items-center justify-center">
-                <img src="${producto.imagen_url}"
-                    alt="${producto.nombre}"
-                    class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy">
+        <a href="producto_detalle.php?id=${producto.id}" class="block">
+            <div class="relative overflow-hidden">
+                <div class="aspect-[4/5] flex items-center justify-center">
+                    <img src="${producto.imagen_url}"
+                        alt="${producto.nombre}"
+                        class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy">
+                </div>
             </div>
-        </div>
-
+        </a>
         <div class="p-4 border-t border-gray-100">
             <div class="mb-3">
-                <h3 class="font-bold text-gray-900 line-clamp-1">${
-                  producto.nombre
-                }</h3>
+                <h3 class="font-bold text-gray-900 line-clamp-1">
+                    <a href="producto_detalle.php?id=${producto.id}" class="hover:text-lib-blue">${producto.nombre}</a>
+                </h3>
                 <p class="text-gray-600 text-sm mt-1 line-clamp-2">${
                   producto.descripcion || ""
                 }</p>
