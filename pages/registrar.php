@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../db/SessionHelper.php';
 SessionHelper::start();
 require_once '../db/Conexion.php';
+require_once '../db/SecurityHelper.php';
 
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -11,6 +12,7 @@ $error = "";
 $success = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // 1. Verificar campos básicos y CSRF
     if (
         empty($_POST['nombre']) ||
         empty($_POST['rut']) ||
@@ -22,32 +24,47 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     ) {
         $error = "Por favor, completa todos los campos correctamente.";
     } else {
-        $nombre = trim($_POST['nombre']);
-        $rut = trim($_POST['rut']);
-        $correo = trim($_POST['correo']);
-        $telefono = trim($_POST['telefono']);
+        // 2. Sanitizar entradas
+        $nombre = SecurityHelper::sanitize($_POST['nombre']);
+        $rut = SecurityHelper::sanitize($_POST['rut']);
+        $correo = SecurityHelper::sanitize($_POST['correo']);
+        $telefono = SecurityHelper::sanitize($_POST['telefono']);
         $password = $_POST['password'];
 
-        $stmt = $conexion->prepare("SELECT id, rut FROM usuario WHERE correo = ? or rut = ?");
-        $stmt->bind_param("ss", $correo,$rut);
-        $stmt->execute();
-        $stmt->store_result();
-
-        if ($stmt->num_rows > 0) {
-            $error = "El usuario ya está registrado.";
+        // 3. Validaciones específicas
+        if (!SecurityHelper::validateEmail($correo)) {
+            $error = "El formato de correo no es válido.";
+        } elseif (!SecurityHelper::validateRut($rut)) {
+            $error = "El formato de RUT no es válido.";
+        } elseif (!SecurityHelper::validatePhone($telefono)) {
+            $error = "El formato de teléfono no es válido.";
+        } elseif (!SecurityHelper::validatePasswordStrength($password)) {
+            $error = "La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, un número y un carácter especial.";
         } else {
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $insert = $conexion->prepare("INSERT INTO usuario (rut,nombre, correo,telefono, password) VALUES (?,?, ?, ?,?)");
-            $insert->bind_param("sssss",$rut, $nombre, $correo,$telefono, $hashed_password);
-            if ($insert->execute()) {
-                $success = "Registro exitoso. Puedes iniciar sesión.";
-                header("Refresh: 2; URL=login.php");
+            // 4. Verificar si ya existe el usuario
+            $stmt = $conexion->prepare("SELECT id FROM usuario WHERE correo = ? OR rut = ?");
+            $stmt->bind_param("ss", $correo, $rut);
+            $stmt->execute();
+            $stmt->store_result();
+
+            if ($stmt->num_rows > 0) {
+                $error = "El correo o el RUT ya están registrados.";
             } else {
-                $error = "Error al registrar usuario.";
+                // 5. Hash de contraseña y registro final
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $insert = $conexion->prepare("INSERT INTO usuario (rut, nombre, correo, telefono, password) VALUES (?, ?, ?, ?, ?)");
+                $insert->bind_param("sssss", $rut, $nombre, $correo, $telefono, $hashed_password);
+                
+                if ($insert->execute()) {
+                    $success = "¡Registro exitoso! Redirigiendo al inicio de sesión...";
+                    header("Refresh: 2; URL=login.php");
+                } else {
+                    $error = "Hubo un error técnico al registrar el usuario. Inténtalo más tarde.";
+                }
+                $insert->close();
             }
-            $insert->close();
+            $stmt->close();
         }
-        $stmt->close();
     }
 }
 ?>

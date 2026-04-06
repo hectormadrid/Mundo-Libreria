@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../db/SessionHelper.php';
 SessionHelper::start();
 require_once '../db/Conexion.php';
+require_once '../db/SecurityHelper.php';
 
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -10,6 +11,7 @@ if (empty($_SESSION['csrf_token'])) {
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // 1. Verificar campos básicos y CSRF
     if (
         empty($_POST["email"]) ||
         empty($_POST["password"]) ||
@@ -18,32 +20,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ) {
         $error = "Por favor, completa todos los campos correctamente.";
     } else {
-        $email = trim($_POST["email"]);
+        // 2. Sanitizar y validar email
+        $email = SecurityHelper::sanitize($_POST["email"]);
         $password = $_POST["password"];
 
-        $stmt = $conexion->prepare("SELECT * FROM usuario WHERE correo = ? LIMIT 1");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $resultado = $stmt->get_result();
-
-        if ($resultado->num_rows === 1) {
-            $usuario = $resultado->fetch_assoc();
-
-            if (password_verify($password, $usuario['password'])) {
-                $_SESSION['nombre'] = $usuario['nombre'];
-                $_SESSION['ID'] = $usuario['id'];
-                $_SESSION['correo'] = $usuario['correo'];
-
-                header("Location: index.php");
-                exit();
-            } else {
-                $error = "Contraseña incorrecta.";
-            }
+        if (!SecurityHelper::validateEmail($email)) {
+            $error = "El formato de correo no es válido.";
         } else {
-            $error = "Correo no registrado.";
-        }
+            // 3. Consulta segura con sentencias preparadas
+            $stmt = $conexion->prepare("SELECT * FROM usuario WHERE correo = ? LIMIT 1");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $resultado = $stmt->get_result();
 
-        $stmt->close();
+            if ($resultado->num_rows === 1) {
+                $usuario = $resultado->fetch_assoc();
+
+                // 4. Verificación de contraseña segura
+                if (password_verify($password, $usuario['password'])) {
+                    // Regenerar ID de sesión tras login exitoso (Protección contra Hijacking)
+                    SessionHelper::regenerateSession();
+                    
+                    $_SESSION['nombre'] = $usuario['nombre'];
+                    $_SESSION['ID'] = $usuario['id'];
+                    $_SESSION['correo'] = $usuario['correo'];
+
+                    header("Location: index.php");
+                    exit();
+                } else {
+                    $error = "Credenciales incorrectas.";
+                }
+            } else {
+                $error = "Credenciales incorrectas.";
+            }
+            $stmt->close();
+        }
     }
 }
 ?>

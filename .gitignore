@@ -5,3 +5,4 @@ db_config.php
 node_modules/
 
 uploads/productos
+.env

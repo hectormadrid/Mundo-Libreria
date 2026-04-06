@@ -1,14 +1,27 @@
 <?php
-// Incluir el archivo de configuración de la base de datos
-require_once __DIR__ . '/../db_config.php';
+/**
+ * Archivo de conexión a la base de datos para Mundo-Libreria.
+ * Utiliza variables de entorno para mayor seguridad.
+ */
+require_once __DIR__ . '/EnvLoader.php';
 
-// Crear la conexión a la base de datos utilizando las constantes
-$conexion = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+// Cargar variables de entorno desde el archivo .env en la raíz del proyecto
+EnvLoader::load(__DIR__ . '/../.env');
+
+// Obtener credenciales desde $_ENV
+$host = $_ENV['DB_HOST'] ?? 'localhost';
+$dbname = $_ENV['DB_NAME'] ?? '';
+$user = $_ENV['DB_USER'] ?? '';
+$pass = $_ENV['DB_PASS'] ?? '';
+$debug = ($_ENV['DEBUG_MODE'] ?? 'false') === 'true';
+
+// Crear la conexión a la base de datos
+$conexion = new mysqli($host, $user, $pass, $dbname);
 
 // Verificar la conexión
 if ($conexion->connect_error) {
     // Si estamos en modo de depuración, mostrar el error detallado
-    if (defined('DEBUG_MODE') && DEBUG_MODE === true) {
+    if ($debug) {
         $error_message = 'Error de conexión a la base de datos: ' . $conexion->connect_error;
     } else {
         // En producción, mostrar un mensaje genérico
@@ -26,5 +39,9 @@ if ($conexion->connect_error) {
 
 // Establecer el juego de caracteres a UTF-8
 $conexion->set_charset("utf8");
-?>
 
+// Definir constante DEBUG_MODE para compatibilidad con otros archivos
+if (!defined('DEBUG_MODE')) {
+    define('DEBUG_MODE', $debug);
+}
+?>
