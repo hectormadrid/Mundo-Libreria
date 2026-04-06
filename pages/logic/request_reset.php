@@ -3,6 +3,7 @@ require_once __DIR__ . '/../../db/SessionHelper.php';
 SessionHelper::start();
 header('Content-Type: application/json');
 require_once __DIR__ . '/../../db/Conexion.php';
+require_once __DIR__ . '/../../db/EmailHelper.php';
 
 // 1. Verificar CSRF token y método POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
@@ -19,24 +20,26 @@ try {
     }
 
     // 2. Buscar usuario por correo electrónico
-    $stmt = $conexion->prepare("SELECT id FROM usuario WHERE correo = ? LIMIT 1");
+    $stmt = $conexion->prepare("SELECT id, nombre FROM usuario WHERE correo = ? LIMIT 1");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows === 0) {
         // No revelamos si el correo existe o no por seguridad, pero damos un mensaje amigable.
-        throw new Exception('Si tu correo está en nuestra base de datos, recibirás un enlace de recuperación.');
+        echo json_encode(['success' => true, 'message' => 'Si tu correo está en nuestra base de datos, recibirás un enlace de recuperación.']);
+        exit;
     }
     
     $user = $result->fetch_assoc();
     $user_id = $user['id'];
+    $nombre = $user['nombre'];
 
     // 3. Generar token seguro
     $token = bin2hex(random_bytes(32)); // Token que se enviará al usuario
     $token_hash = hash('sha256', $token); // Hash que se guardará en la BD
 
-    // 4. Establecer fecha de expiración (e.g., 1 hora desde ahora)
+    // 4. Establecer fecha de expiración (1 hora desde ahora)
     $expires_at = new DateTime();
     $expires_at->add(new DateInterval('PT1H'));
     $expires_at_string = $expires_at->format('Y-m-d H:i:s');
@@ -49,22 +52,27 @@ try {
     $update_stmt->execute();
     
     if ($update_stmt->affected_rows === 0) {
-        throw new Exception('Hubo un error al generar el enlace. Inténtalo de nuevo.');
+        throw new Exception('Hubo un error al generar el enlace. Inténtelo de nuevo.');
     }
 
-    // 6. Construir el enlace de reseteo (Simulación de envío de correo)
-    // En una aplicación real, aquí iría el código para enviar un correo electrónico.
+    // 6. Construir el enlace de reseteo real
     $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
     $host = $_SERVER['HTTP_HOST'];
-    $path = rtrim(dirname(dirname($_SERVER['PHP_SELF'])), '/\\'); // Sube un nivel desde /logic
+    $path = rtrim(dirname(dirname($_SERVER['PHP_SELF'])), '/\\'); 
     $reset_link = "{$protocol}://{$host}{$path}/reset_password.php?token={$token}";
 
-    // 7. Devolver respuesta exitosa con el enlace (para desarrollo)
-    echo json_encode([
-        'success' => true,
-        'message' => 'Enlace de recuperación generado con éxito.',
-        'reset_link' => $reset_link
-    ]);
+    // 7. ENVIAR CORREO REAL
+    $asunto = "Recuperación de Contraseña - Mundo Librería";
+    $cuerpo = EmailHelper::getPasswordResetTemplate($reset_link);
+    
+    if (EmailHelper::send($email, $asunto, $cuerpo)) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Si tu correo está en nuestra base de datos, recibirás un enlace de recuperación.'
+        ]);
+    } else {
+        throw new Exception('Error al enviar el correo. Por favor, inténtalo más tarde.');
+    }
 
 } catch (Exception $e) {
     http_response_code(400);

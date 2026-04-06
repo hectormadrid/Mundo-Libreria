@@ -4,6 +4,7 @@ SessionHelper::start();
 header('Content-Type: application/json');
 require_once __DIR__.'/../db/Conexion.php';
 require_once __DIR__.'/../db/SecurityHelper.php';
+require_once __DIR__.'/../db/EmailHelper.php';
 
 // 1. Verificar sesión y CSRF
 if (!isset($_SESSION['ID'])) {
@@ -104,6 +105,12 @@ try {
     }
 
     $conexion->commit();
+
+    // ENVIAR CORREO DE CONFIRMACIÓN DE PEDIDO
+    $asunto = "Confirmación de Pedido #$id_pedido - Mundo Librería";
+    $cuerpo = EmailHelper::getOrderTemplate($nombre, $id_pedido, $total);
+    EmailHelper::send($correo, $asunto, $cuerpo);
+
     echo json_encode(['success' => true]);
 
 } catch (Exception $e) {

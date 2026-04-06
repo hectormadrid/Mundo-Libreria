@@ -81,7 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
         }
         
-        // Inserción... (mantenemos la lógica de bind_param del usuario)
         $sql = "INSERT INTO productos 
                     (nombre, codigo_barras, id_categoria, id_familia, imagen, descripcion, marca, color, precio, stock, estado, fecha_creacion) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
@@ -99,17 +98,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit;
     }
-    // ... resto de acciones (edit_product, delete_product) también protegidas por el check CSRF arriba
-}
-        $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-        $nombre = clean($_POST['nombre'] ?? '');
-        $precio = isset($_POST['precio']) ? (float)$_POST['precio'] : 0.0;
-        $descripcion = clean($_POST['descripcion'] ?? '');
-        $categoria = clean($_POST['categoria'] ?? '');
-        $Stock = isset($_POST['Stock']) ? (int)$_POST['Stock'] : 0;
-        $estado = clean($_POST['estado'] ?? 'Activo');
 
-        // Obtener imagen actual
+    if ($action === 'edit_product') {
+        $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+        $nombre = SecurityHelper::sanitize($_POST['nombre'] ?? '');
+        $precio = isset($_POST['precio']) ? (float)$_POST['precio'] : 0.0;
+        $stock = isset($_POST['stock']) ? (int)$_POST['stock'] : 0;
+        $descripcion = SecurityHelper::sanitize($_POST['descripcion'] ?? '');
+        $id_categoria = isset($_POST['id_categoria']) ? (int)$_POST['id_categoria'] : null;
+        $id_familia = isset($_POST['id_familia']) && !empty($_POST['id_familia']) ? (int)$_POST['id_familia'] : null;
+        $marca = SecurityHelper::sanitize($_POST['marca'] ?? '');
+        $color = SecurityHelper::sanitize($_POST['color'] ?? '');
+        $estado = SecurityHelper::sanitize($_POST['estado'] ?? 'Activo');
+
+        // Obtener imagen actual para no perderla si no suben una nueva
         $imagenNombre = null;
         $get = $conexion->prepare('SELECT imagen FROM productos WHERE id = ? LIMIT 1');
         $get->bind_param('i', $id);
@@ -120,34 +122,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
         $get->close();
 
-        // Si suben nueva imagen, reemplazar
+        // Si suben nueva imagen, procesarla de forma segura
         if (!empty($_FILES['imagen']['name']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
-            $tmp = $_FILES['imagen']['tmp_name'];
-            $orig = basename($_FILES['imagen']['name']);
-            $ext = strtolower(pathinfo($orig, PATHINFO_EXTENSION));
-            $allowed = ['jpg', 'jpeg', 'png', 'webp'];
-            if (in_array($ext, $allowed)) {
-                $newName = time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-                move_uploaded_file($tmp, $upload_dir . $newName);
-                // opcional: borrar anterior
-                if (!empty($imagenNombre) && file_exists($upload_dir . $imagenNombre)) {
-                    @unlink($upload_dir . $imagenNombre);
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $mime_type = $finfo->file($_FILES['imagen']['tmp_name']);
+            if (in_array($mime_type, ['image/jpeg', 'image/png', 'image/webp'])) {
+                $ext = strtolower(pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION));
+                $newName = 'prod_upd_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+                if (move_uploaded_file($_FILES['imagen']['tmp_name'], $upload_dir . $newName)) {
+                    if (!empty($imagenNombre) && file_exists($upload_dir . $imagenNombre)) {
+                        @unlink($upload_dir . $imagenNombre);
+                    }
+                    $imagenNombre = $newName;
                 }
-                $imagenNombre = $newName;
             }
         }
 
-        $sql = "UPDATE productos SET nombre = ?, imagen = ?, precio = ?, descripcion = ?, categoria = ?, Stock = ?, estado = ? WHERE id = ?";
+        $sql = "UPDATE productos SET nombre = ?, imagen = ?, precio = ?, descripcion = ?, id_categoria = ?, id_familia = ?, stock = ?, estado = ?, marca = ?, color = ? WHERE id = ?";
         $stmt = $conexion->prepare($sql);
-        $t = "ssdssisi"; // 8 params
-        $stmt->bind_param($t, $nombre, $imagenNombre, $precio, $descripcion, $categoria, $Stock, $estado, $id);
+        $bind_types = "ssdsiissssi";
+        $stmt->bind_param($bind_types, $nombre, $imagenNombre, $precio, $descripcion, $id_categoria, $id_familia, $stock, $estado, $marca, $color, $id);
+        
         if ($stmt->execute()) {
             set_flash('success', 'Producto actualizado correctamente');
         } else {
-            set_flash('error', 'Error al actualizar: ' . $stmt->error);
+            set_flash('error', 'Error al actualizar producto');
         }
         $stmt->close();
-
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit;
     }
@@ -161,10 +162,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         if ($stmt->execute()) {
             set_flash('success', 'Producto marcado como Inactivo');
         } else {
-            set_flash('error', 'Error al eliminar: ' . $stmt->error);
+            set_flash('error', 'Error al eliminar');
         }
         $stmt->close();
-
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit;
     }

@@ -3,6 +3,7 @@ require_once __DIR__ . '/../db/SessionHelper.php';
 SessionHelper::start();
 require_once '../db/Conexion.php';
 require_once '../db/SecurityHelper.php';
+require_once '../db/EmailHelper.php';
 
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -56,6 +57,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $insert->bind_param("sssss", $rut, $nombre, $correo, $telefono, $hashed_password);
                 
                 if ($insert->execute()) {
+                    // ENVIAR CORREO DE BIENVENIDA
+                    $asunto = "¡Bienvenido a Mundo Librería!";
+                    $cuerpo = EmailHelper::getWelcomeTemplate($nombre);
+                    EmailHelper::send($correo, $asunto, $cuerpo);
+
                     $success = "¡Registro exitoso! Redirigiendo al inicio de sesión...";
                     header("Refresh: 2; URL=login.php");
                 } else {
