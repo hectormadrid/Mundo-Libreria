@@ -22,6 +22,11 @@ try {
     // Obtener los datos del cuerpo de la petición
     $input = json_decode(file_get_contents('php://input'), true);
     
+    // VALIDACIÓN CSRF
+    if (empty($input['csrf_token']) || $input['csrf_token'] !== $_SESSION['csrf_token']) {
+        throw new Exception('Error de seguridad CSRF. Inténtelo de nuevo.');
+    }
+
     // Validar que los datos necesarios estén presentes
     if (!isset($input['id']) || !isset($input['estado'])) {
         throw new Exception('Datos incompletos: id y estado son requeridos');

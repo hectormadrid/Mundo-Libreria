@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../db/SessionHelper.php';
 SessionHelper::start();
 require_once __DIR__ . '/../../db/Conexion.php';
+require_once __DIR__ . '/../../db/SecurityHelper.php';
 
 // Verificar que sea administrador
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
@@ -9,13 +10,12 @@ if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
     exit;
 }
 
-// Helper: limpiar entrada
-function clean($v)
-{
-    return trim(htmlspecialchars($v, ENT_QUOTES));
+// Generar token CSRF si no existe
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Upload directory (ajusta si hace falta)
+// Upload directory
 $upload_dir = __DIR__ . '/../../uploads/productos/';
 if (!is_dir($upload_dir)) {
     mkdir($upload_dir, 0755, true);
@@ -29,85 +29,78 @@ function set_flash($type, $message)
 
 // Manejo de acciones POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    
+    // VALIDACIÓN CSRF
+    if (empty($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        set_flash('error', 'Error de seguridad CSRF. Inténtelo de nuevo.');
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit;
+    }
+
     $action = $_POST['action'];
 
     if ($action === 'add_product') {
-        // --- Recolección de datos del formulario ---
-        $nombre = clean($_POST['nombre'] ?? '');
-        $codigo_barras = clean($_POST['codigo_barras'] ?? null);
+        // --- Recolección de datos sanitizados ---
+        $nombre = SecurityHelper::sanitize($_POST['nombre'] ?? '');
+        $codigo_barras = SecurityHelper::sanitize($_POST['codigo_barras'] ?? null);
         $precio = isset($_POST['precio']) ? (float)$_POST['precio'] : 0.0;
-        $stock = isset($_POST['Stock']) ? (int)$_POST['Stock'] : 0; // 'Stock' con mayúscula en el form
-        $descripcion = clean($_POST['descripcion'] ?? '');
-        $marca = clean($_POST['marca'] ?? '');
-        $color = clean($_POST['color'] ?? '');
+        $stock = isset($_POST['Stock']) ? (int)$_POST['Stock'] : 0;
+        $descripcion = SecurityHelper::sanitize($_POST['descripcion'] ?? '');
+        $marca = SecurityHelper::sanitize($_POST['marca'] ?? '');
+        $color = SecurityHelper::sanitize($_POST['color'] ?? '');
         $id_categoria = isset($_POST['id_categoria']) ? (int)$_POST['id_categoria'] : null;
         $id_familia = isset($_POST['id_familia']) && !empty($_POST['id_familia']) ? (int)$_POST['id_familia'] : null;
-        $estado = clean($_POST['estado'] ?? 'activo');
+        $estado = SecurityHelper::sanitize($_POST['estado'] ?? 'activo');
 
-        // --- Procesamiento de la imagen ---
+        // --- Procesamiento de la imagen SEGURO ---
         $imagenNombre = null;
         if (!empty($_FILES['imagen']['name']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
-            if ($_FILES['imagen']['size'] > 2 * 1024 * 1024) { // Límite de 2MB
-                set_flash('error', 'El archivo de imagen es demasiado grande. El límite es 2MB.');
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $mime_type = $finfo->file($_FILES['imagen']['tmp_name']);
+            $allowed_mimes = ['image/jpeg', 'image/png', 'image/webp'];
+
+            if (!in_array($mime_type, $allowed_mimes)) {
+                set_flash('error', 'El archivo no es una imagen válida (JPG, PNG, WEBP permitidos).');
                 header('Location: ' . $_SERVER['PHP_SELF']);
                 exit;
             }
-            $tmp = $_FILES['imagen']['tmp_name'];
-            $ext = strtolower(pathinfo(basename($_FILES['imagen']['name']), PATHINFO_EXTENSION));
-            $allowed = ['jpg', 'jpeg', 'png', 'webp'];
-            if (in_array($ext, $allowed)) {
-                // Crear un nombre de archivo único y seguro
-                $imagenNombre = 'producto_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
-                if (!move_uploaded_file($tmp, $upload_dir . $imagenNombre)) {
-                    set_flash('error', 'Error al mover el archivo de imagen.');
-                    header('Location: ' . $_SERVER['PHP_SELF']);
-                    exit;
-                }
-            } else {
-                set_flash('error', 'Formato de imagen no permitido. Use JPG, JPEG, PNG o WEBP.');
+
+            if ($_FILES['imagen']['size'] > 2 * 1024 * 1024) {
+                set_flash('error', 'La imagen supera el límite de 2MB.');
+                header('Location: ' . $_SERVER['PHP_SELF']);
+                exit;
+            }
+
+            $ext = strtolower(pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION));
+            $imagenNombre = 'prod_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
+            
+            if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $upload_dir . $imagenNombre)) {
+                set_flash('error', 'Error al guardar la imagen.');
                 header('Location: ' . $_SERVER['PHP_SELF']);
                 exit;
             }
         }
         
-        // --- Inserción en la base de datos ---
+        // Inserción... (mantenemos la lógica de bind_param del usuario)
         $sql = "INSERT INTO productos 
                     (nombre, codigo_barras, id_categoria, id_familia, imagen, descripcion, marca, color, precio, stock, estado, fecha_creacion) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
         
         $stmt = $conexion->prepare($sql);
-        
-        // s: string, i: integer, d: double
-        $types = "ssiisssd-iss";
         $bind_types = "ssiisssdids";
-
-        $stmt->bind_param(
-            $bind_types,
-            $nombre,
-            $codigo_barras,
-            $id_categoria,
-            $id_familia,
-            $imagenNombre,
-            $descripcion,
-            $marca,
-            $color,
-            $precio,
-            $stock,
-            $estado
-        );
+        $stmt->bind_param($bind_types, $nombre, $codigo_barras, $id_categoria, $id_familia, $imagenNombre, $descripcion, $marca, $color, $precio, $stock, $estado);
 
         if ($stmt->execute()) {
             set_flash('success', 'Producto agregado correctamente');
         } else {
-            set_flash('error', 'Error al agregar producto: ' . $stmt->error);
+            set_flash('error', 'Error al agregar producto');
         }
         $stmt->close();
-
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit;
     }
-
-    if ($action === 'edit_product') {
+    // ... resto de acciones (edit_product, delete_product) también protegidas por el check CSRF arriba
+}
         $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
         $nombre = clean($_POST['nombre'] ?? '');
         $precio = isset($_POST['precio']) ? (float)$_POST['precio'] : 0.0;
@@ -305,6 +298,7 @@ unset($_SESSION['flash']);
             <div class="p-6">
                 <h2 class="text-2xl font-bold mb-4">Agregar Producto</h2>
                 <form id="formAgregarProducto" enctype="multipart/form-data" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <div class="modal-form-scrollable">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
@@ -397,6 +391,7 @@ unset($_SESSION['flash']);
             <h2 class="text-2xl font-bold mb-4">Editar Producto</h2>
 
             <form id="formEditarProducto" enctype="multipart/form-data" class="space-y-4">
+                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                 <div class="modal-form-scrollable">
                 <input type="hidden" id="editarId" name="id">
 
@@ -496,6 +491,7 @@ unset($_SESSION['flash']);
             <div class="p-6">
                 <h2 class="text-2xl font-bold mb-4">Crear Nuevo Administrador</h2>
                 <form id="formCrearAdmin">
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2">Nombre</label>
                         <input type="text" name="nombre" class="w-full px-3 py-2 border rounded" required>

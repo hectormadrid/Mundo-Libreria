@@ -3,6 +3,11 @@ require_once __DIR__ . '/../db/SessionHelper.php';
 SessionHelper::start();
 require_once __DIR__.'/../db/Conexion.php';
 
+// Generar token CSRF si no existe
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Verificar sesión
 if (!isset($_SESSION['ID'])) {
     header('Location: login.php');
@@ -142,6 +147,7 @@ $stmt_carrito->close();
             </div>
 
             <!-- ... resto del formulario ... -->
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
             <input type="hidden" name="metodo_pago" id="selectedPaymentMethod" value="transferencia">
         </form>
     </div>

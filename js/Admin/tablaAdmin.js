@@ -178,10 +178,17 @@ class ProductosDataTable {
 
   static async toggleEstado(productId, nuevoEstado) {
     try {
+      // Obtener el token CSRF desde el formulario de agregar (ya que está presente en el DOM)
+      const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+
       const response = await fetch("/Mundo-Libreria/pages/Admin/actualizar_estado_producto.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: productId, estado: nuevoEstado ? "activo" : "inactivo" }),
+        body: JSON.stringify({ 
+          id: productId, 
+          estado: nuevoEstado ? "activo" : "inactivo",
+          csrf_token: csrfToken 
+        }),
       });
       const result = await response.json();
 
