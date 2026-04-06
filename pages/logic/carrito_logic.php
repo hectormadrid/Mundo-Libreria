@@ -1,6 +1,7 @@
 <?php
 // Iniciar la sesión para acceder a las variables de sesión del usuario.
-session_start();
+require_once __DIR__ . '/../../db/SessionHelper.php';
+SessionHelper::start();
 
 // Incluir el archivo de conexión a la base de datos.
 // Se utiliza __DIR__ para asegurar que la ruta sea relativa al archivo actual.

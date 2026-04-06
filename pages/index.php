@@ -1,4 +1,7 @@
-<?php session_start(); ?>
+<?php 
+require_once __DIR__ . '/../db/SessionHelper.php';
+SessionHelper::start();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>

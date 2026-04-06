@@ -1,6 +1,7 @@
 <?php
 // eliminar_usuario.php - Versión corregida
-session_start();
+require_once __DIR__ . '/../../db/SessionHelper.php';
+SessionHelper::start();
 header('Content-Type: application/json');
 require_once __DIR__.'/../../db/Conexion.php';
 // Verificar que sea administrador

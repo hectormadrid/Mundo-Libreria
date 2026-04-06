@@ -3,7 +3,8 @@
 header('Content-Type: application/json');
 
 // Iniciar sesión para validar el rol de administrador
-session_start();
+require_once __DIR__ . '/../../db/SessionHelper.php';
+SessionHelper::start();
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
     http_response_code(403); // Forbidden
     echo json_encode(['success' => false, 'error' => 'Acceso denegado. Se requiere ser administrador.']);

@@ -1,6 +1,7 @@
 <?php
 // eliminar_item.php
-session_start();
+require_once __DIR__ . '/../db/SessionHelper.php';
+SessionHelper::start();
 require_once __DIR__.'/../db/Conexion.php';
 
 // Verificar si la solicitud es POST

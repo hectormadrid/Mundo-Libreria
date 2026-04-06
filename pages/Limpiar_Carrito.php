@@ -1,6 +1,7 @@
 <?php
 // Limpiar_Carrito.php
-session_start();
+require_once __DIR__ . '/../db/SessionHelper.php';
+SessionHelper::start();
 require_once __DIR__.'/../db/Conexion.php';
 
 // Solo permitir POST

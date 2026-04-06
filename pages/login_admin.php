@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/../db/SessionHelper.php';
+SessionHelper::start();
 require_once '../db/Conexion.php';
 
 if (empty($_SESSION['csrf_token'])) {

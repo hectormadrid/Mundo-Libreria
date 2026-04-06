@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/../db/SessionHelper.php';
+SessionHelper::start();
 // Generar un token CSRF si no existe
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
