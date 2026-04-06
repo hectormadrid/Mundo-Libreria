@@ -109,6 +109,7 @@
                     </div>
                     <div class="p-6">
                         <form action="perfilUser.php" method="POST" class="space-y-6">
+                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
