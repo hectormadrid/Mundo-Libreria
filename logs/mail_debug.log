@@ -1,0 +1,23 @@
+========================================
+FECHA: 2026-04-06 17:56:57
+PARA: Hectorfmf2002@gmail.com
+ASUNTO: Recuperación de Contraseña - Mundo Librería
+CONTENIDO:
+
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;'>
+            <div style='background: #4A5568; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;'>
+                <h1 style='color: white; margin: 0;'>Recuperar Contraseña</h1>
+            </div>
+            <div style='padding: 20px; color: #333;'>
+                <p>Has solicitado restablecer tu contraseña en <b>Mundo Librería</b>.</p>
+                <p>Haz clic en el siguiente botón para crear una nueva contraseña. Este enlace expirará en 1 hora.</p>
+                <div style='text-align: center; margin: 30px 0;'>
+                    <a href='http://localhost/mundo-libreria/pages/reset_password.php?token=9995e181c5b7fbd41be6994b48c44153a270b6f06cb20d3a6c273bc4f84221c6' style='background-color: #E53E3E; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Restablecer Contraseña</a>
+                </div>
+                <p>Si no solicitaste este cambio, puedes ignorar este correo de forma segura.</p>
+            </div>
+            <hr style='border: 0; border-top: 1px solid #eee;'>
+            <p style='font-size: 12px; color: #777; text-align: center;'>&copy; 2025 Mundo Librería. Seguridad ante todo.</p>
+        </div>
+========================================
+

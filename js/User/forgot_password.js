@@ -6,6 +6,13 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
 
         const formData = new FormData(form);
+        
+        // Asegurarnos de que el token esté presente (depuración)
+        if (!formData.has('csrf_token')) {
+            const tokenInput = form.querySelector('input[name="csrf_token"]');
+            if (tokenInput) formData.append('csrf_token', tokenInput.value);
+        }
+
         const submitButton = form.querySelector('button[type="submit"]');
 
         // Deshabilitar botón y mostrar carga
@@ -26,17 +33,13 @@ document.addEventListener('DOMContentLoaded', function () {
             
             if (data.success) {
                 messageContainer.className = 'p-4 text-center rounded-lg bg-green-100 text-green-800';
-                
-                // Construir el HTML dinámicamente en el frontend
-                const successHtml = `
-                    <strong>¡Enlace generado!</strong><br>
-                    <p class='mt-2 text-sm'>En una aplicación real, este enlace se enviaría a tu correo.</p>
-                    <p class='mt-4 text-xs'>Para continuar, por favor, haz clic en el siguiente enlace:</p>
-                    <div class='mt-2'>
-                        <a href='${data.reset_link}' class='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>Restablecer Contraseña</a>
+                messageContainer.innerHTML = `
+                    <div class="flex flex-col items-center">
+                        <i class="fas fa-check-circle text-3xl mb-2"></i>
+                        <strong>¡Solicitud enviada!</strong>
+                        <p class="mt-2 text-sm">${data.message}</p>
                     </div>
                 `;
-                messageContainer.innerHTML = successHtml;
                 form.classList.add('hidden'); // Ocultar formulario en caso de éxito
             } else {
                 messageContainer.className = 'p-4 text-center rounded-lg bg-red-100 text-red-800';

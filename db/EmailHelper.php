@@ -15,8 +15,25 @@ class EmailHelper {
      * Envía un correo electrónico profesional usando SMTP y PHPMailer.
      */
     public static function send($to, $subject, $htmlContent) {
-        $mail = new PHPMailer(true);
+        $user = $_ENV['SMTP_USER'] ?? '';
+        
+        // MODO DESARROLLO: Si el usuario es el placeholder o está vacío, logueamos en lugar de enviar.
+        if (empty($user) || $user === 'tu-correo@gmail.com') {
+            $logDir = __DIR__ . '/../logs';
+            if (!is_dir($logDir)) mkdir($logDir, 0755, true);
+            
+            $logEntry = "========================================\n";
+            $logEntry .= "FECHA: " . date('Y-m-d H:i:s') . "\n";
+            $logEntry .= "PARA: $to\n";
+            $logEntry .= "ASUNTO: $subject\n";
+            $logEntry .= "CONTENIDO:\n$htmlContent\n";
+            $logEntry .= "========================================\n\n";
+            
+            file_put_contents($logDir . '/mail_debug.log', $logEntry, FILE_APPEND);
+            return true; // Retornamos true para que el flujo continúe
+        }
 
+        $mail = new PHPMailer(true);
         try {
             // Configuración del servidor SMTP desde el .env
             $mail->isSMTP();
