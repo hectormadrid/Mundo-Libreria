@@ -250,45 +250,101 @@ unset($_SESSION['flash']);
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div class="p-4 bg-white rounded shadow">
-                <div class="text-sm text-gray-500">Total Productos</div>
-                <div id="metric-total-productos" class="text-2xl font-bold"><?php echo $totalProductos; ?></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Productos -->
+            <div class="bg-gradient-to-br from-blue-500 to-blue-700 p-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-300 group">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-blue-100 text-sm font-semibold mb-1">Total Catálogo</p>
+                        <h3 id="metric-total-productos" class="text-3xl font-bold text-white"><?php echo $totalProductos; ?></h3>
+                        <p class="text-blue-200 text-xs mt-2"><i class="fas fa-box mr-1"></i> <?php echo $productosActivos; ?> Activos</p>
+                    </div>
+                    <div class="bg-blue-400 bg-opacity-30 p-4 rounded-xl group-hover:rotate-12 transition-transform">
+                        <i class="fas fa-boxes text-3xl text-white"></i>
+                    </div>
+                </div>
             </div>
-            <div class="p-4 bg-white rounded shadow">
-                <div class="text-sm text-gray-500">Activos</div>
-                <div id="metric-activos" class="text-2xl font-bold"><?php echo $productosActivos; ?></div>
+
+            <!-- Ventas del Mes -->
+            <div class="bg-gradient-to-br from-green-500 to-green-700 p-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-300 group">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-green-100 text-sm font-semibold mb-1">Ventas del Mes</p>
+                        <h3 id="metric-ventas-mes" class="text-3xl font-bold text-white">$0</h3>
+                        <p class="text-green-200 text-xs mt-2"><i class="fas fa-chart-line mr-1"></i> Ingresos actuales</p>
+                    </div>
+                    <div class="bg-green-400 bg-opacity-30 p-4 rounded-xl group-hover:rotate-12 transition-transform">
+                        <i class="fas fa-dollar-sign text-3xl text-white"></i>
+                    </div>
+                </div>
             </div>
-            <div class="p-4 bg-white rounded shadow">
-                <div class="text-sm text-gray-500">Stock bajo (&lt;10)</div>
-                <div id="metric-stock-bajo" class="text-2xl font-bold text-red-600"><?php echo $stockBajo; ?></div>
+
+            <!-- Pedidos Pendientes -->
+            <div class="bg-gradient-to-br from-yellow-500 to-yellow-700 p-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-300 group relative overflow-hidden">
+                <div id="alert-pedidos" class="absolute top-2 right-2 hidden">
+                    <span class="flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                </div>
+                <div class="flex justify-between items-center text-white">
+                    <div>
+                        <p class="text-yellow-100 text-sm font-semibold mb-1">Pedidos Pendientes</p>
+                        <h3 id="metric-pedidos-pendientes" class="text-3xl font-bold">0</h3>
+                        <a href="pedidos.php" class="text-yellow-200 text-xs mt-2 hover:underline">Gestionar pedidos <i class="fas fa-chevron-right ml-1"></i></a>
+                    </div>
+                    <div class="bg-yellow-400 bg-opacity-30 p-4 rounded-xl group-hover:rotate-12 transition-transform">
+                        <i class="fas fa-clock text-3xl text-white"></i>
+                    </div>
+                </div>
             </div>
-            <div class="p-4 bg-white rounded shadow">
-                <div class="text-sm text-gray-500">Valor total</div>
-                <div id="metric-valor-total" class="text-2xl font-bold text-green-600">$<?php echo number_format((float)$valorTotal, 0, ',', '.'); ?></div>
+
+            <!-- Stock Bajo -->
+            <div class="bg-gradient-to-br from-red-500 to-red-700 p-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-300 group">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-red-100 text-sm font-semibold mb-1">Alerta de Stock</p>
+                        <h3 id="metric-stock-bajo" class="text-3xl font-bold text-white"><?php echo $stockBajo; ?></h3>
+                        <p class="text-red-200 text-xs mt-2"><i class="fas fa-exclamation-triangle mr-1"></i> Menos de 10 unidades</p>
+                    </div>
+                    <div class="bg-red-400 bg-opacity-30 p-4 rounded-xl group-hover:rotate-12 transition-transform">
+                        <i class="fas fa-warehouse text-3xl text-white"></i>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Tabla de productos -->
-        <div class="bg-white rounded shadow p-4">
-            <table id="productosTable" class="min-w-full table-auto">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="p-2">ID</th>
-                        <th class="p-2">Nombre</th>
-                        <th class="p-2">Código de Barras</th>
-                        <th class="p-2">Imagen</th>
-                        <th class="p-2">Precio</th>
-                        <th class="p-2">Descripción</th>
-                        <th class="p-2">Categoria</th>
-                        <th class="p-2">Stock</th>
-                        <th class="p-2">Estado</th>
-                        <th class="p-2">Fecha</th>
-                        <th class="p-2">Acciones</th>
-                    </tr>
-                </thead>
-
-            </table>
+        <div class="w-full mb-8">
+            <!-- Tabla de productos -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-list mr-3 text-blue-600"></i> Inventario Completo de Productos
+                    </h2>
+                    <div class="flex gap-2">
+                        <button onclick="window.productosTable.reload()" class="p-2 text-gray-400 hover:text-blue-600 transition-colors" title="Refrescar tabla">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table id="productosTable" class="min-w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-600 text-sm uppercase font-semibold">
+                                <th class="p-3">ID</th>
+                                <th class="p-3">Nombre</th>
+                                <th class="p-3">Código</th>
+                                <th class="p-3">Imagen</th>
+                                <th class="p-3">Precio</th>
+                                <th class="p-3">Categoría</th>
+                                <th class="p-3">Stock</th>
+                                <th class="p-3">Estado</th>
+                                <th class="p-3">Acciones</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
         </div>
 
     </section>

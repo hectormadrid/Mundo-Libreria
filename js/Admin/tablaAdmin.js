@@ -231,11 +231,42 @@ class ProductosDataTable {
 
       if (result.success) {
         const metrics = result.data;
+        const formatCLP = (val) => new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(val);
+
+        // Actualizar contadores principales
         $('#metric-total-productos').text(metrics.totalProductos);
-        $('#metric-activos').text(metrics.productosActivos);
+        $('#metric-ventas-mes').text(formatCLP(metrics.ventasMes));
         $('#metric-stock-bajo').text(metrics.stockBajo);
-        const formattedTotal = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(metrics.valorTotal);
-        $('#metric-valor-total').text(formattedTotal);
+        $('#metric-pedidos-pendientes').text(metrics.pedidosPendientes);
+
+        // Manejar alerta de pedidos
+        if (metrics.pedidosPendientes > 0) {
+            $('#alert-pedidos').removeClass('hidden');
+        } else {
+            $('#alert-pedidos').addClass('hidden');
+        }
+
+        // Actualizar Top Productos
+        const topList = $('#top-productos-list');
+        if (metrics.topProductos && metrics.topProductos.length > 0) {
+            topList.empty();
+            metrics.topProductos.forEach((prod, index) => {
+                const colors = ['bg-orange-500', 'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-gray-500'];
+                topList.append(`
+                    <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition-colors border-b border-gray-50 last:border-0">
+                        <div class="flex items-center space-x-3">
+                            <span class="flex items-center justify-center w-6 h-6 rounded-full ${colors[index] || 'bg-gray-400'} text-white text-[10px] font-bold">
+                                ${index + 1}
+                            </span>
+                            <span class="text-sm font-medium text-gray-700 truncate max-w-[150px]">${prod.nombre}</span>
+                        </div>
+                        <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-lg">${prod.total_vendido} vendidos</span>
+                    </div>
+                `);
+            });
+        } else {
+            topList.html('<p class="text-center text-gray-400 italic py-4">Sin datos de ventas aún</p>');
+        }
       }
     } catch (error) {
       console.error("Error al actualizar métricas:", error);

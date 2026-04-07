@@ -29,7 +29,15 @@ try {
     // Valor Total del Inventario
     $r = $conexion->query("SELECT IFNULL(SUM(precio * Stock),0) AS v FROM productos WHERE estado = 'Activo'");
     $metrics['valorTotal'] = ($r && $rr = $r->fetch_assoc()) ? (float)$rr['v'] : 0.0;
-    
+
+    // Pedidos Pendientes
+    $r = $conexion->query("SELECT COUNT(*) AS c FROM pedido WHERE estado = 'pendiente'");
+    $metrics['pedidosPendientes'] = ($r && $rr = $r->fetch_assoc()) ? $rr['c'] : 0;
+
+    // Ventas del Mes (Ingresos)
+    $r = $conexion->query("SELECT IFNULL(SUM(total),0) AS v FROM pedido WHERE estado = 'pagado' AND MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())");
+    $metrics['ventasMes'] = ($r && $rr = $r->fetch_assoc()) ? (float)$rr['v'] : 0.0;
+
     echo json_encode([
         'success' => true,
         'data' => $metrics

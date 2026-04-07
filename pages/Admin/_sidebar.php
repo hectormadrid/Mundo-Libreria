@@ -10,37 +10,43 @@
     </svg>
 </button>
 
+<?php
+$current_page = basename($_SERVER['PHP_SELF']);
+function is_active($page, $current) {
+    return $page === $current ? 'bg-white/20 border-l-4 border-yellow-400 font-bold' : 'hover:bg-white/10';
+}
+?>
 <div class="sidebar" id="sidebar">
     <div class="logo-details text-white mb-6">
         <div class="flex items-center gap-3">
             <svg class="w-8 h-8 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
             </svg>
-            <span class="font-bold text-lg logo-text px-3">Mundo Librería</span>
+            <span class="font-bold text-lg logo-text px-3 text-white">Mundo Librería</span>
         </div>
     </div>
     <div class="nav-links space-y-2">
-        <a href="admin.php" class="nav-item flex items-center p-3 rounded-lg transition-all">
+        <a href="admin.php" class="nav-item flex items-center p-3 rounded-lg transition-all <?= is_active('admin.php', $current_page) ?>">
             <i class="fas fa-home text-white mr-3 w-5 text-center"></i>
             <span class="nav-text text-white">Inicio</span>
         </a>
-        <a href="pedidos.php" class="nav-item flex items-center p-3 rounded-lg transition-all">
+        <a href="pedidos.php" class="nav-item flex items-center p-3 rounded-lg transition-all <?= is_active('pedidos.php', $current_page) ?>">
             <i class="fas fa-box text-white mr-3 w-5 text-center"></i>
             <span class="nav-text text-white">Pedidos</span>
         </a>
-        <a href="usuarios.php" class="nav-item flex items-center p-3 rounded-lg transition-all">
+        <a href="usuarios.php" class="nav-item flex items-center p-3 rounded-lg transition-all <?= is_active('usuarios.php', $current_page) ?>">
             <i class="fas fa-users text-white mr-3 w-5 text-center"></i>
             <span class="nav-text text-white">Usuarios</span>
         </a>
-        <a href="categorias.php" class="nav-item flex items-center p-3 rounded-lg transition-all">
+        <a href="categorias.php" class="nav-item flex items-center p-3 rounded-lg transition-all <?= is_active('categorias.php', $current_page) ?>">
             <i class="fas fa-tags text-white mr-3 w-5 text-center"></i>
             <span class="nav-text text-white">Categorías</span>
         </a>
-        <a href="familias.php" class="nav-item flex items-center p-3 rounded-lg transition-all">
+        <a href="familias.php" class="nav-item flex items-center p-3 rounded-lg transition-all <?= is_active('familias.php', $current_page) ?>">
             <i class="fas fa-sitemap text-white mr-3 w-5 text-center"></i>
             <span class="nav-text text-white">Familias</span>
         </a>
-        <a href="generador_codigos.php" class="nav-item flex items-center p-3 rounded-lg transition-all">
+        <a href="generador_codigos.php" class="nav-item flex items-center p-3 rounded-lg transition-all <?= is_active('generador_codigos.php', $current_page) ?>">
             <i class="fas fa-barcode text-white mr-3 w-5 text-center"></i>
             <span class="nav-text text-white">Generar Códigos</span>
         </a>
