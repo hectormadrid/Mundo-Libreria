@@ -21,3 +21,26 @@ CONTENIDO:
         </div>
 ========================================
 
+========================================
+FECHA: 2026-04-07 23:33:04
+PARA: prueba1@gmail.com
+ASUNTO: ¡Bienvenido a Mundo Librería!
+CONTENIDO:
+
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;'>
+            <div style='background: linear-gradient(135deg, #E53E3E 0%, #3182CE 100%); padding: 20px; text-align: center; border-radius: 10px 10px 0 0;'>
+                <h1 style='color: white; margin: 0;'>¡Bienvenido, Fernando Flores!</h1>
+            </div>
+            <div style='padding: 20px; color: #333;'>
+                <p>Estamos encantados de que te hayas unido a <b>Mundo Librería</b>.</p>
+                <p>En nuestra tienda encontrarás todo lo que necesitas para tu oficina, estudio o proyectos creativos.</p>
+                <div style='text-align: center; margin: 30px 0;'>
+                    <a href='http://localhost/Mundo-Libreria' style='background-color: #3182CE; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Empezar a comprar</a>
+                </div>
+                <p>Si tienes alguna duda, responde a este correo y nuestro equipo te ayudará.</p>
+            </div>
+            <hr style='border: 0; border-top: 1px solid #eee;'>
+            <p style='font-size: 12px; color: #777; text-align: center;'>&copy; 2025 Mundo Librería. Pasión por el papel.</p>
+        </div>
+========================================
+

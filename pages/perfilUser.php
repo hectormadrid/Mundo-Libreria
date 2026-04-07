@@ -77,48 +77,59 @@
         </div>
 
         <div class="text-center mb-12 fade-in">
+            <div class="inline-block relative mb-6">
+                <div class="w-32 h-32 dual-gradient rounded-full flex items-center justify-center text-5xl font-bold text-white shadow-2xl border-4 border-white">
+                    <?= strtoupper(substr($usuario['nombre'] ?? 'U', 0, 1)) ?>
+                </div>
+                <div class="absolute bottom-0 right-0 bg-green-500 w-8 h-8 rounded-full border-4 border-white shadow-lg"></div>
+            </div>
             <h1 class="text-5xl font-bold mb-4">
-                <i class="fas fa-user-circle dual-gradient" style="-webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
-                <span class="text-dual-gradient">Mi Perfil</span>
+                <span class="text-dual-gradient">¡Hola, <?= htmlspecialchars(explode(' ', $usuario['nombre'] ?? 'Usuario')[0]) ?>!</span>
             </h1>
-            <p class="text-gray-600 text-lg">Gestiona tu información personal con estilo</p>
+            <p class="text-gray-600 text-lg">Bienvenido a tu panel de control personal</p>
         </div>
 
-        <!-- Mensajes -->
+        <!-- Mensajes con SweetAlert2 -->
         <?php if (!empty($mensaje)): ?>
             <?php 
             $tipo = explode(':', $mensaje)[0];
             $texto = explode(':', $mensaje)[1];
-            $color = $tipo === 'success' ? 'green' : 'red';
             ?>
-            <div class="mb-6 p-4 rounded-2xl border-l-4 border-<?= $color ?>-500 bg-<?= $color ?>-50 text-<?= $color ?>-800">
-                <i class="fas <?= $tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle' ?> mr-2"></i>
-                <?= htmlspecialchars($texto) ?>
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: '<?= $tipo ?>',
+                        title: '<?= $tipo === 'success' ? 'Éxito' : 'Error' ?>',
+                        text: '<?= htmlspecialchars($texto) ?>',
+                        confirmButtonColor: '#3182CE'
+                    });
+                });
+            </script>
         <?php endif; ?>
 
         <div class="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             
             <!-- Información del Perfil - Tarjeta Principal -->
-            <div class="lg:col-span-2 fade-in">
-                <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden card-hover gradient-border">
+            <div class="lg:col-span-2 space-y-8 fade-in">
+                <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden card-hover gradient-border bg-white/80">
                     <div class="dual-gradient p-6">
                         <h3 class="text-2xl font-bold text-white flex items-center">
-                            <i class="fas fa-user-edit mr-3"></i> Información Personal
+                            <i class="fas fa-user-edit mr-3"></i> Mis Datos
                         </h3>
                     </div>
-                    <div class="p-6">
+                    <div class="p-8">
                         <form action="perfilUser.php" method="POST" class="space-y-6">
                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                                         <i class="fas fa-id-card mr-2 icon-red"></i>RUT
                                     </label>
                                     <input type="text" 
-                                           class="w-full p-3 border border-gray-300 rounded-xl bg-gradient-to-r from-red-50 to-blue-50"
+                                           class="w-full p-4 border border-gray-200 rounded-xl bg-gray-50 text-gray-500 cursor-not-allowed"
                                            value="<?= isset($usuario['rut']) ? htmlspecialchars($usuario['rut']) : '' ?>"
                                            readonly>
+                                    <p class="text-xs text-gray-400 mt-1">El RUT no puede ser modificado.</p>
                                 </div>
                                 
                                 <div>
@@ -126,9 +137,10 @@
                                         <i class="fas fa-envelope mr-2 icon-blue"></i>Correo Electrónico
                                     </label>
                                     <input type="email" 
-                                           class="w-full p-3 border border-gray-300 rounded-xl bg-gradient-to-r from-blue-50 to-red-50"
+                                           class="w-full p-4 border border-gray-200 rounded-xl bg-gray-50 text-gray-500 cursor-not-allowed"
                                            value="<?= isset($usuario['correo']) ? htmlspecialchars($usuario['correo']) : '' ?>"
                                            readonly>
+                                    <p class="text-xs text-gray-400 mt-1">Para cambiar tu correo, contacta a soporte.</p>
                                 </div>
                             </div>
 
@@ -137,18 +149,18 @@
                                     <i class="fas fa-user mr-2 text-dual-gradient"></i>Nombre Completo *
                                 </label>
                                 <input type="text" name="nombre" required 
-                                       class="w-full p-3 border border-gray-300 rounded-xl input-focus focus:outline-none bg-gradient-to-r from-red-50 to-blue-50"
+                                       class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-lib-blue focus:border-transparent transition-all outline-none"
                                        placeholder="Tu nombre completo"
                                        value="<?= isset($usuario['nombre']) ? htmlspecialchars($usuario['nombre']) : '' ?>">
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                                         <i class="fas fa-phone mr-2 icon-red"></i>Teléfono
                                     </label>
                                     <input type="tel" name="telefono" 
-                                           class="w-full p-3 border border-gray-300 rounded-xl input-focus focus:outline-none bg-gradient-to-r from-red-50 to-white"
+                                           class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-lib-red focus:border-transparent transition-all outline-none"
                                            placeholder="+56 9 1234 5678"
                                            value="<?= isset($usuario['telefono']) ? htmlspecialchars($usuario['telefono']) : '' ?>">
                                 </div>
@@ -158,103 +170,132 @@
                                         <i class="fas fa-map-marker-alt mr-2 icon-blue"></i>Dirección
                                     </label>
                                     <input type="text" name="direccion" 
-                                           class="w-full p-3 border border-gray-300 rounded-xl input-focus focus:outline-none bg-gradient-to-r from-white to-blue-50"
+                                           class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-lib-blue focus:border-transparent transition-all outline-none"
                                            placeholder="Av. Principal #123"
                                            value="<?= isset($usuario['direccion']) ? htmlspecialchars($usuario['direccion']) : '' ?>">
                                 </div>
                             </div>
 
-                            <div class="flex justify-end space-x-4 pt-4">
-                                <a href="/" 
-                                   class="btn-secondary text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-300">
-                                    <i class="fas fa-arrow-left mr-2"></i>Volver al Inicio
-                                </a>
+                            <div class="flex justify-end space-x-4 pt-6">
                                 <button type="submit" 
-                                        class="btn-primary text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-300 pulse">
-                                    <i class="fas fa-save mr-2"></i>Guardar Cambios
+                                        class="dual-gradient text-white px-10 py-4 rounded-xl font-bold flex items-center transition-all duration-300 hover:scale-105 shadow-xl">
+                                    <i class="fas fa-save mr-2"></i>Actualizar Perfil
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
+
+                <!-- Pedidos Recientes -->
+                <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden card-hover gradient-border bg-white/80">
+                    <div class="bg-gray-800 p-6 flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-white flex items-center">
+                            <i class="fas fa-shopping-bag mr-3"></i> Pedidos Recientes
+                        </h3>
+                        <a href="historial_pedidos.php" class="text-blue-400 hover:text-white transition-colors text-sm font-semibold">
+                            Ver historial <i class="fas fa-chevron-right ml-1"></i>
+                        </a>
+                    </div>
+                    <div class="p-6">
+                        <?php if (empty($pedidos_recientes)): ?>
+                            <div class="text-center py-8">
+                                <p class="text-gray-500 italic">Aún no has realizado pedidos.</p>
+                                <a href="index.php" class="text-lib-blue font-bold hover:underline mt-2 inline-block">¡Empieza a comprar ahora!</a>
+                            </div>
+                        <?php else: ?>
+                            <div class="space-y-4">
+                                <?php foreach ($pedidos_recientes as $pedido): ?>
+                                    <div class="flex flex-col md:flex-row justify-between items-center p-4 bg-gray-50 rounded-2xl hover:bg-white border border-transparent hover:border-blue-100 transition-all">
+                                        <div class="flex items-center space-x-4 mb-3 md:mb-0">
+                                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                                                <i class="fas fa-box"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-gray-800">Pedido #<?= $pedido['id'] ?></p>
+                                                <p class="text-xs text-gray-500"><?= date('d/m/Y', strtotime($pedido['fecha'])) ?></p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-6">
+                                            <div class="text-right">
+                                                <p class="text-xs text-gray-500">Total</p>
+                                                <p class="font-bold text-lib-blue">$<?= number_format($pedido['total'], 0, ',', '.') ?></p>
+                                            </div>
+                                            <div>
+                                                <?php 
+                                                $estado_color = $pedido['estado'] === 'pagado' ? 'bg-green-100 text-green-700' : ($pedido['estado'] === 'cancelado' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700');
+                                                ?>
+                                                <span class="px-3 py-1 rounded-full text-xs font-bold <?= $estado_color ?>">
+                                                    <?= ucfirst($pedido['estado']) ?>
+                                                </span>
+                                            </div>
+                                            <a href="pedido_detalle_user.php?id=<?= $pedido['id'] ?>" class="p-2 text-gray-400 hover:text-lib-blue transition-colors">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
             </div>
 
             <!-- Panel Lateral -->
-            <div class="lg:col-span-1 space-y-6 fade-in">
-                <!-- Resumen de Cuenta - Tarjeta Azul-Rojo -->
-                <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden card-hover">
-                    <div class="gradient-bg-reverse p-6">
-                        <h3 class="text-xl font-bold text-white flex items-center">
-                            <i class="fas fa-user-circle mr-3"></i> Mi Cuenta
-                        </h3>
-                    </div>
-                    <div class="p-6">
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center p-3 bg-gradient-to-r from-red-50 to-blue-50 rounded-lg">
-                                <span class="text-gray-600 flex items-center">
-                                    <i class="fas fa-calendar-alt mr-2 icon-red"></i>Miembro desde:
-                                </span>
-                                <span class="font-semibold text-lib-blue"><?= date('Y') ?></span>
-                            </div>
-                            <div class="flex justify-between items-center p-3 bg-gradient-to-r from-blue-50 to-red-50 rounded-lg">
-                                <span class="text-gray-600 flex items-center">
-                                    <i class="fas fa-check-circle mr-2 icon-blue"></i>Estado:
-                                </span>
-                                <span class="status-badge font-semibold">Activo</span>
-                            </div>
-                            <div class="flex justify-between items-center p-3 bg-gradient-to-r from-red-50 to-blue-50 rounded-lg">
-                                <span class="text-gray-600 flex items-center">
-                                    <i class="fas fa-hashtag mr-2 icon-red"></i>Usuario ID:
-                                </span>
-                                <span class="font-semibold text-lib-blue">#<?= isset($usuario['id']) ? htmlspecialchars($usuario['id']) : '' ?></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Acciones Rápidas - Tarjeta con degradado mixto -->
-                <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden card-hover">
+            <div class="lg:col-span-1 space-y-8 fade-in">
+                <!-- Tarjeta de Seguridad -->
+                <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden card-hover gradient-border bg-white/80">
                     <div class="dual-gradient p-6">
                         <h3 class="text-xl font-bold text-white flex items-center">
-                            <i class="fas fa-bolt mr-3"></i> Acciones Rápidas
+                            <i class="fas fa-shield-alt mr-3"></i> Seguridad
                         </h3>
                     </div>
-                    <div class="p-6">
-                        <div class="space-y-3">
-                            <a href="carrito.php" 
-                               class="flex items-center p-3 bg-gradient-to-r from-blue-50 to-red-50 text-gray-800 rounded-xl quick-action transition-all duration-300 hover:shadow-lg border-l-4 border-lib-blue">
-                                <i class="fas fa-shopping-cart mr-3 text-lg text-lib-blue"></i>
-                                <span>Ver Carrito</span>
-                                <i class="fas fa-arrow-right ml-auto text-lib-red"></i>
-                            </a>
-                            
-                            <a href="historial_pedidos.php" 
-                               class="flex items-center p-3 bg-gradient-to-r from-red-50 to-blue-50 text-gray-800 rounded-xl quick-action transition-all duration-300 hover:shadow-lg border-l-4 border-lib-red">
-                                <i class="fas fa-history mr-3 text-lg text-lib-red"></i>
-                                <span>Historial de Pedidos</span>
-                                <i class="fas fa-arrow-right ml-auto text-lib-blue"></i>
-                            </a>
-                            
-                            <a href="../db/Cerrar_sesion.php" 
-                               class="flex items-center p-3 bg-gradient-to-r from-blue-50 to-red-50 text-gray-800 rounded-xl quick-action transition-all duration-300 hover:shadow-lg border-l-4 border-lib-blue">
-                                <i class="fas fa-sign-out-alt mr-3 text-lg text-lib-blue"></i>
-                                <span>Cerrar Sesión</span>
-                                <i class="fas fa-arrow-right ml-auto text-lib-red"></i>
+                    <div class="p-8">
+                        <div class="text-center">
+                            <i class="fas fa-key text-5xl text-lib-yellow mb-4"></i>
+                            <h4 class="font-bold text-gray-800 mb-2">Tu Contraseña</h4>
+                            <p class="text-sm text-gray-500 mb-6">Mantén tu cuenta segura cambiando tu clave regularmente.</p>
+                            <a href="forgot_password.php" class="inline-block w-full py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-all border border-gray-200">
+                                Cambiar Contraseña
                             </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tarjeta de Contacto -->
-                <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden card-hover">
-                    <div class="gradient-bg p-6">
+                <!-- Tarjeta de Contacto / Soporte -->
+                <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden card-hover border border-blue-100 bg-white/80">
+                    <div class="bg-blue-600 p-6">
+                        <h3 class="text-xl font-bold text-white flex items-center">
+                            <i class="fas fa-headset mr-3"></i> ¿Necesitas Ayuda?
+                        </h3>
+                    </div>
+                    <div class="p-8 text-center">
+                        <p class="text-gray-600 mb-6">Si tienes dudas sobre tus pedidos o productos, ¡escríbenos!</p>
+                        <a href="https://wa.me/56941870729" target="_blank"
+                           class="flex items-center justify-center space-x-2 w-full py-4 bg-green-500 text-white font-bold rounded-2xl hover:bg-green-600 transition-all shadow-lg hover:shadow-green-200">
+                            <i class="fab fa-whatsapp text-2xl"></i>
+                            <span>Contactar vía WhatsApp</span>
+                        </a>
+                        <p class="text-xs text-gray-400 mt-4 italic">Atención: Lun a Vie 9:00 - 20:00</p>
+                    </div>
+                </div>
+
+                <!-- Cerrar Sesión -->
+                <a href="../db/Cerrar_sesion.php" 
+                   class="flex items-center justify-center space-x-3 w-full py-4 bg-white text-lib-red font-bold rounded-3xl border-2 border-lib-red hover:bg-lib-red hover:text-white transition-all group shadow-lg">
+                    <i class="fas fa-sign-out-alt transition-transform group-hover:-translate-x-1"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
                         <h3 class="text-xl font-bold text-white flex items-center">
                             <i class="fas fa-headset mr-3"></i> Soporte
                         </h3>
                     </div>
                     <div class="p-6 text-center">
                         <p class="text-gray-600 mb-4">¿Necesitas ayuda?</p>
-                        <button class="btn-primary text-white px-4 py-2 rounded-lg w-full">
+                        <button class="btn-primary text-white px-4 py-2 rounded-lg">
                             <i class="fas fa-envelope mr-2"></i>Contactar Soporte
                         </button>
                     </div>

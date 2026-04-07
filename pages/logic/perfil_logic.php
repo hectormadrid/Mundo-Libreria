@@ -32,6 +32,18 @@ try {
     }
     $stmt->close();
     
+    // Obtener pedidos recientes
+    $pedidos_recientes = [];
+    $sql_pedidos = "SELECT id, total, estado, fecha FROM pedido WHERE id_usuario = ? ORDER BY fecha DESC LIMIT 3";
+    $stmt_p = $conexion->prepare($sql_pedidos);
+    $stmt_p->bind_param("i", $id_usuario);
+    $stmt_p->execute();
+    $res_p = $stmt_p->get_result();
+    while ($row = $res_p->fetch_assoc()) {
+        $pedidos_recientes[] = $row;
+    }
+    $stmt_p->close();
+    
 } catch (Exception $e) {
     $mensaje = "error:Error al cargar los datos: " . $e->getMessage();
 }
