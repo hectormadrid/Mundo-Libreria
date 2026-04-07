@@ -164,13 +164,18 @@ const debounce = (func, delay) => {
 
 // Al cargar la página
 document.addEventListener("DOMContentLoaded", () => {
+    // Resaltar Inicio por defecto
+    const inicioLink = document.querySelector('.category-link[data-category="all"]');
+    if (inicioLink) inicioLink.classList.add('active-filter');
+
     loadProducts(); // Carga inicial de productos
     loadCartCount(); // Carga inicial del contador del carrito
 
     const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
     
     const performSearch = () => {
-        const searchTerm = searchInput.value;
+        const searchTerm = searchInput.value.trim();
         // Al buscar, limpiamos los filtros de categoría y familia para buscar en todo el catálogo
         activeCategory = "";
         activeFamily = "";
@@ -182,8 +187,29 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Búsqueda en tiempo real con debounce
-    const debouncedSearch = debounce(performSearch, 400);
-    searchInput.addEventListener('input', debouncedSearch);
+    const debouncedSearch = debounce(performSearch, 500);
+    searchInput.addEventListener('input', (e) => {
+        if (e.target.value.trim() === "") {
+            // Si borra todo, volvemos al inicio
+            activeCategory = "";
+            activeFamily = "";
+            const startLink = document.querySelector('.category-link[data-category="all"]');
+            if(startLink) startLink.classList.add('active-filter');
+            loadProducts();
+        } else {
+            debouncedSearch();
+        }
+    });
+
+    // Búsqueda al hacer clic en el botón
+    searchButton?.addEventListener('click', performSearch);
+
+    // Búsqueda al presionar Enter
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
 
     // Manejador para los links de categoría
     document.querySelectorAll(".category-link").forEach((link) => {
@@ -268,11 +294,24 @@ const updateFamilyFilters = async (categoryName) => {
     }
 };
 
+// Función para mostrar skeletons de carga
+const showSkeletons = () => {
+    const container = document.getElementById("productos-container");
+    container.innerHTML = "";
+    for (let i = 0; i < 10; i++) {
+        container.innerHTML += `
+            <div class="skeleton-card skeleton overflow-hidden shadow-sm"></div>
+        `;
+    }
+};
+
 // Función principal para cargar productos (MODIFICADA)
 const loadProducts = async (categoria = "", familiaId = "", searchTerm = "") => {
   console.log(`Cargando: Categoria='${categoria}', Familia='${familiaId}', Busqueda='${searchTerm}'`);
   const container = document.getElementById("productos-container");
-  container.innerHTML = `<div class="col-span-full text-center py-10"><p class="text-500">Cargando productos...</p></div>`;
+  
+  // Mostrar skeletons antes de la petición
+  showSkeletons();
 
   try {
     const params = new URLSearchParams();
@@ -289,20 +328,44 @@ const loadProducts = async (categoria = "", familiaId = "", searchTerm = "") => 
       throw new Error(data.error || "Error al cargar productos");
 
     if (data.success && data.data.length > 0) {
-      container.innerHTML = data.data.map(createProductCard).join("");
+      container.innerHTML = data.data.map((producto, index) => {
+          // Añadimos una clase de fade-in con un pequeño retraso escalonado
+          const cardHtml = createProductCard(producto);
+          return `<div class="product-fade-in" style="animation-delay: ${index * 50}ms">${cardHtml}</div>`;
+      }).join("");
       attachEventListeners();
     } else {
+      // Estado vacío mejorado
       container.innerHTML = `
-                <div class="col-span-full text-center py-10">
-                    <p class="text-gray-500">No se encontraron productos con estos filtros.</p>
+                <div class="col-span-full text-center py-20 flex flex-col items-center justify-center animate-fade-in">
+                    <div class="text-6xl mb-6">🔍</div>
+                    <h3 class="text-2xl font-bold text-gray-700 mb-2">No encontramos lo que buscas</h3>
+                    <p class="text-gray-500 mb-8 max-w-md mx-auto">Prueba ajustando tus términos de búsqueda o seleccionando una categoría diferente.</p>
+                    <button id="clear-filters-btn" class="bg-lib-blue text-white px-8 py-3 rounded-full hover:bg-blue-700 transition-all transform hover:scale-105 shadow-lg">
+                        Ver todos los productos
+                    </button>
                 </div>
             `;
+      
+      document.getElementById('clear-filters-btn')?.addEventListener('click', () => {
+          const searchInput = document.getElementById('search-input');
+          if(searchInput) searchInput.value = "";
+          activeCategory = "";
+          activeFamily = "";
+          document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active-filter'));
+          const startLink = document.querySelector('.category-link[data-category="all"]');
+          if(startLink) startLink.classList.add('active-filter');
+          document.getElementById('familia-filters-container').classList.add('hidden');
+          loadProducts();
+      });
     }
   } catch (error) {
     console.error("Error:", error);
-    document.getElementById("productos-container").innerHTML = `
+    container.innerHTML = `
             <div class="col-span-full text-center py-10">
-                <p class="text-red-500">Error al cargar productos. Por favor intenta más tarde.</p>
+                <div class="text-5xl mb-4">⚠️</div>
+                <p class="text-red-500 font-bold">Error al cargar productos</p>
+                <button onclick="location.reload()" class="mt-4 text-lib-blue underline">Reintentar</button>
             </div>
         `;
   }

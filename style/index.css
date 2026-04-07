@@ -40,3 +40,46 @@
      background-image: radial-gradient(circle, rgba(49, 130, 206, 0.1) 1px, transparent 1px);
      background-size: 20px 20px;
  }
+
+ /* Filtros Activos */
+ .active-filter {
+     background-color: #F6E05E !important; /* lib-yellow */
+     color: #3182CE !important; /* lib-blue */
+     transform: scale(1.1);
+     box-shadow: 0 4px 15px rgba(246, 224, 94, 0.4);
+ }
+
+ /* Skeleton Loading Animation */
+ @keyframes shimmer {
+     0% { background-position: -468px 0; }
+     100% { background-position: 468px 0; }
+ }
+
+ .skeleton {
+     background: #f6f7f8;
+     background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+     background-repeat: no-repeat;
+     background-size: 800px 100%;
+     display: inline-block;
+     position: relative;
+     animation: shimmer 1s linear infinite forwards;
+ }
+
+ .skeleton-card {
+     height: 380px;
+     border-radius: 0.75rem;
+ }
+
+ /* Transiciones suaves para el grid de productos */
+ #productos-container {
+     transition: opacity 0.3s ease-in-out;
+ }
+ 
+ .product-fade-in {
+     animation: fadeIn 0.5s ease-out forwards;
+ }
+
+ @keyframes fadeIn {
+     from { opacity: 0; transform: translateY(20px); }
+     to { opacity: 1; transform: translateY(0); }
+ }
