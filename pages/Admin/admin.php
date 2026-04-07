@@ -336,9 +336,11 @@ unset($_SESSION['flash']);
                                 <th class="p-3">Código</th>
                                 <th class="p-3">Imagen</th>
                                 <th class="p-3">Precio</th>
+                                <th class="p-3">Descripcion</th>
                                 <th class="p-3">Categoría</th>
                                 <th class="p-3">Stock</th>
                                 <th class="p-3">Estado</th>
+                                <th class="p-3">Fecha</th>
                                 <th class="p-3">Acciones</th>
                             </tr>
                         </thead>
