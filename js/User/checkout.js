@@ -98,26 +98,31 @@
                     .then(data => {
                         if (data.success) {
                             Swal.fire({
-                                title: '¡Compra exitosa!',
-                                text: 'Tu pedido ha sido procesado correctamente.',
+                                title: '¡Pedido Confirmado!',
+                                text: 'Tu compra ha sido procesada con éxito. Te enviamos un correo con el detalle.',
                                 icon: 'success',
-                                confirmButtonText: 'Ir al inicio'
+                                confirmButtonText: 'Ver mis pedidos',
+                                confirmButtonColor: '#48BB78'
                             }).then(() => {
-                                window.location.href = 'index.php';
+                                // Redirigir al historial de pedidos para mayor seguridad visual
+                                window.location.href = 'historial_pedidos.php';
                             });
                         } else {
                             Swal.fire({
-                                title: 'Error',
-                                text: data.error || 'Ha ocurrido un error al procesar tu pedido.',
-                                icon: 'error'
+                                title: 'Error en el proceso',
+                                text: data.error || 'No pudimos procesar tu pedido. Por favor intenta de nuevo.',
+                                icon: 'error',
+                                confirmButtonColor: '#3182CE'
                             });
                         }
                     })
                     .catch(error => {
+                        console.error('Error:', error);
                         Swal.fire({
-                            title: 'Error',
-                            text: 'No se pudo conectar con el servidor. Por favor, inténtalo de nuevo.',
-                            icon: 'error'
+                            title: 'Error de Red',
+                            text: 'No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.',
+                            icon: 'error',
+                            confirmButtonColor: '#3182CE'
                         });
                     });
                 }

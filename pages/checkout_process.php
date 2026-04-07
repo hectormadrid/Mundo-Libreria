@@ -106,16 +106,23 @@ try {
 
     $conexion->commit();
 
-    // ENVIAR CORREO DE CONFIRMACIÓN DE PEDIDO
-    $asunto = "Confirmación de Pedido #$id_pedido - Mundo Librería";
-    $cuerpo = EmailHelper::getOrderTemplate($nombre, $id_pedido, $total);
-    EmailHelper::send($correo, $asunto, $cuerpo);
+    // ENVIAR CORREO DE CONFIRMACIÓN DE PEDIDO DETALLADO
+    try {
+        $asunto = "Confirmación de Pedido #$id_pedido - Mundo Librería";
+        $cuerpo = EmailHelper::getOrderTemplate($nombre, $id_pedido, $total, $items);
+        EmailHelper::send($correo, $asunto, $cuerpo);
+    } catch (Exception $e_mail) {
+        error_log("Error al enviar email de confirmación: " . $e_mail->getMessage());
+        // No detenemos el proceso si falla el correo, el pedido ya está creado
+    }
 
-    echo json_encode(['success' => true]);
+    echo json_encode(['success' => true, 'id_pedido' => $id_pedido]);
 
 } catch (Exception $e) {
-    if (isset($conexion)) $conexion->rollback();
-    error_log('Error en checkout_process: ' . $e->getMessage());
+    if (isset($conexion) && $conexion->connect_errno == 0) {
+        $conexion->rollback();
+    }
+    error_log('CRITICAL ERROR en checkout_process: ' . $e->getMessage());
     http_response_code(400);
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 } finally {

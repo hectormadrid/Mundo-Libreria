@@ -86,27 +86,66 @@ class EmailHelper {
     }
 
     /**
-     * Genera la plantilla HTML para la confirmación de pedido.
+     * Genera la plantilla HTML para la confirmación de pedido con detalle.
      */
-    public static function getOrderTemplate($nombre, $id_pedido, $total) {
+    public static function getOrderTemplate($nombre, $id_pedido, $total, $items = []) {
         $total_fmt = number_format($total, 0, ',', '.');
+        $items_html = "";
+        
+        foreach ($items as $item) {
+            $subtotal = number_format($item['precio'] * $item['cantidad'], 0, ',', '.');
+            $items_html .= "
+            <tr>
+                <td style='padding: 10px; border-bottom: 1px solid #eee;'>{$item['nombre']}</td>
+                <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>{$item['cantidad']}</td>
+                <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>$$subtotal</td>
+            </tr>";
+        }
+
         return "
-        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;'>
-            <div style='background: #2F855A; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;'>
-                <h1 style='color: white; margin: 0;'>¡Pedido Confirmado!</h1>
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px; background-color: #ffffff;'>
+            <div style='background: linear-gradient(135deg, #2F855A 0%, #48BB78 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;'>
+                <h1 style='color: white; margin: 0; font-size: 28px;'>¡Pedido Recibido!</h1>
+                <p style='color: #e6fffa; margin-top: 10px;'>Orden #$id_pedido</p>
             </div>
             <div style='padding: 20px; color: #333;'>
-                <p>Hola $nombre,</p>
-                <p>Tu pedido <b>#$id_pedido</b> ha sido recibido con éxito y ya estamos trabajando en él.</p>
-                <div style='background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;'>
-                    <p style='margin: 5px 0;'><b>ID del Pedido:</b> #$id_pedido</p>
-                    <p style='margin: 5px 0;'><b>Total pagado:</b> $$total_fmt</p>
-                    <p style='margin: 5px 0;'><b>Estado:</b> Procesando</p>
+                <p style='font-size: 16px;'>Hola <b>$nombre</b>,</p>
+                <p>Tu pedido ha sido procesado con éxito. Aquí tienes el detalle de tu compra en <b>Mundo Librería</b>:</p>
+                
+                <table style='width: 100%; border-collapse: collapse; margin: 20px 0;'>
+                    <thead>
+                        <tr style='background-color: #f7fafc;'>
+                            <th style='padding: 10px; text-align: left; border-bottom: 2px solid #edf2f7;'>Producto</th>
+                            <th style='padding: 10px; text-align: center; border-bottom: 2px solid #edf2f7;'>Cant.</th>
+                            <th style='padding: 10px; text-align: right; border-bottom: 2px solid #edf2f7;'>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        $items_html
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan='2' style='padding: 15px 10px; text-align: right; font-weight: bold; font-size: 18px;'>Total:</td>
+                            <td style='padding: 15px 10px; text-align: right; font-weight: bold; font-size: 18px; color: #2F855A;'>$$total_fmt</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div style='background: #ebf8ff; border-left: 4px solid #3182ce; padding: 15px; margin: 20px 0;'>
+                    <p style='margin: 0; font-size: 14px; color: #2a4365;'>
+                        <b>Información de Envío:</b><br>
+                        Estamos preparando tus productos. Te notificaremos vía email cuando el despacho esté en camino.
+                    </p>
                 </div>
-                <p>Te enviaremos otro correo cuando tu pedido sea despachado.</p>
+                
+                <p style='font-size: 14px; color: #718096; text-align: center; margin-top: 30px;'>
+                    Si tienes alguna pregunta sobre tu pedido, no dudes en contactarnos.
+                </p>
             </div>
-            <hr style='border: 0; border-top: 1px solid #eee;'>
-            <p style='font-size: 12px; color: #777; text-align: center;'>&copy; 2025 Mundo Librería. Gracias por tu preferencia.</p>
+            <div style='background-color: #f7fafc; padding: 20px; text-align: center; border-radius: 0 0 10px 10px; border-top: 1px solid #edf2f7;'>
+                <p style='font-size: 12px; color: #a0aec0; margin: 0;'>&copy; 2025 Mundo Librería. Pasión por el papel.</p>
+                <p style='font-size: 10px; color: #cbd5e0; margin-top: 5px;'>Este es un correo automático, por favor no respondas directamente.</p>
+            </div>
         </div>";
     }
 
