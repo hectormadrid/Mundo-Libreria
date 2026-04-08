@@ -162,8 +162,8 @@ $stmt_carrito->close();
             <h2 class="text-2xl font-bold text-gray-800">Método de Pago</h2>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="payment-card" data-method="transferencia">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="payment-card cursor-pointer" data-method="transferencia">
               <div class="text-center">
                 <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
                   <i class="fas fa-university text-blue-600 text-2xl"></i>
@@ -178,7 +178,7 @@ $stmt_carrito->close();
               </div>
             </div>
 
-            <div class="payment-card" data-method="tarjeta">
+            <div class="payment-card cursor-pointer" data-method="tarjeta">
               <div class="text-center">
                 <div class="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
                   <i class="fas fa-credit-card text-purple-600 text-2xl"></i>
@@ -186,14 +186,14 @@ $stmt_carrito->close();
                 <h3 class="font-bold text-gray-800 mb-2">Tarjeta</h3>
                 <p class="text-sm text-gray-600">Crédito o débito</p>
                 <div class="mt-3 flex justify-center space-x-1">
-                  <i class="fab fa-cc-visa text-blue-600"></i>
-                  <i class="fab fa-cc-mastercard text-red-600"></i>
-                  <i class="fab fa-cc-amex text-blue-800"></i>
+                  <i class="fab fa-cc-visa text-blue-600 text-lg"></i>
+                  <i class="fab fa-cc-mastercard text-red-600 text-lg"></i>
+                  <i class="fab fa-cc-amex text-blue-800 text-lg"></i>
                 </div>
               </div>
             </div>
 
-            <div class="payment-card" data-method="efectivo">
+            <div class="payment-card cursor-pointer" data-method="efectivo">
               <div class="text-center">
                 <div class="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
                   <i class="fas fa-money-bill-wave text-green-600 text-2xl"></i>
@@ -205,6 +205,40 @@ $stmt_carrito->close();
                     <i class="fas fa-truck mr-1"></i>Entrega
                   </span>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Formulario de Tarjeta (Oculto por defecto) -->
+          <div id="cardDetailsForm" class="hidden space-y-4 border-t border-gray-100 pt-6 animate-fade-in">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+              <i class="fas fa-shield-alt text-green-500 mr-2"></i>
+              Detalles de la Tarjeta
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Nombre en la Tarjeta</label>
+                <input type="text" name="card_name" placeholder="Nombre como aparece en la tarjeta"
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Número de Tarjeta</label>
+                <div class="relative">
+                  <input type="text" name="card_number" id="cardNumberInput" placeholder="0000 0000 0000 0000" maxlength="19"
+                         class="w-full p-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                  <i class="fas fa-credit-card absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Vencimiento (MM/AA)</label>
+                <input type="text" name="card_expiry" id="cardExpiryInput" placeholder="MM/AA" maxlength="5"
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">CVV</label>
+                <input type="text" name="card_cvv" id="cardCvvInput" placeholder="123" maxlength="4"
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
               </div>
             </div>
           </div>

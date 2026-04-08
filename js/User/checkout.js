@@ -9,6 +9,21 @@
                 // Actualizar input hidden
                 const method = this.dataset.method;
                 document.getElementById('selectedPaymentMethod').value = method;
+
+                // Mostrar/Ocultar formulario de tarjeta
+                const cardForm = document.getElementById('cardDetailsForm');
+                if (method === 'tarjeta') {
+                    cardForm.classList.remove('hidden');
+                    cardForm.classList.add('animate-fade-in');
+                    // Hacer campos de tarjeta requeridos dinámicamente
+                    cardForm.querySelectorAll('input').forEach(input => input.required = true);
+                } else {
+                    cardForm.classList.add('hidden');
+                    cardForm.querySelectorAll('input').forEach(input => {
+                        input.required = false;
+                        input.value = ''; // Limpiar al ocultar
+                    });
+                }
                 
                 // Feedback visual
                 const icon = this.querySelector('i');
@@ -19,12 +34,35 @@
             });
         });
 
+        // Formatear Número de Tarjeta (4 en 4)
+        document.getElementById('cardNumberInput').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formatted;
+        });
+
+        // Formatear Vencimiento (MM/AA)
+        document.getElementById('cardExpiryInput').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Formatear CVV (Solo números)
+        document.getElementById('cardCvvInput').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
         // Seleccionar método por defecto
         document.querySelector('.payment-card[data-method="transferencia"]').classList.add('selected');
 
         // Validación de formulario mejorada
         document.getElementById('checkoutForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            const method = document.getElementById('selectedPaymentMethod').value;
             
             // Validar campos requeridos
             const requiredFields = this.querySelectorAll('input[required]');
@@ -34,10 +72,8 @@
                 if (!field.value.trim()) {
                     isValid = false;
                     field.style.borderColor = '#EF4444';
-                    field.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
                 } else {
                     field.style.borderColor = '#10B981';
-                    field.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
                 }
             });
 
@@ -45,10 +81,30 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Campos incompletos',
-                    text: 'Por favor completa todos los campos requeridos',
+                    text: 'Por favor completa todos los campos de contacto y pago',
                     confirmButtonColor: '#3182CE'
                 });
                 return;
+            }
+
+            // Validaciones específicas de tarjeta
+            if (method === 'tarjeta') {
+                const cardNumber = document.getElementById('cardNumberInput').value.replace(/\s/g, '');
+                const cardExpiry = document.getElementById('cardExpiryInput').value;
+                const cardCvv = document.getElementById('cardCvvInput').value;
+
+                if (cardNumber.length < 13) {
+                    Swal.fire({ icon: 'error', title: 'Número de tarjeta inválido' });
+                    return;
+                }
+                if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
+                    Swal.fire({ icon: 'error', title: 'Fecha de vencimiento inválida (MM/AA)' });
+                    return;
+                }
+                if (cardCvv.length < 3) {
+                    Swal.fire({ icon: 'error', title: 'CVV inválido' });
+                    return;
+                }
             }
 
             // Validar email
