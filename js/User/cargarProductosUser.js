@@ -84,28 +84,44 @@ const attachEventListeners = () => {
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    showNotification('✅ Producto agregado al carrito', 'success');
+                    // Feedback visual en el botón
+                    button.innerHTML = '✅ <span class="text-xs">¡Listo!</span>';
+                    button.classList.remove('bg-lib-yellow');
+                    button.classList.add('bg-green-500', 'text-white');
                     
-                    // Actualizar el contador del carrito flotante
-                    updateCartCount(result.cartCount);
+                    // Mostrar notificación flotante personalizada
+                    showNotification('Producto añadido correctamente', 'success');
+                    
+                    // Abrir el drawer para mostrar el carrito actualizado
+                    if (typeof openCartDrawer === 'function') {
+                        openCartDrawer();
+                    }
+                    
+                    // Revertir el botón después de un momento
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.classList.remove('bg-green-500', 'text-white');
+                        button.classList.add('bg-lib-yellow');
+                        button.disabled = false;
+                    }, 2000);
                     
                 } else {
                     let errorMsg = 'Error al agregar producto';
                     if (result.error) errorMsg = result.error;
                     
-                    showNotification(`❌ ${errorMsg}`, 'error');
+                    showNotification(errorMsg, 'error');
                     
                     if (response.status === 401) {
-                        showNotification('🔐 Inicia sesión para continuar', 'warning');
                         setTimeout(() => {
                             window.location.href = 'login.php';
-                        }, 2000);
+                        }, 1500);
                     }
+                    button.innerHTML = originalText;
+                    button.disabled = false;
                 }
             } catch (error) {
                 console.error('Error de red:', error);
-                showNotification('❌ Error de conexión', 'error');
-            } finally {
+                showNotification('Error de conexión', 'error');
                 button.innerHTML = originalText;
                 button.disabled = false;
             }
@@ -113,24 +129,30 @@ const attachEventListeners = () => {
     });
 };
 
-// Función de notificación con SweetAlert2
-function showNotification(message, type = "info") {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.addEventListener("mouseenter", Swal.stopTimer);
-      toast.addEventListener("mouseleave", Swal.resumeTimer);
-    },
-  });
-
-  Toast.fire({
-    icon: type,
-    title: message,
-  });
+// Función de notificación mejorada
+function showNotification(message, type = "success") {
+    const notification = document.getElementById('notification');
+    const text = document.getElementById('notification-text');
+    
+    if (!notification || !text) return;
+    
+    text.textContent = message;
+    
+    // Cambiar color según tipo
+    notification.classList.remove('bg-green-500', 'bg-red-500', 'bg-yellow-500');
+    if (type === 'success') notification.classList.add('bg-green-500');
+    else if (type === 'error') notification.classList.add('bg-red-500');
+    else notification.classList.add('bg-yellow-500');
+    
+    // Mostrar
+    notification.classList.remove('opacity-0', 'translate-x-full');
+    notification.classList.add('opacity-100', 'translate-x-0');
+    
+    // Ocultar después de 3 segundos
+    setTimeout(() => {
+        notification.classList.add('opacity-0', 'translate-x-full');
+        notification.classList.remove('opacity-100', 'translate-x-0');
+    }, 3000);
 }
 
 // Función para obtener el conteo inicial al cargar la página

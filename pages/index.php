@@ -347,14 +347,65 @@ SessionHelper::start();
       </div>
     </div>
   </footer>
-  <div id="notification" class="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 opacity-0 -translate-y-10">
-  <div class="flex items-center">
-    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-    </svg>
-    <span id="notification-text">Producto agregado al carrito</span>
+  <!-- Notification -->
+  <div id="notification" class="fixed top-4 right-4 z-[100] bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 opacity-0 translate-x-full">
+    <div class="flex items-center">
+      <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+      <span id="notification-text">Producto agregado al carrito</span>
+    </div>
   </div>
-</div>
+
+  <!-- Carrito Lateral (Side Drawer) -->
+  <div id="cart-drawer" class="fixed inset-0 z-[60] invisible">
+    <!-- Overlay -->
+    <div id="cart-overlay" class="absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300"></div>
+    
+    <!-- Drawer -->
+    <div id="cart-content" class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+      <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-lib-blue text-white">
+        <h3 class="text-xl font-bold flex items-center">
+          <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293 c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4  2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          Tu Carrito
+        </h3>
+        <button id="close-cart" class="p-2 hover:bg-white/20 rounded-full transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Items Container -->
+      <div id="cart-drawer-items" class="flex-1 overflow-y-auto p-6 space-y-4">
+        <!-- Los items se cargarán aquí dinámicamente -->
+        <div class="flex flex-col items-center justify-center h-full text-gray-400">
+          <svg class="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 11-8 0m-4 8a2 2 0 012-2h12a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6z" />
+          </svg>
+          <p>Tu carrito está vacío</p>
+        </div>
+      </div>
+      
+      <!-- Footer del Drawer -->
+      <div id="cart-drawer-footer" class="p-6 border-t border-gray-100 bg-gray-50 hidden">
+        <div class="flex justify-between items-center mb-4">
+          <span class="text-gray-600 font-medium">Subtotal</span>
+          <span id="cart-drawer-subtotal" class="text-2xl font-bold text-lib-blue">$0</span>
+        </div>
+        <div class="space-y-3">
+          <a href="Carrito.php" class="block w-full text-center bg-gray-200 text-gray-800 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors">
+            Ver Carrito Completo
+          </a>
+          <a href="checkout.php" class="block w-full text-center bg-lib-yellow text-lib-blue py-4 rounded-xl font-bold text-lg hover:bg-yellow-400 transition-all transform hover:scale-[1.02] shadow-lg">
+            Finalizar Compra
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script src="../js/User/carousel.js"></script>
