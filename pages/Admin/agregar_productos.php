@@ -24,14 +24,16 @@ $maxSize = 2 * 1024 * 1024; // 2MB
 try {
     require_once(__DIR__ . '/../../db/Conexion.php');
 
+    // VALIDACIÓN CSRF
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        throw new Exception("Error de seguridad: Token CSRF inválido.");
+    }
+
     // Validar campos obligatorios
-    $requiredFields = ['nombre', 'precio', 'descripcion', 'id_categoria', 'estado', 'Stock'];
+    $requiredFields = ['nombre', 'precio', 'descripcion', 'estado', 'Stock'];
     foreach ($requiredFields as $field) {
-        if (!isset($_POST[$field])) { // Verificar si existe primero
-            throw new Exception("El campo $field es requerido");
-        }
-        if ($field !== 'id_categoria' && empty(trim($_POST[$field]))) { // Validar que no esté vacío, excepto para id_categoria que puede ser 0
-            throw new Exception("El campo $field no puede estar vacío");
+        if (!isset($_POST[$field]) || (is_string($_POST[$field]) && trim($_POST[$field]) === '')) {
+            throw new Exception("El campo " . ucfirst($field) . " es requerido y no puede estar vacío");
         }
     }
 
@@ -49,13 +51,13 @@ try {
 
         // Validar tamaño
         if ($_FILES['imagen']['size'] > $maxSize) {
-            throw new Exception("El tamaño excede el límite de 2MB");
+            throw new Exception("El tamaño de la imagen excede el límite de 2MB");
         }
 
         // Crear directorio si no existe
         if (!file_exists($uploadDir)) {
             if (!mkdir($uploadDir, 0755, true)) {
-                throw new Exception("No se pudo crear el directorio de uploads");
+                throw new Exception("No se pudo crear el directorio de subida de imágenes");
             }
         }
 
@@ -101,6 +103,24 @@ try {
         $check_stmt->close();
     }
 
+    // Preparar valores para la inserción
+    $nombre = trim($_POST['nombre']);
+    $precio = (float)$_POST['precio'];
+    $descripcion = trim($_POST['descripcion']);
+    $marca = isset($_POST['marca']) && !empty(trim($_POST['marca'])) ? trim($_POST['marca']) : null;
+    $color = isset($_POST['color']) && !empty(trim($_POST['color'])) ? trim($_POST['color']) : null;
+    
+    // Manejo de id_categoria e id_familia como nulos si están vacíos
+    $id_categoria = !empty($_POST['id_categoria']) ? (int)$_POST['id_categoria'] : null;
+    $id_familia = !empty($_POST['id_familia']) ? (int)$_POST['id_familia'] : null;
+    
+    $estado_raw = $_POST['estado'] ?? ''; 
+    $estado = strtolower($estado_raw);
+    if (!in_array($estado, ['activo', 'inactivo'])) {
+        $estado = 'activo';
+    }
+    $Stock = (int)$_POST['Stock'];
+
     // Insertar en la base de datos
     $query = "INSERT INTO productos (nombre, codigo_barras, id_categoria, id_familia, precio, descripcion, marca, color, estado, imagen, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conexion->prepare($query);
@@ -108,23 +128,6 @@ try {
     if (!$stmt) {
         throw new Exception('Error al preparar la consulta: ' . $conexion->error);
     }
-
-    // Sanitizar valores
-    $nombre = trim($_POST['nombre']);
-    $precio = (float)$_POST['precio'];
-    $descripcion = trim($_POST['descripcion']);
-    $marca = isset($_POST['marca']) && !empty(trim($_POST['marca'])) ? trim($_POST['marca']) : null;
-    $color = isset($_POST['color']) && !empty(trim($_POST['color'])) ? trim($_POST['color']) : null;
-    $id_categoria = (int)$_POST['id_categoria'];
-    $id_familia = isset($_POST['id_familia']) && !empty($_POST['id_familia']) ? (int)$_POST['id_familia'] : null;
-    
-    $estado_raw = $_POST['estado'] ?? ''; // Obtener estado, por defecto cadena vacía
-    $estado = strtolower($estado_raw); // Convertir a minúsculas
-    // Validar y establecer por defecto si es inválido
-    if (!in_array($estado, ['activo', 'inactivo'])) {
-        $estado = 'activo'; // Por defecto 'activo'
-    }
-    $Stock = (int)$_POST['Stock'];
 
     $stmt->bind_param(
         "ssiidsssssi",
@@ -144,7 +147,7 @@ try {
     if ($stmt->execute()) {
         // Obtener el nombre de la categoría para la respuesta
         $categoriaNombre = '';
-        if ($id_categoria > 0) {
+        if ($id_categoria) {
             $cat_stmt = $conexion->prepare("SELECT nombre FROM categorias WHERE id = ?");
             $cat_stmt->bind_param("i", $id_categoria);
             $cat_stmt->execute();
@@ -158,7 +161,6 @@ try {
         $response = [
             'success' => true,
             'message' => 'Producto agregado correctamente',
-            'imagen' => $nombreImagen,
             'data' => [ 
                 'id' => $stmt->insert_id,
                 'nombre' => $nombre,
@@ -167,7 +169,7 @@ try {
                 'marca' => $marca,
                 'color' => $color,
                 'id_categoria' => $id_categoria,
-                'categoria' => $categoriaNombre, // Enviar también el nombre para la tabla
+                'categoria' => $categoriaNombre,
                 'estado' => $estado,
                 'Stock' => $Stock,
                 'imagen' => $nombreImagen,
@@ -182,6 +184,12 @@ try {
         }
         throw new Exception('Error al ejecutar la consulta: ' . $stmt->error);
     }
+} catch (Exception $e) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ]);
 } finally {
     if (isset($stmt)) $stmt->close();
     if (isset($conexion)) $conexion->close();

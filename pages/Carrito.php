@@ -124,7 +124,7 @@
                 </div>
 
                 <div class="flex justify-between mt-6">
-                    <a href="/" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold flex items-center">
+                    <a href="index.php" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold flex items-center">
                         <i class="fas fa-arrow-left mr-2"></i> Seguir Comprando
                     </a>
                     <button id="clear-cart-btn" class="bg-lib-yellow text-gray-800 px-6 py-3 rounded-xl font-semibold hover:bg-yellow-500 transition-all duration-300">

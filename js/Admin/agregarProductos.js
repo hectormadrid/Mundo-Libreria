@@ -118,24 +118,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const requiredFields = [
       formProducto.querySelector('input[name="nombre"]'),
-      formProducto.querySelector('input[name="imagen"]'),
       formProducto.querySelector('input[name="precio"]'),
       formProducto.querySelector('textarea[name="descripcion"]'),
       formProducto.querySelector('select[name="id_categoria"]'),
       formProducto.querySelector('input[name="Stock"]'),
       formProducto.querySelector('select[name="estado"]'),
-      
     ];  
 
     for (let field of requiredFields) {
-      if (!field.value.trim()) {
+      if (!field || !field.value.trim()) {
         await Swal.fire({
           icon: "warning",
           title: "Campo requerido",
-          text: `Por favor completa el campo: ${field.name}`,
+          text: `Por favor completa el campo: ${field ? field.name : 'desconocido'}`,
           confirmButtonColor: "#d33",
         });
-        field.focus();
+        if (field) field.focus();
         return;
       }
     }
@@ -153,7 +151,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     // --- FIN NUEVO ---
 
-    const estado = document.querySelector('select[name="estado"]').value;
+    const estadoSelect = formProducto.querySelector('select[name="estado"]');
+    const estado = estadoSelect ? estadoSelect.value : "";
     if (!["Activo", "Inactivo"].includes(estado)) {
       await Swal.fire({
         icon: "warning",
@@ -184,8 +183,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const data = await response.json();
 
-      if (!response.ok) throw new Error(data.error || "Error en el servidor");
-
       if (data.success) {
         await Swal.fire({
           icon: "success",
@@ -207,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
       await Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Complete todos los campos correctamente",
+        text: error.message || "Hubo un problema al procesar la solicitud",
         confirmButtonColor: "#d33",
       });
     } finally {

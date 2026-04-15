@@ -71,7 +71,7 @@ class ProductosDataTable {
           return `
             <img src="${path}" 
                 alt="Imagen producto" 
-                 class="h-12 w-12 object-cover rounded cursor-pointer hover:scale-150 transition-all"
+                class="h-12 w-12 object-cover rounded cursor-pointer hover:scale-150 transition-all"
                 onclick="ProductosDataTable.showFullImage('${path}')">
           `;
         },
