@@ -13,6 +13,7 @@ $sql = "SELECT
   u.nombre AS cliente,
   u.correo,
   p.total,
+  p.metodo_pago,
   p.estado,
   p.fecha
 FROM pedido p
@@ -22,6 +23,11 @@ ORDER BY p.fecha DESC;";
 $result = $conexion->query($sql);
 if (!$result) {
     die("Error en la consulta: " . $conexion->error);
+}
+
+// Generar token CSRF si no existe
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 ?>
 <!DOCTYPE html>
@@ -47,7 +53,7 @@ if (!$result) {
     <link rel="stylesheet" href="../../style/admin.css">
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-100" data-csrf="<?= $_SESSION['csrf_token'] ?>">
  <?php include '_sidebar.php'; ?>
   
     <!-- Sección principal -->
@@ -65,6 +71,7 @@ if (!$result) {
                         <th class="p-2">Cliente</th>
                         <th class="p-2">Correo</th>
                         <th class="p-2">Total</th>
+                        <th class="p-2">Pago</th>
                         <th class="p-2">Estado</th>
                         <th class="p-2">Fecha</th>
                         <th class="p-2">Acciones</th>
@@ -73,19 +80,29 @@ if (!$result) {
                 <tbody>
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <tr>
-                            <td class="p-2"><?= htmlspecialchars($row['id']) ?></td>
+                            <td class="p-2 text-center"><?= htmlspecialchars($row['id']) ?></td>
                             <td class="p-2"><?= htmlspecialchars($row['cliente']) ?></td>
                             <td class="p-2"><?= htmlspecialchars($row['correo']) ?></td>
-                            <td class="p-2 text-center">$<?= number_format($row['total'], 0) ?></td>
+                            <td class="p-2 text-center font-bold">$<?= number_format($row['total'], 0, ',', '.') ?></td>
                             <td class="p-2 text-center">
-                                <span class="px-2 py-1 rounded text-white <?= $row['estado'] === 'pagado' ? 'bg-green-500' : 'bg-yellow-500' ?>">
-                                    <?= ucfirst($row['estado']) ?>
+                                <span class="px-2 py-1 rounded text-xs uppercase font-bold bg-blue-100 text-blue-800">
+                                    <?= htmlspecialchars($row['metodo_pago'] ?? 'N/A') ?>
                                 </span>
                             </td>
-                            <td class="p-2 text-center"><?= $row['fecha'] ?></td>
                             <td class="p-2 text-center">
-                                <button class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded ver-detalle" data-id="<?= $row['id'] ?>">Ver</button>
-                                <button class="bg-green-500 hover:bg-green-700 text-white px-3 py-1 rounded actualizar-estado" data-id="<?= $row['id'] ?>">Actualizar</button>
+                                <select class="status-select p-1 rounded border text-sm" data-id="<?= $row['id'] ?>">
+                                    <option value="pendiente" <?= $row['estado'] === 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
+                                    <option value="pagado" <?= $row['estado'] === 'pagado' ? 'selected' : '' ?>>Pagado</option>
+                                    <option value="enviado" <?= $row['estado'] === 'enviado' ? 'selected' : '' ?>>Enviado</option>
+                                    <option value="entregado" <?= $row['estado'] === 'entregado' ? 'selected' : '' ?>>Entregado</option>
+                                    <option value="cancelado" <?= $row['estado'] === 'cancelado' ? 'selected' : '' ?>>Cancelado</option>
+                                </select>
+                            </td>
+                            <td class="p-2 text-center text-xs"><?= $row['fecha'] ?></td>
+                            <td class="p-2 text-center">
+                                <button class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded ver-detalle" data-id="<?= $row['id'] ?>">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                             </td>
                         </tr>
                     <?php endwhile; ?>

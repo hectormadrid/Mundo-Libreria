@@ -65,10 +65,10 @@ try {
         throw new Exception('Tu carrito está vacío.');
     }
 
-    // 4. Crear pedido
-    $sql_pedido = "INSERT INTO pedido (id_usuario, total, estado) VALUES (?, ?, 'pendiente')";
+    // 4. Crear pedido (Incluyendo método de pago)
+    $sql_pedido = "INSERT INTO pedido (id_usuario, total, metodo_pago, estado) VALUES (?, ?, ?, 'pendiente')";
     $stmt_pedido = $conexion->prepare($sql_pedido);
-    $stmt_pedido->bind_param("id", $id_usuario, $total);
+    $stmt_pedido->bind_param("ids", $id_usuario, $total, $metodo_pago);
     $stmt_pedido->execute();
     $id_pedido = $stmt_pedido->insert_id;
     $stmt_pedido->close();
