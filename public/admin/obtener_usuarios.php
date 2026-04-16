@@ -1,0 +1,40 @@
+<?php
+// obtener_usuarios.php - Versión corregida
+require_once __DIR__ . '/../../vendor/autoload.php';
+use App\Helpers\SessionHelper;
+use App\Database\Conexion;
+
+SessionHelper::start();
+header('Content-Type: application/json');
+$conexion = Conexion::getConnection();
+
+
+// Verificar que sea administrador
+if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'error' => 'Acceso no autorizado.']);
+    exit;
+}
+try {
+    $query = "SELECT id, rut, nombre, correo,telefono,direccion FROM usuario ORDER BY id DESC";
+    $stmt = $conexion->prepare($query);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $usuarios = [];
+    while ($row = $result->fetch_assoc()) {
+        $usuarios[] = $row;
+    }
+
+    // Asegurar que siempre devuelve un array en 'data'
+    echo json_encode([
+        'data' => $usuarios
+    ]);
+
+} catch (Exception $e) {
+    // En caso de error, devolver array vacío
+    echo json_encode([
+        'data' => []
+    ]);
+}
+?>
