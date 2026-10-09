@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../vendor/autoload.php';
 use App\Helpers\SessionHelper;
 use App\Database\Conexion;
+use App\Helpers\SecurityHelper;
 
 SessionHelper::start();
 header('Content-Type: application/json');
@@ -29,8 +30,8 @@ try {
     if (empty($password)) {
         throw new Exception("La contraseña es obligatoria.");
     }
-    if (strlen($password) < 4) {
-        throw new Exception("La contraseña debe tener al menos 4 caracteres.");
+    if (!SecurityHelper::validatePasswordStrength($password)) {
+        throw new Exception("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.");
     }
     
     // 3. Verificar si el administrador ya existe

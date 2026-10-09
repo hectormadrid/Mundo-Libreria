@@ -53,8 +53,8 @@ function is_active($page, $current) {
     </div>
 
     <div class="mt-8 text-white user-section">
-        <div class="font-semibold user-name"><?php echo htmlspecialchars($_SESSION['nombre'] ?? 'Administrador'); ?></div>
-        <a href="../../db/Cerrar_sesion.php" class="inline-block mt-3 bg-red-600 px-3 py-1 rounded text-white logout-btn">
+        <div class="font-semibold user-name"><?php echo htmlspecialchars($_SESSION['admin_nombre'] ?? 'Administrador'); ?></div>
+        <a href="../logout.php" class="inline-block mt-3 bg-red-600 px-3 py-1 rounded text-white logout-btn">
             Cerrar sesión
         </a>
     </div>

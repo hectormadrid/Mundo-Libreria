@@ -212,7 +212,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 name="password"
                                 required
                                 placeholder="Crea una contraseña segura"
-                                minlength="6"
+                                minlength="8"
                                 class="input-glow w-full px-6 py-4 pr-14 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:border-lib-yellow focus:bg-white outline-none text-gray-800 placeholder-gray-500 font-medium transition-all duration-300">
                             <button 
                                 type="button" 

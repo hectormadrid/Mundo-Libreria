@@ -8,16 +8,16 @@ SessionHelper::start();
 $conexion = Conexion::getConnection();
 // Verificar que sea administrador
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
-    header('Location: ../pages/login_admin.php');
+    header('Location: ../login_admin.php');
     exit;
 }
 $stmt = $conexion->prepare("SELECT nombre FROM Administrador WHERE id = ?");
-$stmt->bind_param("i", $_SESSION['ID']);
+$stmt->bind_param("i", $_SESSION['admin_id']);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($row = $result->fetch_assoc()) {
-    $_SESSION['nombre'] = $row['nombre'];
+    $_SESSION['admin_nombre'] = $row['nombre'];
 }
 
 ?>

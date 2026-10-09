@@ -74,7 +74,7 @@ try {
                     <a href="perfilUser.php" class="text-white hover:text-yellow-300 transition-colors">
                         <i class="fas fa-user mr-2"></i>Mi Perfil
                     </a>
-                    <a href="../db/Cerrar_sesion.php" class="text-white hover:text-yellow-300 transition-colors">
+                    <a href="logout.php" class="text-white hover:text-yellow-300 transition-colors">
                         <i class="fas fa-sign-out-alt mr-2"></i>Salir
                     </a>
                 </nav>

@@ -24,16 +24,36 @@ if (!$id_producto) {
 $id_usuario = $_SESSION['ID'];
 
 try {
+    // Verificar que el producto exista y esté disponible
+    $stmt_prod = $conexion->prepare("SELECT stock FROM productos WHERE id = ? AND estado = 'activo'");
+    $stmt_prod->bind_param("i", $id_producto);
+    $stmt_prod->execute();
+    $producto = $stmt_prod->get_result()->fetch_assoc();
+    $stmt_prod->close();
+
+    if (!$producto) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'error' => 'Producto no disponible']);
+        exit;
+    }
+
     // Verificar si el producto ya está en el carrito del usuario
     $stmt = $conexion->prepare("SELECT id, cantidad FROM carrito WHERE id_usuario = ? AND id_producto = ?");
     $stmt->bind_param("ii", $id_usuario, $id_producto);
     $stmt->execute();
     $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $cantidad_actual = $row ? (int)$row['cantidad'] : 0;
 
-    if ($result->num_rows > 0) {
+    if ($cantidad_actual + 1 > (int)$producto['stock']) {
+        http_response_code(409);
+        echo json_encode(['success' => false, 'error' => 'No hay más stock disponible de este producto']);
+        exit;
+    }
+
+    if ($row) {
         // Si el producto ya está, actualizar la cantidad
-        $row = $result->fetch_assoc();
-        $nueva_cantidad = $row['cantidad'] + 1;
+        $nueva_cantidad = $cantidad_actual + 1;
         $stmt_update = $conexion->prepare("UPDATE carrito SET cantidad = ? WHERE id = ?");
         $stmt_update->bind_param("ii", $nueva_cantidad, $row['id']);
         $stmt_update->execute();

@@ -33,8 +33,8 @@ try {
         
         // Construir la ruta de la imagen. Si no hay imagen, usar un placeholder o dejar vacío
         $ruta_imagen = !empty($producto['imagen']) 
-            ? "/Mundo-Libreria/uploads/productos/" . $producto['imagen'] 
-            : "/Mundo-Libreria/assets/placeholder_producto.png";
+            ? "uploads/productos/" . $producto['imagen'] 
+            : "assets/placeholder_producto.png";
 
         $items[] = [
             'id' => $producto['id'],

@@ -147,7 +147,7 @@ try {
                                 <div class="flex items-center gap-4">
                                     <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
                                         <?php if ($item['imagen']): ?>
-                                            <img src="/Mundo-Libreria/uploads/productos/<?= htmlspecialchars($item['imagen']) ?>" 
+                                            <img src="uploads/productos/<?= htmlspecialchars($item['imagen']) ?>" 
                                                  class="w-full h-full object-cover">
                                         <?php else: ?>
                                             <i class="fas fa-image text-gray-400"></i>

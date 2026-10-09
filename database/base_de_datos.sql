@@ -1,8 +1,6 @@
 CREATE DATABASE IF NOT EXISTS Mundo_Libreria;
 USE Mundo_Libreria;
 
-select * from productos;
-select * from usuarios;
 --
 -- Estructura de la tabla `categorias`
 --
@@ -89,7 +87,8 @@ CREATE TABLE `pedido` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `id_usuario` INT NOT NULL,
   `total` DECIMAL(10,2) NOT NULL,
-  `estado` ENUM('pendiente', 'pagado', 'cancelado') DEFAULT 'pendiente',
+  `metodo_pago` VARCHAR(50) DEFAULT 'efectivo',
+  `estado` ENUM('pendiente', 'pagado', 'cancelado', 'enviado', 'entregado') DEFAULT 'pendiente',
   `fecha` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`id_usuario`) REFERENCES `usuario`(`id`) ON DELETE CASCADE
 );

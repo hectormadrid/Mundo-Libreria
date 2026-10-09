@@ -1,4 +1,4 @@
-<?php require_once __DIR__.'/logic/perfil_logic.php'; ?>
+<?php require_once __DIR__ . '/../src/Logic/perfil_logic.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -57,7 +57,7 @@
                         <i class="fas fa-shopping-cart mr-2"></i>
                         Carrito
                     </a>
-                    <a href="../db/Cerrar_sesion.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
+                    <a href="logout.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
                         <i class="fas fa-sign-out-alt mr-2"></i>
                         Salir
                     </a>
@@ -280,7 +280,7 @@
                 </div>
 
                 <!-- Cerrar Sesión -->
-                <a href="../db/Cerrar_sesion.php" 
+                <a href="logout.php" 
                    class="flex items-center justify-center space-x-3 w-full py-4 bg-white text-lib-red font-bold rounded-3xl border-2 border-lib-red hover:bg-lib-red hover:text-white transition-all group shadow-lg">
                     <i class="fas fa-sign-out-alt transition-transform group-hover:-translate-x-1"></i>
                     <span>Cerrar Sesión</span>

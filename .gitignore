@@ -6,3 +6,6 @@ node_modules/
 
 uploads/productos
 .env
+
+# Logs locales (pueden contener correos y enlaces de recuperación)
+logs/

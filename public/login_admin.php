@@ -38,9 +38,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Regenerar ID de sesión tras login exitoso
                 SessionHelper::regenerateSession();
 
-                $_SESSION['nombre'] = $usuario['nombre'];
-                $_SESSION['ID'] = $usuario['id'];
-                $_SESSION['tipo'] = 'administrador'; 
+                // La sesión de admin usa claves propias para no mezclarse con la de cliente
+                unset($_SESSION['ID'], $_SESSION['nombre'], $_SESSION['correo']);
+                $_SESSION['admin_id'] = $usuario['id'];
+                $_SESSION['admin_nombre'] = $usuario['nombre'];
+                $_SESSION['tipo'] = 'administrador';
                  
                 header("Location: Admin/admin.php");
                 exit();
@@ -230,7 +232,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script>
         Swal.fire({
             title: 'Acceso denegado',
-            text: '<?php json_encode ($error); ?>',
+            text: <?php echo json_encode($error); ?>,
             confirmButtonColor: '#3182CE'
         })
     </script>

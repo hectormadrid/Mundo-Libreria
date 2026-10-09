@@ -1,5 +1,4 @@
 <?php
-namespace App\Logic;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 

@@ -38,11 +38,17 @@ if (!SecurityHelper::validateEmail($correo)) {
     exit;
 }
 
+if (!in_array($metodo_pago, ['efectivo', 'transferencia', 'tarjeta'], true)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Método de pago no válido.']);
+    exit;
+}
+
 try {
     $conexion->begin_transaction();
 
     // 3. Verificar stock con BLOQUEO de filas (FOR UPDATE)
-    $sql = "SELECT p.id, p.nombre, p.precio, c.cantidad, p.stock
+    $sql = "SELECT p.id, p.nombre, p.precio, c.cantidad, p.stock, p.estado
             FROM carrito c
             JOIN productos p ON c.id_producto = p.id
             WHERE c.id_usuario = ? FOR UPDATE";
@@ -54,6 +60,9 @@ try {
     $items = [];
     $total = 0;
     while ($row = $result->fetch_assoc()) {
+        if (strtolower($row['estado']) !== 'activo') {
+            throw new Exception('El producto ya no está disponible: ' . $row['nombre']);
+        }
         if ($row['cantidad'] > $row['stock']) {
             throw new Exception('No hay suficiente stock para: ' . $row['nombre']);
         }
@@ -96,8 +105,9 @@ try {
     $stmt_delete_cart->execute();
     $stmt_delete_cart->close();
 
-    // Simulación de pago
-    if ($metodo_pago === 'tarjeta' || $metodo_pago === 'transferencia') {
+    // Simulación de pago con tarjeta: no hay pasarela integrada todavía.
+    // Transferencia y efectivo quedan 'pendiente' hasta que un admin confirme el pago.
+    if ($metodo_pago === 'tarjeta') {
         $stmt_update_pedido_estado = $conexion->prepare("UPDATE pedido SET estado='pagado' WHERE id=?");
         $stmt_update_pedido_estado->bind_param("i", $id_pedido);
         $stmt_update_pedido_estado->execute();

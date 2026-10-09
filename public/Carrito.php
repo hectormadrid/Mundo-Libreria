@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/logic/carrito_logic.php'; ?>
+<?php require_once __DIR__ . '/../src/Logic/carrito_logic.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -41,7 +41,7 @@
                     Inicio
                 </a>
 
-                <a href="../db/Cerrar_sesion.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
+                <a href="logout.php" class="text-white hover:text-lib-yellow transition-colors duration-300 flex items-center">
                     <i class="fas fa-sign-out-alt mr-2"></i>
                     Salir
                 </a>

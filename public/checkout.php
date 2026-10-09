@@ -219,25 +219,25 @@ $stmt_carrito->close();
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="md:col-span-2">
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Nombre en la Tarjeta</label>
-                <input type="text" name="card_name" placeholder="Nombre como aparece en la tarjeta"
+                <input type="text" placeholder="Nombre como aparece en la tarjeta"
                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
               </div>
               <div class="md:col-span-2">
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Número de Tarjeta</label>
                 <div class="relative">
-                  <input type="text" name="card_number" id="cardNumberInput" placeholder="0000 0000 0000 0000" maxlength="19"
+                  <input type="text" id="cardNumberInput" placeholder="0000 0000 0000 0000" maxlength="19"
                          class="w-full p-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                   <i class="fas fa-credit-card absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 </div>
               </div>
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Vencimiento (MM/AA)</label>
-                <input type="text" name="card_expiry" id="cardExpiryInput" placeholder="MM/AA" maxlength="5"
+                <input type="text" id="cardExpiryInput" placeholder="MM/AA" maxlength="5"
                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
               </div>
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">CVV</label>
-                <input type="text" name="card_cvv" id="cardCvvInput" placeholder="123" maxlength="4"
+                <input type="text" id="cardCvvInput" placeholder="123" maxlength="4"
                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
               </div>
             </div>
@@ -263,7 +263,7 @@ $stmt_carrito->close();
             <div class="order-item">
               <div class="flex items-center">
                 <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                <img src="/Mundo-Libreria/uploads/productos/<?= $imagen ?>"
+                <img src="uploads/productos/<?= $imagen ?>"
                         >
                 </div>
                 <div>

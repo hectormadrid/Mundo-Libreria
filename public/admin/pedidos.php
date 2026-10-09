@@ -8,7 +8,7 @@ SessionHelper::start();
 $conexion = Conexion::getConnection();
 // Verificar que sea administrador
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
-    header('Location: ../pages/login_admin.php');
+    header('Location: ../login_admin.php');
     exit;
 }
 // Traer pedidos con detalles

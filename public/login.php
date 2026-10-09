@@ -41,6 +41,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Regenerar ID de sesión tras login exitoso (Protección contra Hijacking)
                     SessionHelper::regenerateSession();
                     
+                    // Cerrar cualquier sesión de admin previa en este navegador
+                    unset($_SESSION['admin_id'], $_SESSION['admin_nombre'], $_SESSION['tipo']);
                     $_SESSION['nombre'] = $usuario['nombre'];
                     $_SESSION['ID'] = $usuario['id'];
                     $_SESSION['correo'] = $usuario['correo'];

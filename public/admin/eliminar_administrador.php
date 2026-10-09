@@ -28,7 +28,7 @@ try {
     }
     
     // 3. Prevenir que un administrador se elimine a sí mismo
-    $id_sesion_actual = $_SESSION['ID'] ?? null;
+    $id_sesion_actual = $_SESSION['admin_id'] ?? null;
     if ($id_a_eliminar == $id_sesion_actual) {
         throw new Exception("No puedes eliminar tu propia cuenta de administrador.");
     }
