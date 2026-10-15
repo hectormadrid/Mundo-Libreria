@@ -2,10 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import express, { type ErrorRequestHandler } from 'express';
 import session from 'express-session';
-import MySQLStoreFactory from 'express-mysql-session';
+import connectPgSimple from 'connect-pg-simple';
 import multer from 'multer';
 import { config } from './config.js';
-import { pool } from './db.js';
+import { isUniqueViolation, pool } from './db.js';
 import { HttpError } from './http.js';
 import { verifyCsrf } from './auth.js';
 import { authRouter } from './routes/auth.js';
@@ -14,7 +14,7 @@ import { cartRouter } from './routes/cart.js';
 import { accountRouter } from './routes/account.js';
 import { adminRouter } from './routes/admin.js';
 
-const MySQLStore = MySQLStoreFactory(session);
+const PgStore = connectPgSimple(session);
 
 export function createApp() {
   const app = express();
@@ -30,9 +30,8 @@ export function createApp() {
     next();
   });
 
-  // Las sesiones se guardan en la tabla `sessions` (se crea sola) y sobreviven a reinicios.
-  // La librería usa mysql2/promise internamente; sus tipos solo declaran el pool clásico.
-  const sessionStore = new MySQLStore({ createDatabaseTable: true, clearExpired: true }, pool as unknown as ConstructorParameters<typeof MySQLStore>[1]);
+  // Las sesiones se guardan en la tabla `sesiones` (database/schema.sql) y sobreviven a reinicios.
+  const sessionStore = new PgStore({ pool, tableName: 'sesiones', pruneSessionInterval: 15 * 60 });
   app.locals.sessionStore = sessionStore;
 
   // ------------------------------------------------------------------ API
@@ -63,6 +62,8 @@ export function createApp() {
     } else if (error instanceof multer.MulterError) {
       const message = error.code === 'LIMIT_FILE_SIZE' ? 'La imagen supera el límite de 2MB.' : 'No se pudo procesar el archivo enviado.';
       res.status(400).json({ error: message });
+    } else if (isUniqueViolation(error)) {
+      res.status(409).json({ error: 'Ya existe un registro con esos datos.' });
     } else if (error?.type === 'entity.parse.failed' || error?.type === 'entity.too.large') {
       res.status(400).json({ error: 'El cuerpo de la petición no es válido.' });
     } else {

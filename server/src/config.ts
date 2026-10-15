@@ -16,6 +16,44 @@ if (isProduction && sessionSecret.length < 32) {
   throw new Error('SESSION_SECRET debe tener al menos 32 caracteres en producción.');
 }
 
+const databaseUrl = env('DATABASE_URL');
+if (!/^postgres(ql)?:\/\/.+/.test(databaseUrl)) {
+  const hint = databaseUrl.startsWith('sb_')
+    ? 'pegaste una clave de API de Supabase; ahí va la cadena de conexión a la base de datos.'
+    : databaseUrl
+      ? 'el valor no es una cadena de conexión de PostgreSQL.'
+      : 'está vacía.';
+  console.error(
+    `\nDATABASE_URL en el archivo .env no es válida: ${hint}\n` +
+      'Cópiala desde el Dashboard de Supabase: botón "Connect" → "Session pooler".\n' +
+      'Debe verse así: postgresql://postgres.xxxx:TU-CONTRASEÑA@aws-...pooler.supabase.com:5432/postgres\n',
+  );
+  process.exit(1);
+}
+{
+  let parsed: URL;
+  try {
+    parsed = new URL(databaseUrl);
+  } catch {
+    console.error('\nDATABASE_URL está mal formada. Si la contraseña tiene caracteres como @ : / # ? %, cámbiala por una sin ellos o codifícalos.\n');
+    process.exit(1);
+  }
+  if (/[[\]]/.test(decodeURIComponent(parsed.password))) {
+    console.error(
+      '\nLa contraseña en DATABASE_URL tiene corchetes [ ]. En la cadena de Supabase, [YOUR-PASSWORD] se reemplaza completo,\n' +
+        'corchetes incluidos: ...postgres.xxxx:MiClave123@aws-... (no ...:[MiClave123]@...).\n',
+    );
+    process.exit(1);
+  }
+  // La conexión directa de Supabase (db.<proyecto>.supabase.co) solo funciona por IPv6 en el plan gratuito.
+  if (/^db\.[a-z0-9]+\.supabase\.co$/.test(parsed.hostname)) {
+    console.warn(
+      '\nAviso: DATABASE_URL usa la conexión directa (db.xxxx.supabase.co), que en el plan gratuito solo funciona por IPv6.\n' +
+        'Si la conexión falla por tiempo de espera, usa la del "Session pooler" (Connect → Session pooler).\n',
+    );
+  }
+}
+
 export const config = {
   isProduction,
   port: Number(env('PORT', '3000')),
@@ -25,11 +63,15 @@ export const config = {
   appUrl: env('APP_URL'),
   publicDir: env('PUBLIC_DIR', path.join(ROOT_DIR, 'public')),
   db: {
-    host: env('DB_HOST', 'localhost'),
-    port: Number(env('DB_PORT', '3306')),
-    database: env('DB_NAME'),
-    user: env('DB_USER'),
-    password: env('DB_PASS'),
+    url: databaseUrl,
+    poolMax: Number(env('DB_POOL_MAX', '10')),
+    /** Certificado raíz de Supabase (Dashboard → Database Settings → SSL) para verificar el servidor. */
+    caCertPath: env('DATABASE_CA_CERT'),
+  },
+  supabase: {
+    url: env('SUPABASE_URL').replace(/\/+$/, ''),
+    secretKey: env('SUPABASE_SECRET_KEY'),
+    bucket: env('SUPABASE_BUCKET', 'productos'),
   },
   smtp: {
     host: env('SMTP_HOST', 'smtp.gmail.com'),
@@ -41,5 +83,3 @@ export const config = {
   /** Sin SMTP configurado, los correos se escriben en este archivo. */
   mailLogPath: env('MAIL_LOG_PATH', path.join(ROOT_DIR, 'logs', 'mail_debug.log')),
 };
-
-export const uploadsDir = () => path.join(config.publicDir, 'uploads', 'productos');

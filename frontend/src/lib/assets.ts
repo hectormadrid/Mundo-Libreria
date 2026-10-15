@@ -10,8 +10,9 @@ const PLACEHOLDER =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#f3f4f6"/><text x="100" y="110" font-family="sans-serif" font-size="56" text-anchor="middle">📚</text></svg>',
   );
 
+/** La API entrega la URL completa de la imagen (Supabase Storage). */
 export function productImage(imagen: string | null | undefined): string {
-  return imagen ? `${BASE}uploads/productos/${encodeURIComponent(imagen)}` : PLACEHOLDER;
+  return imagen || PLACEHOLDER;
 }
 
 /** Si la imagen no existe en el servidor, mostrar el marcador en su lugar. */

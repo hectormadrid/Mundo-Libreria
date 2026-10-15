@@ -3,9 +3,11 @@
 Tienda en línea de artículos de librería, papelería y oficina.
 
 - **Frontend:** React 19 + TypeScript + Vite + Tailwind CSS 4 (`frontend/`)
-- **Servidor:** Node.js + Express 5 + TypeScript + MySQL/MariaDB (`server/`)
+- **Servidor:** Node.js + Express 5 + TypeScript (`server/`)
+- **Base de datos e imágenes:** Supabase (PostgreSQL + Storage)
 
-Un solo proceso de Node sirve la API (`/api/...`), la app React y las imágenes.
+Un solo proceso de Node sirve la API (`/api/...`) y la app React. Las imágenes de productos
+se guardan en el bucket `productos` de Supabase Storage.
 
 ## Estructura
 
@@ -20,14 +22,16 @@ server/
 public/              Archivos que sirve Node
   index.html, static/  Build de React (se genera con `npm run build`)
   assets/            Logo e íconos
-  uploads/productos/ Imágenes subidas desde el panel
-database/            Esquema y migraciones SQL
+  uploads/productos/ Imágenes de la versión antigua (y respaldo local sin Supabase)
+database/
+  schema.sql         Esquema PostgreSQL (tablas, restricciones, RLS)
+  supabase.sql       Permisos y bucket de imágenes (solo Supabase)
 ```
 
 ## Requisitos
 
 - Node.js 20 o superior
-- MySQL 5.7+ o MariaDB 10.4+ (el de XAMPP sirve)
+- Un proyecto de Supabase
 
 ## Puesta en marcha
 
@@ -35,10 +39,11 @@ database/            Esquema y migraciones SQL
    ```bash
    npm run install:all
    ```
-2. Copia `.env.example` a `.env` y completa los datos de la base de datos.
-3. Base de datos:
-   - **Nueva:** importa `database/base_de_datos.sql`.
-   - **Existente (de la versión PHP):** ejecuta una sola vez y en orden `database/update_pedido_table.sql` (solo si aún no tienes la columna `metodo_pago`) y `database/migracion_api.sql`. Después ejecuta `npm run decodificar-entidades --prefix server`.
+2. Copia `.env.example` a `.env` y completa:
+   - `DATABASE_URL`: en el Dashboard de Supabase, botón **Connect** → **Session pooler**, con tu contraseña de la base.
+   - `SUPABASE_URL` y `SUPABASE_SECRET_KEY` (Settings → API Keys → clave secreta `sb_secret_...`).
+   - `SESSION_SECRET`: una cadena aleatoria larga.
+3. Base de datos (solo en un proyecto nuevo): en el **SQL Editor** de Supabase ejecuta `database/schema.sql` y luego `database/supabase.sql`.
 4. Compila y arranca:
    ```bash
    npm run build
@@ -68,7 +73,22 @@ La app queda en `http://localhost:5173`. Vite reenvía `/api`, `/uploads` y `/as
 npm test
 ```
 
-Las pruebas crean y borran una base `mundo_libreria_test` en el MySQL local (usuario `root` sin contraseña). Para usar otros datos de conexión, define `TEST_DB_HOST`, `TEST_DB_USER`, `TEST_DB_PASS` o `TEST_DB_NAME`.
+Las pruebas levantan un PostgreSQL en memoria ([PGlite](https://pglite.dev)) con `database/schema.sql`: no necesitan instalar nada ni tocan el proyecto de Supabase.
+
+## Migrar datos desde la versión PHP/MySQL
+
+1. Con el MySQL antiguo encendido, genera el SQL de los datos:
+   ```bash
+   npm run exportar-mysql --prefix server -- datos.sql
+   ```
+   (Conexión: variables `MYSQL_HOST`, `MYSQL_USER`, `MYSQL_PASS`, `MYSQL_DB`; por defecto el MySQL de XAMPP.)
+2. Ejecuta `datos.sql` en el SQL Editor de Supabase, sobre una base recién creada con `schema.sql`. Bórralo después: contiene los hashes de las contraseñas.
+3. Sube las imágenes de `public/uploads/productos` al bucket:
+   ```bash
+   npm run subir-imagenes --prefix server
+   ```
+
+Las contraseñas existentes siguen funcionando: el servidor acepta los hashes creados por PHP.
 
 ## Despliegue
 
@@ -82,7 +102,16 @@ Las pruebas crean y borran una base `mundo_libreria_test` en el MySQL local (usu
    - `TRUST_PROXY=1` si el servidor está detrás de un proxy (lo habitual en cPanel y Nginx)
 4. Usa HTTPS: con él, la cookie de sesión se marca automáticamente como segura.
 
-Las sesiones se guardan en la tabla `sessions` de MySQL, así que sobreviven a los reinicios.
+Las sesiones se guardan en la tabla `sesiones` de la base de datos, así que sobreviven a los reinicios.
+
+### Seguridad de la base de datos
+
+La tienda accede a Supabase solo desde el servidor Node. Todas las tablas tienen RLS activado
+sin políticas y los roles públicos (`anon`, `authenticated`) no tienen permisos, así que la API
+pública de Supabase no expone ningún dato. La clave secreta y la contraseña de la base nunca
+deben llegar al frontend ni al repositorio.
+
+En el plan gratuito, Supabase pausa el proyecto tras una semana sin actividad; se reactiva desde el Dashboard.
 
 ## API
 

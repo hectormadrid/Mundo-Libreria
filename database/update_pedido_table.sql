@@ -1,4 +1,0 @@
--- Migración para bases de datos creadas antes de agregar el método de pago.
--- (Las instalaciones nuevas con base_de_datos.sql ya incluyen estos cambios.)
-ALTER TABLE pedido ADD COLUMN metodo_pago VARCHAR(50) DEFAULT 'efectivo' AFTER total;
-ALTER TABLE pedido MODIFY COLUMN estado ENUM('pendiente', 'pagado', 'cancelado', 'enviado', 'entregado') DEFAULT 'pendiente';

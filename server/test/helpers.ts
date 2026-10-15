@@ -1,54 +1,63 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import type { AddressInfo } from 'node:net';
+import net, { type AddressInfo } from 'node:net';
 import type { Server } from 'node:http';
-import mysql from 'mysql2/promise';
+import { PGlite } from '@electric-sql/pglite';
+import { PGLiteSocketServer } from '@electric-sql/pglite-socket';
 
 /**
- * Entorno de pruebas: base de datos `mundo_libreria_test` creada desde database/base_de_datos.sql,
- * carpeta pública y log de correos temporales. Requiere un MySQL/MariaDB local (XAMPP).
+ * Entorno de pruebas: un PostgreSQL en memoria (PGlite) con database/schema.sql,
+ * expuesto por TCP para que el servidor se conecte con `pg` igual que a Supabase.
+ * No necesita instalar Postgres ni tocar el proyecto de Supabase.
  */
-export const TEST_DB = process.env.TEST_DB_NAME ?? 'mundo_libreria_test';
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'mundo-libreria-test-'));
 
-process.env.ENV_FILE = path.join(tmp, 'no-existe.env');
-process.env.NODE_ENV = 'test';
-process.env.DB_HOST = process.env.TEST_DB_HOST ?? '127.0.0.1';
-process.env.DB_USER = process.env.TEST_DB_USER ?? 'root';
-process.env.DB_PASS = process.env.TEST_DB_PASS ?? '';
-process.env.DB_NAME = TEST_DB;
-process.env.PUBLIC_DIR = path.join(tmp, 'public');
-process.env.MAIL_LOG_PATH = path.join(tmp, 'mail.log');
-process.env.SMTP_USER = '';
-process.env.APP_URL = 'http://tienda.test';
+let pglite: PGlite;
+let socketServer: PGLiteSocketServer;
 
-fs.mkdirSync(process.env.PUBLIC_DIR, { recursive: true });
-fs.writeFileSync(path.join(process.env.PUBLIC_DIR, 'index.html'), '<!doctype html><title>App React</title>');
-
-/** Hash generado por PHP (password_hash) para "Admin123!": comprueba la compatibilidad con cuentas existentes. */
+/** Hash generado por PHP (password_hash) para "Admin123!": comprueba la compatibilidad con cuentas migradas. */
 export const PHP_ADMIN_HASH = '$2y$10$lBD66UY4SjArgYXBC8TBNu3PbCzRIRQOFVHD6BVdcwXU.ksk4p1me';
 
-export async function resetDatabase() {
-  const conn = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    multipleStatements: true,
+async function freePort(): Promise<number> {
+  return new Promise((resolve) => {
+    const srv = net.createServer().listen(0, '127.0.0.1', () => {
+      const { port } = srv.address() as AddressInfo;
+      srv.close(() => resolve(port));
+    });
   });
-  const schema = fs
-    .readFileSync(path.resolve(import.meta.dirname, '../../database/base_de_datos.sql'), 'utf8')
-    .replace(/^\s*(CREATE DATABASE|USE)\b.*$/gim, '');
-  await conn.query(`DROP DATABASE IF EXISTS \`${TEST_DB}\`; CREATE DATABASE \`${TEST_DB}\` CHARACTER SET utf8mb4; USE \`${TEST_DB}\`;`);
-  await conn.query(schema);
-  await conn.query("INSERT INTO Administrador (nombre, tipo, password) VALUES ('testadmin', 'administrador', ?)", [PHP_ADMIN_HASH]);
-  await conn.end();
 }
 
-export async function dropDatabase() {
-  const conn = await mysql.createConnection({ host: process.env.DB_HOST, user: process.env.DB_USER, password: process.env.DB_PASS });
-  await conn.query(`DROP DATABASE IF EXISTS \`${TEST_DB}\``);
-  await conn.end();
+/** Crea la base, carga el esquema y configura las variables de entorno del servidor. */
+export async function startDatabase() {
+  pglite = await PGlite.create();
+  await pglite.exec(fs.readFileSync(path.resolve(import.meta.dirname, '../../database/schema.sql'), 'utf8'));
+  await pglite.query('INSERT INTO administradores (usuario, password_hash) VALUES ($1, $2)', ['testadmin', PHP_ADMIN_HASH]);
+
+  const port = await freePort();
+  socketServer = new PGLiteSocketServer({ db: pglite, port, host: '127.0.0.1' });
+  await socketServer.start();
+
+  Object.assign(process.env, {
+    ENV_FILE: path.join(tmp, 'no-existe.env'),
+    NODE_ENV: 'test',
+    DATABASE_URL: `postgres://postgres:postgres@127.0.0.1:${port}/postgres`,
+    // PGlite atiende una conexión a la vez.
+    DB_POOL_MAX: '1',
+    SUPABASE_URL: '',
+    SUPABASE_SECRET_KEY: '',
+    PUBLIC_DIR: path.join(tmp, 'public'),
+    MAIL_LOG_PATH: path.join(tmp, 'mail.log'),
+    SMTP_USER: '',
+    APP_URL: 'http://tienda.test',
+  });
+  fs.mkdirSync(process.env.PUBLIC_DIR!, { recursive: true });
+  fs.writeFileSync(path.join(process.env.PUBLIC_DIR!, 'index.html'), '<!doctype html><title>App React</title>');
+}
+
+export async function stopDatabase() {
+  await socketServer?.stop();
+  await pglite?.close();
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
@@ -92,10 +101,9 @@ export class Client {
     } catch {
       /* respuesta no JSON (HTML) */
     }
-    const result = { status: res.status, body: parsed, text };
     const token = (parsed as { data?: { csrfToken?: string } }).data?.csrfToken;
     if (token) this.csrf = token;
-    return result;
+    return { status: res.status, body: parsed, text };
   }
 
   get = <T = any>(url: string) => this.request<T>('GET', url);
@@ -110,5 +118,5 @@ export class Client {
   }
 }
 
-// Imágenes mínimas válidas por su firma (magic bytes).
+// Imagen PNG mínima válida por su firma (magic bytes).
 export const PNG = Buffer.from('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d4944415478da63f8ffff3f0005fe02fea7d6a4ff0000000049454e44ae426082', 'hex');

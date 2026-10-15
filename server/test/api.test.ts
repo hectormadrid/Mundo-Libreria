@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { Server } from 'node:http';
 import { after, before, describe, test } from 'node:test';
-import { baseUrl, Client, dropDatabase, mailLog, PNG, resetDatabase, uploadsDir } from './helpers.js';
+import { baseUrl, Client, mailLog, PNG, startDatabase, stopDatabase, uploadsDir } from './helpers.js';
 
 let server: Server;
 let base: string;
@@ -28,34 +28,38 @@ async function loggedAdmin(): Promise<Client> {
 }
 
 before(async () => {
-  await resetDatabase();
+  await startDatabase();
   // Importar después de configurar las variables de entorno de prueba.
   const { createApp } = await import('../src/app.js');
   db = await import('../src/db.js');
   ({ resetThrottle } = await import('../src/throttle.js'));
 
-  await db.exec("INSERT INTO familias (id, nombre, id_categoria) VALUES (1, 'Lápices', 1), (2, 'Calculadoras', 2)");
+  // Las columnas identity asignan 1, 2, 3... en orden de inserción.
+  await db.exec("INSERT INTO categorias (nombre) VALUES ('Libreria'), ('Oficina'), ('Papeleria')");
+  await db.exec("INSERT INTO familias (nombre, categoria_id) VALUES ('Lápices', 1), ('Calculadoras', 2)");
   await db.exec(
-    `INSERT INTO productos (id, nombre, codigo_barras, id_categoria, id_familia, precio, stock, estado, descripcion) VALUES
-     (1, 'Lápiz pasta azul', 'ML00000000001', 1, 1, 790, 20, 'activo', 'Lápiz de tinta'),
-     (2, 'Calculadora', 'ML00000000002', 2, 2, 2500, 3, 'activo', 'Calculadora básica'),
-     (3, 'Producto oculto', 'ML00000000003', 1, NULL, 100, 5, 'inactivo', '')`,
+    `INSERT INTO productos (nombre, codigo_barras, categoria_id, familia_id, precio, stock, activo, descripcion) VALUES
+     ('Lápiz pasta azul', 'ML00000000001', 1, 1, 790, 20, true, 'Lápiz de tinta'),
+     ('Calculadora', 'ML00000000002', 2, 2, 2500, 3, true, 'Calculadora básica'),
+     ('Producto oculto', 'ML00000000003', 1, NULL, 100, 5, false, '')`,
   );
   for (let i = 0; i < 13; i++) {
-    await db.exec("INSERT INTO productos (nombre, id_categoria, precio, stock, estado) VALUES (?, 3, 100, 1, 'activo')", [`Papel ${i}`]);
+    await db.exec('INSERT INTO productos (nombre, categoria_id, precio, stock) VALUES ($1, 3, 100, 1)', [`Papel ${i}`]);
   }
 
   app = createApp();
-  await app.locals.sessionStore.onReady();
   server = app.listen(0);
+  // fetch reutiliza conexiones; con el límite de 5 s de Node, una pausa larga entre
+  // peticiones puede encontrar el socket recién cerrado (ECONNRESET).
+  server.keepAliveTimeout = 60_000;
   base = baseUrl(server);
 });
 
 after(async () => {
   await new Promise((resolve) => server.close(resolve));
-  await app.locals.sessionStore.close();
+  app.locals.sessionStore.close();
   await db.pool.end();
-  await dropDatabase();
+  await stopDatabase();
 });
 
 describe('sesión y seguridad', () => {
@@ -93,7 +97,7 @@ describe('registro e inicio de sesión', () => {
     assert.equal((await c.post('/api/auth/register', NEW_USER)).status, 409);
 
     // El RUT se guarda completo (antes VARCHAR(10) cortaba el dígito verificador) y el texto sin codificar.
-    const row = await db.one('SELECT rut, nombre FROM usuario WHERE correo = ?', [NEW_USER.correo]);
+    const row = await db.one('SELECT rut, nombre FROM clientes WHERE correo = $1', [NEW_USER.correo]);
     assert.deepEqual({ ...row }, { rut: NEW_USER.rut, nombre: NEW_USER.nombre });
     assert.match(mailLog(), /Bienvenido, Ana O&#039;Higgins &lt;b&gt;/);
   });
@@ -275,15 +279,15 @@ describe('panel de administración', () => {
     assert.equal(created.status, 201, created.text);
     const product = created.body.data;
     assert.match(product.codigoBarras, /^ML\d{11}$/);
-    assert.match(product.imagen, /\.png$/);
-    assert.ok(fs.existsSync(path.join(uploadsDir(), product.imagen)));
+    assert.match(product.imagen, /^\/uploads\/productos\/producto_\w+\.png$/);
+    assert.ok(fs.existsSync(path.join(uploadsDir(), path.basename(product.imagen))));
 
     assert.equal((await admin.post(`/api/admin/products/${product.id}`, form({ codigoBarras: 'ML00000000001' }))).status, 409);
 
     const updated = await admin.post(`/api/admin/products/${product.id}`, form({ nombre: 'Cuaderno 100 hojas', imagen: new Blob([PNG]) }));
     assert.equal(updated.status, 200, updated.text);
     assert.notEqual(updated.body.data.imagen, product.imagen);
-    assert.ok(!fs.existsSync(path.join(uploadsDir(), product.imagen)), 'la imagen anterior se elimina');
+    assert.ok(!fs.existsSync(path.join(uploadsDir(), path.basename(product.imagen))), 'la imagen anterior se elimina');
 
     const hidden = await admin.patch(`/api/admin/products/${product.id}/status`, { estado: 'inactivo' });
     assert.equal(hidden.body.data.estado, 'inactivo');
@@ -330,7 +334,7 @@ describe('panel de administración', () => {
     assert.equal(fam.status, 201);
     // Mover la familia "Lápices" a Arte también mueve sus productos.
     assert.equal((await admin.put('/api/admin/families/1', { nombre: 'Lápices', idCategoria: cat.body.data.id })).status, 200);
-    assert.equal(await db.value('SELECT id_categoria FROM productos WHERE id = 1'), cat.body.data.id);
+    assert.equal(await db.value('SELECT categoria_id FROM productos WHERE id = 1'), cat.body.data.id);
 
     const families = (await admin.get('/api/admin/families')).body.data;
     assert.ok(families.some((f: { nombre: string; productos: number }) => f.nombre === 'Lápices' && f.productos >= 1));
