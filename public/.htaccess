@@ -1,0 +1,25 @@
+# Aplicación React (build de /frontend) + API PHP en /api
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Las imágenes subidas nunca se ejecutan como scripts.
+    RewriteRule ^uploads/.*\.(php\d?|phtml|phar|pl|py|cgi|sh)$ - [F,L,NC]
+
+    # Archivos y carpetas reales (api/, static/, uploads/, assets/) se sirven tal cual.
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Cualquier otra ruta (/producto/5, /admin/pedidos...) la resuelve React.
+    RewriteRule ^ index.html [L]
+</IfModule>
+
+# El HTML de entrada no se guarda en caché para que cada despliegue se vea al instante;
+# los archivos de /static llevan un hash en el nombre y sí se pueden cachear.
+<IfModule mod_headers.c>
+    <Files "index.html">
+        Header set Cache-Control "no-cache"
+    </Files>
+</IfModule>

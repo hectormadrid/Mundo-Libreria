@@ -58,6 +58,8 @@ class EmailHelper {
     }
 
     public static function getWelcomeTemplate($nombre) {
+        $nombre = self::e($nombre);
+        $url = self::e(($_ENV['APP_URL'] ?? '') ?: 'http://localhost/Mundo-Libreria/public/');
         return "
         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;'>
             <div style='background: linear-gradient(135deg, #E53E3E 0%, #3182CE 100%); padding: 20px; text-align: center; border-radius: 10px 10px 0 0;'>
@@ -67,7 +69,7 @@ class EmailHelper {
                 <p>Estamos encantados de que te hayas unido a <b>Mundo Librería</b>.</p>
                 <p>En nuestra tienda encontrarás todo lo que necesitas para tu oficina, estudio o proyectos creativos.</p>
                 <div style='text-align: center; margin: 30px 0;'>
-                    <a href='http://localhost/Mundo-Libreria' style='background-color: #3182CE; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Empezar a comprar</a>
+                    <a href='$url' style='background-color: #3182CE; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Empezar a comprar</a>
                 </div>
                 <p>Si tienes alguna duda, responde a este correo y nuestro equipo te ayudará.</p>
             </div>
@@ -77,6 +79,7 @@ class EmailHelper {
     }
 
     public static function getOrderTemplate($nombre, $id_pedido, $total, $items = []) {
+        $nombre = self::e($nombre);
         $total_fmt = number_format($total, 0, ',', '.');
         $items_html = "";
         
@@ -84,7 +87,7 @@ class EmailHelper {
             $subtotal = number_format($item['precio'] * $item['cantidad'], 0, ',', '.');
             $items_html .= "
             <tr>
-                <td style='padding: 10px; border-bottom: 1px solid #eee;'>{$item['nombre']}</td>
+                <td style='padding: 10px; border-bottom: 1px solid #eee;'>" . self::e($item['nombre']) . "</td>
                 <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>{$item['cantidad']}</td>
                 <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>$$subtotal</td>
             </tr>";
@@ -138,6 +141,7 @@ class EmailHelper {
     }
 
     public static function getPasswordResetTemplate($link) {
+        $link = self::e($link);
         return "
         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;'>
             <div style='background: #4A5568; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;'>
@@ -154,5 +158,9 @@ class EmailHelper {
             <hr style='border: 0; border-top: 1px solid #eee;'>
             <p style='font-size: 12px; color: #777; text-align: center;'>&copy; 2025 Mundo Librería. Seguridad ante todo.</p>
         </div>";
+    }
+
+    private static function e($value): string {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
     }
 }

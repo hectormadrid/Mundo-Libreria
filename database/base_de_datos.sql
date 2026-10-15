@@ -27,7 +27,7 @@ CREATE TABLE `familias` (
 --
 CREATE TABLE `usuario` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `rut` VARCHAR(10) NOT NULL,
+  `rut` VARCHAR(12) NOT NULL,
   `nombre` VARCHAR(50) NOT NULL,
   `correo` VARCHAR(100) NOT NULL UNIQUE,
   `telefono` VARCHAR(20) NULL,
@@ -88,6 +88,8 @@ CREATE TABLE `pedido` (
   `id_usuario` INT NOT NULL,
   `total` DECIMAL(10,2) NOT NULL,
   `metodo_pago` VARCHAR(50) DEFAULT 'efectivo',
+  `direccion_envio` VARCHAR(255) NULL,
+  `telefono_contacto` VARCHAR(20) NULL,
   `estado` ENUM('pendiente', 'pagado', 'cancelado', 'enviado', 'entregado') DEFAULT 'pendiente',
   `fecha` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`id_usuario`) REFERENCES `usuario`(`id`) ON DELETE CASCADE

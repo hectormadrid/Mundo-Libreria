@@ -1,0 +1,9 @@
+# Lo ideal es que el DocumentRoot del servidor apunte a /public.
+# Si en cambio se publica la raíz del proyecto, esto impide descargar
+# archivos sensibles (.env, .git, código fuente, base de datos, logs).
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule (^|/)\. - [F,L]
+    RewriteRule ^(src|vendor|database|logs|frontend|node_modules)(/|$) - [F,L]
+    RewriteRule ^(composer\.(json|lock)|dev-router\.php|MANUAL_DE_USUARIO\.md)$ - [F,L]
+</IfModule>

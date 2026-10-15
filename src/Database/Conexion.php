@@ -22,15 +22,13 @@ class Conexion {
         $pass = $_ENV['DB_PASS'] ?? '';
         $debug = ($_ENV['DEBUG_MODE'] ?? 'false') === 'true';
 
-        // Desde PHP 8.1 mysqli lanza excepciones al fallar la conexión.
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         try {
             $this->conexion = new mysqli($host, $user, $pass, $dbname);
         } catch (\mysqli_sql_exception $e) {
             error_log('Error de conexión a la base de datos: ' . $e->getMessage());
             $error_message = $debug ? 'Error de conexión: ' . $e->getMessage() : 'Error de conexión a la base de datos.';
-            http_response_code(500);
-            echo json_encode(['success' => false, 'error' => $error_message]);
-            exit;
+            throw new \RuntimeException($error_message, 0, $e);
         }
 
         $this->conexion->set_charset("utf8mb4");

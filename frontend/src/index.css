@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --color-lib-red: #e53e3e;
+  --color-lib-yellow: #f6e05e;
+  --color-lib-blue: #3182ce;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-shimmer: shimmer 1.2s linear infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -468px 0; }
+    100% { background-position: 468px 0; }
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-800 antialiased;
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  .glass {
+    background: rgb(255 255 255 / 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgb(255 255 255 / 0.2);
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, #3182ce, #f6e05e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .skeleton {
+    background: #f6f7f8 linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%) no-repeat;
+    background-size: 800px 100%;
+    @apply animate-shimmer;
+  }
+  .input {
+    @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-lib-blue focus:ring-2 focus:ring-lib-blue/30 disabled:bg-gray-100;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-semibold text-gray-700;
+  }
+  .btn-primary, .btn-yellow, .btn-danger, .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply bg-lib-blue text-white hover:bg-blue-700;
+  }
+  .btn-yellow {
+    @apply bg-lib-yellow text-lib-blue hover:bg-yellow-400;
+  }
+  .btn-danger {
+    @apply bg-lib-red text-white hover:bg-red-700;
+  }
+  .btn-ghost {
+    @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50;
+  }
+  .card {
+    @apply rounded-2xl border border-gray-100 bg-white shadow-sm;
+  }
+}
+
+@media print {
+  body * { visibility: hidden; }
+  .print-area, .print-area * { visibility: visible; }
+  .print-area { position: absolute; left: 0; top: 0; }
+}

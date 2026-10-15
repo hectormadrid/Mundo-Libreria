@@ -3,19 +3,9 @@
 namespace App\Helpers;
 
 /**
- * Clase para centralizar la seguridad, validación y sanitización de datos.
+ * Validaciones de datos de entrada. Los textos se guardan tal cual y se escapan al mostrarlos.
  */
 class SecurityHelper {
-    /**
-     * Limpia una cadena de texto para prevenir XSS y eliminar espacios innecesarios.
-     */
-    public static function sanitize($data) {
-        $data = trim($data);
-        $data = stripslashes($data);
-        $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
-        return $data;
-    }
-
     /**
      * Valida si un email es correcto.
      */
@@ -27,9 +17,22 @@ class SecurityHelper {
      * Valida el formato del RUT chileno (básico: números, puntos, guion y K).
      */
     public static function validateRut($rut) {
-        $rut = preg_replace('/[^k0-9]/i', '', $rut);
+        if (strlen($rut) > 12 || !preg_match('/^[0-9.]+-?[0-9kK]$/', $rut)) return false;
+        $rut = strtoupper(preg_replace('/[^k0-9]/i', '', $rut));
         if (strlen($rut) < 8) return false;
-        return true;
+
+        // Dígito verificador (módulo 11)
+        $cuerpo = substr($rut, 0, -1);
+        $dv = substr($rut, -1);
+        $suma = 0;
+        $multiplo = 2;
+        for ($i = strlen($cuerpo) - 1; $i >= 0; $i--) {
+            $suma += (int) $cuerpo[$i] * $multiplo;
+            $multiplo = $multiplo === 7 ? 2 : $multiplo + 1;
+        }
+        $esperado = 11 - ($suma % 11);
+        $esperado = $esperado === 11 ? '0' : ($esperado === 10 ? 'K' : (string) $esperado);
+        return $dv === $esperado;
     }
 
     /**
