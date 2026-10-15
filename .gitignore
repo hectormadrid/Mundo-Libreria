@@ -1,11 +1,17 @@
-# Credenciales de la base de datos
+# Configuración local (credenciales)
+.env
 db_config.php
 
 # Dependencias de Node.js
 node_modules/
 
-uploads/productos
-.env
+# Archivos generados por `npm run build`
+server/dist/
+public/index.html
+public/static/
+
+# Carpeta de imágenes de la versión antigua
+/uploads/
 
 # Logs locales (pueden contener correos y enlaces de recuperación)
 logs/

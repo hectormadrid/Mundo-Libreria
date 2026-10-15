@@ -5,11 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "api": "php -S 127.0.0.1:8000 -t ../public ../dev-router.php",
     "prebuild": "node -e \"require('fs').rmSync('../public/static',{recursive:true,force:true})\"",
     "build": "tsc -b && vite build",
-    "prebuild:server": "node -e \"require('fs').rmSync('../public/static',{recursive:true,force:true})\"",
-    "build:server": "tsc -b && vite build --base=/",
     "typecheck": "tsc -b"
   },
   "dependencies": {

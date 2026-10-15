@@ -22,7 +22,7 @@ interface RequestOptions {
   body?: unknown;
 }
 
-/** Llama a la API PHP. Devuelve el campo `data` o lanza ApiError con el mensaje del servidor. */
+/** Llama a la API del servidor. Devuelve el campo `data` o lanza ApiError con el mensaje del servidor. */
 export async function api<T>(path: string, { method = 'GET', body }: RequestOptions = {}): Promise<T> {
   const headers: Record<string, string> = { Accept: 'application/json' };
 

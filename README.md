@@ -3,62 +3,86 @@
 Tienda en línea de artículos de librería, papelería y oficina.
 
 - **Frontend:** React 19 + TypeScript + Vite + Tailwind CSS 4 (`frontend/`)
-- **Backend:** API REST en PHP 8.2 + MySQL/MariaDB (`public/api/` y `src/`)
+- **Servidor:** Node.js + Express 5 + TypeScript + MySQL/MariaDB (`server/`)
+
+Un solo proceso de Node sirve la API (`/api/...`), la app React y las imágenes.
 
 ## Estructura
 
 ```
-frontend/            Código fuente de la app React (tienda + panel admin)
-public/              Carpeta que publica Apache
-  api/index.php      Punto de entrada único de la API (rutas en este archivo)
-  index.html, static/  Build de React (generado con `npm run build`)
+frontend/            App React (tienda + panel admin)
+server/
+  src/index.ts       Arranque del servidor
+  src/app.ts         Middlewares, sesiones, archivos estáticos
+  src/routes/        Rutas de la API (auth, catálogo, carrito, cuenta, admin)
+  test/              Pruebas automáticas de la API
+  scripts/           Scripts de mantenimiento
+public/              Archivos que sirve Node
+  index.html, static/  Build de React (se genera con `npm run build`)
   assets/            Logo e íconos
   uploads/productos/ Imágenes subidas desde el panel
-src/
-  Controllers/       Lógica de cada recurso de la API (Admin/ = panel)
-  Http/              Router, Request, Response, autenticación, límite de intentos
-  Database/          Conexión y helpers de consultas preparadas
-  Helpers/           Sesión, validaciones, correo, subida de imágenes
-database/            Esquema y migraciones
+database/            Esquema y migraciones SQL
 ```
 
-## Puesta en marcha local (XAMPP)
+## Requisitos
 
-1. `composer install` (si `vendor/` no existe).
+- Node.js 20 o superior
+- MySQL 5.7+ o MariaDB 10.4+ (el de XAMPP sirve)
+
+## Puesta en marcha
+
+1. Instala las dependencias:
+   ```bash
+   npm run install:all
+   ```
 2. Copia `.env.example` a `.env` y completa los datos de la base de datos.
 3. Base de datos:
    - **Nueva:** importa `database/base_de_datos.sql`.
-   - **Existente:** ejecuta, en orden y una sola vez, `database/update_pedido_table.sql` (si aún no tienes la columna `metodo_pago`), `database/migracion_api.sql` y luego `php database/decodificar_entidades.php`.
-4. Compila el frontend:
+   - **Existente (de la versión PHP):** ejecuta una sola vez y en orden `database/update_pedido_table.sql` (solo si aún no tienes la columna `metodo_pago`) y `database/migracion_api.sql`. Después ejecuta `npm run decodificar-entidades --prefix server`.
+4. Compila y arranca:
    ```bash
-   cd frontend && npm install && npm run build
+   npm run build
    ```
-5. Abre `http://localhost/Mundo-Libreria/public/` (panel: `/admin`).
+   ```bash
+   npm start
+   ```
+5. Abre `http://localhost:3000` (panel: `http://localhost:3000/admin`).
 
 ## Desarrollo
 
-Con recarga en caliente, en dos terminales dentro de `frontend/`:
+Con recarga en caliente, en dos terminales:
 
 ```bash
-npm run api
+npm run dev --prefix server
 ```
 
 ```bash
-npm run dev
+npm run dev --prefix frontend
 ```
 
-La app queda en `http://localhost:5173` y Vite reenvía `/api`, `/uploads` y `/assets` al servidor PHP del puerto 8000.
+La app queda en `http://localhost:5173`. Vite reenvía `/api`, `/uploads` y `/assets` al servidor del puerto 3000.
 
-`npm run typecheck` revisa los tipos sin compilar.
+## Pruebas
 
-## Despliegue en el servidor
+```bash
+npm test
+```
 
-1. Configura el `DocumentRoot` del sitio para que apunte a `public/` (recomendado). Si no es posible, el `.htaccess` de la raíz bloquea el acceso a `.env`, `src/`, `vendor/`, `database/` y `.git`.
-2. El servidor necesita `mod_rewrite` y `AllowOverride All`.
-3. Compila con la ruta base que corresponda:
-   - Sitio en la raíz del dominio: `npm run build:server`
-   - Sitio en `/Mundo-Libreria/public/` (XAMPP): `npm run build`
-4. Sube `public/`, `src/`, `vendor/` y `.env` (con `APP_URL` y los datos SMTP de producción).
+Las pruebas crean y borran una base `mundo_libreria_test` en el MySQL local (usuario `root` sin contraseña). Para usar otros datos de conexión, define `TEST_DB_HOST`, `TEST_DB_USER`, `TEST_DB_PASS` o `TEST_DB_NAME`.
+
+## Despliegue
+
+1. El hosting debe permitir aplicaciones Node.js (en cPanel: "Setup Node.js App"; o un VPS).
+2. Sube el proyecto, ejecuta `npm run install:all` y `npm run build`, y arranca con `npm start` (o apunta el gestor de Node del hosting a `server/dist/index.js`).
+3. En el `.env` de producción define:
+   - `NODE_ENV=production`
+   - `SESSION_SECRET` con al menos 32 caracteres aleatorios
+   - `APP_URL` con la dirección pública de la tienda
+   - los datos SMTP para enviar correos
+   - `TRUST_PROXY=1` si el servidor está detrás de un proxy (lo habitual en cPanel y Nginx)
+4. Usa HTTPS: con él, la cookie de sesión se marca automáticamente como segura.
+
+Las sesiones se guardan en la tabla `sessions` de MySQL, así que sobreviven a los reinicios.
 
 ## API
 
