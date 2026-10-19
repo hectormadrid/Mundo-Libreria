@@ -62,6 +62,16 @@ export async function stopDatabase() {
 }
 
 export const mailLog = () => (fs.existsSync(process.env.MAIL_LOG_PATH!) ? fs.readFileSync(process.env.MAIL_LOG_PATH!, 'utf8') : '');
+
+/** Algunos correos se envían en segundo plano: espera (hasta 3 s) a que aparezca uno que coincida. */
+export async function waitForMail(pattern: RegExp): Promise<string> {
+  for (let i = 0; i < 60; i++) {
+    const log = mailLog();
+    if (pattern.test(log)) return log;
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  throw new Error(`No llegó ningún correo que coincida con ${pattern}`);
+}
 export const uploadsDir = () => path.join(process.env.PUBLIC_DIR!, 'uploads', 'productos');
 
 export function baseUrl(server: Server) {

@@ -377,6 +377,8 @@ adminRouter.post('/admins', async (req, res) => {
   const password = rawString(req, 'password');
   if (!nombre || !password) throw HttpError.badRequest('El nombre y la contraseña son obligatorios.');
   if (nombre.length > 50) throw HttpError.badRequest('El nombre no puede superar los 50 caracteres.');
+  // Clientes y administradores comparten el formulario de inicio de sesión: los correos son de clientes.
+  if (nombre.includes('@')) throw HttpError.badRequest('El usuario de administrador no puede ser un correo (no uses "@").');
   if (!isStrongPassword(password)) throw HttpError.badRequest(PASSWORD_RULE);
   if (await one('SELECT 1 FROM administradores WHERE lower(usuario) = lower($1)', [nombre])) {
     throw HttpError.conflict('Ya existe un administrador con ese nombre.');

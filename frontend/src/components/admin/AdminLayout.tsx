@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router';
-import { Barcode, FolderTree, LayoutDashboard, LogOut, Menu, Shield, ShoppingBag, Tags, Users, X } from 'lucide-react';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router';
+import { Barcode, FolderTree, LayoutDashboard, LogOut, Menu, Shield, ShoppingBag, Store, Tags, Users, X } from 'lucide-react';
 import { useLogout, useSession } from '../../hooks/useSession';
 import { LOGO_URL } from '../../lib/assets';
 import { toastError } from '../../lib/alerts';
@@ -22,7 +22,7 @@ export function AdminLayout() {
   const [open, setOpen] = useState(false);
 
   const handleLogout = () =>
-    logout.mutate(undefined, { onSuccess: () => navigate('/admin/login', { replace: true }), onError: toastError });
+    logout.mutate(undefined, { onSuccess: () => navigate('/', { replace: true }), onError: toastError });
 
   return (
     <div className="min-h-screen bg-gray-100 lg:pl-64">
@@ -68,6 +68,12 @@ export function AdminLayout() {
               <Icon className="h-5 w-5" /> {label}
             </NavLink>
           ))}
+          <Link
+            to="/"
+            className="mt-4 flex items-center gap-3 rounded-lg border-t border-white/10 px-3 py-2.5 pt-4 text-gray-300 transition hover:bg-white/10 hover:text-white"
+          >
+            <Store className="h-5 w-5" /> Ver tienda
+          </Link>
         </nav>
 
         <div className="border-t border-white/10 p-4">

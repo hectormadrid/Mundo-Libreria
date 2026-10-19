@@ -41,23 +41,35 @@ authRouter.get('/auth/session', async (req, res) => {
   send(res, await sessionPayload(req));
 });
 
+/**
+ * Inicio de sesión único: el campo `correo` acepta el correo de un cliente o el usuario
+ * de un administrador. Así el panel no necesita una página de acceso propia.
+ */
 authRouter.post('/auth/login', async (req, res) => {
-  const correo = str(req, 'correo');
+  const identificador = str(req, 'correo');
   const password = rawString(req, 'password');
-  if (!isEmail(correo) || password === '') {
-    throw HttpError.badRequest('Ingresa un correo válido y tu contraseña.');
+  if (!identificador || password === '') {
+    throw HttpError.badRequest('Ingresa tu correo y tu contraseña.');
   }
 
-  checkThrottle(req, 'user', correo);
-  const cliente = await one('SELECT id, password_hash FROM clientes WHERE lower(correo) = lower($1)', [correo]);
-  if (!cliente || !(await verifyPassword(password, cliente.password_hash))) {
-    registerFailure(req, 'user', correo);
-    throw HttpError.unauthorized('Credenciales incorrectas.');
+  checkThrottle(req, 'login', identificador);
+
+  const cliente = await one('SELECT id, password_hash FROM clientes WHERE lower(correo) = lower($1)', [identificador]);
+  if (cliente && (await verifyPassword(password, cliente.password_hash))) {
+    clearThrottle(req, 'login', identificador);
+    await loginUser(req, cliente.id);
+    return send(res, await sessionPayload(req));
   }
 
-  clearThrottle(req, 'user', correo);
-  await loginUser(req, cliente.id);
-  send(res, await sessionPayload(req));
+  const admin = await one('SELECT id, password_hash FROM administradores WHERE lower(usuario) = lower($1)', [identificador]);
+  if (admin && (await verifyPassword(password, admin.password_hash))) {
+    clearThrottle(req, 'login', identificador);
+    await loginAdmin(req, admin.id);
+    return send(res, await sessionPayload(req));
+  }
+
+  registerFailure(req, 'login', identificador);
+  throw HttpError.unauthorized('Credenciales incorrectas.');
 });
 
 authRouter.post('/auth/register', async (req, res) => {
@@ -95,23 +107,6 @@ authRouter.post('/auth/register', async (req, res) => {
 authRouter.post('/auth/logout', async (req, res) => {
   await regenerateSession(req);
   send(res, { user: null, admin: null, csrfToken: csrfToken(req) });
-});
-
-authRouter.post('/admin/auth/login', async (req, res) => {
-  const nombre = str(req, 'nombre');
-  const password = rawString(req, 'password');
-  if (!nombre || !password) throw HttpError.badRequest('Completa todos los campos.');
-
-  checkThrottle(req, 'admin', nombre);
-  const admin = await one('SELECT id, password_hash FROM administradores WHERE lower(usuario) = lower($1)', [nombre]);
-  if (!admin || !(await verifyPassword(password, admin.password_hash))) {
-    registerFailure(req, 'admin', nombre);
-    throw HttpError.unauthorized('Credenciales incorrectas.');
-  }
-
-  clearThrottle(req, 'admin', nombre);
-  await loginAdmin(req, admin.id);
-  send(res, await sessionPayload(req));
 });
 
 authRouter.post('/auth/forgot-password', async (req, res) => {

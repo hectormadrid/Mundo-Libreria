@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router';
-import { LogOut, Package, Search, ShoppingCart, User } from 'lucide-react';
+import { LayoutDashboard, LogOut, Package, Search, ShoppingCart, User } from 'lucide-react';
 import { useCart } from '../../hooks/useCart';
 import { useLogout, useSession } from '../../hooks/useSession';
 import { useCartDrawer } from '../../context/CartDrawerContext';
@@ -72,6 +72,7 @@ export function Header() {
   const logout = useLogout();
   const navigate = useNavigate();
   const user = session?.user;
+  const admin = session?.admin;
 
   const handleLogout = () =>
     logout.mutate(undefined, {
@@ -92,7 +93,26 @@ export function Header() {
         <div className="flex flex-wrap items-center justify-center gap-3">
           <SearchBox />
 
-          {user ? (
+          {admin ? (
+            <div className="flex items-center gap-2">
+              <Link
+                to="/admin"
+                className="flex items-center gap-2 rounded-full bg-lib-yellow px-5 py-2.5 font-semibold text-lib-blue shadow-lg transition hover:scale-105 hover:bg-yellow-400"
+              >
+                <LayoutDashboard className="h-5 w-5" />
+                Panel admin
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={logout.isPending}
+                className="flex items-center gap-1 rounded-full bg-lib-red px-4 py-2 text-sm font-semibold shadow-lg transition hover:bg-red-600"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline">Salir</span>
+              </button>
+            </div>
+          ) : user ? (
             <div className="flex items-center gap-2">
               <Link to="/perfil" className="flex items-center gap-2 rounded-full px-2 py-1 transition hover:bg-white/10" title="Mi perfil">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-lib-yellow font-bold text-lib-blue">

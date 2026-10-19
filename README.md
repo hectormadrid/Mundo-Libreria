@@ -51,7 +51,14 @@ database/
    ```bash
    npm start
    ```
-5. Abre `http://localhost:3000` (panel: `http://localhost:3000/admin`).
+5. Abre `http://localhost:3000`.
+
+### Acceso al panel de administración
+
+La tienda no muestra ningún enlace al panel. Los administradores usan el mismo formulario de
+"Iniciar sesión" que los clientes, escribiendo su **usuario de administrador** en el campo del
+correo; al entrar van directo al panel (`/admin`). Los usuarios de administrador no pueden
+contener `@`, para no confundirse con el correo de un cliente.
 
 ## Desarrollo
 
@@ -121,9 +128,9 @@ Las peticiones que modifican datos requieren la cabecera `X-CSRF-Token`, que se 
 | Método | Ruta | Descripción |
 | --- | --- | --- |
 | GET | `/auth/session` | Usuario/admin actual y token CSRF |
-| POST | `/auth/login`, `/auth/register`, `/auth/logout` | Sesión de clientes |
+| POST | `/auth/login` | Inicio de sesión único: `{ correo, password }`, donde `correo` es el correo de un cliente o el usuario de un administrador |
+| POST | `/auth/register`, `/auth/logout` | Registro de clientes / cerrar sesión |
 | POST | `/auth/forgot-password`, `/auth/reset-password`, `/auth/reset-password/validate` | Recuperar contraseña |
-| POST | `/admin/auth/login` | Sesión de administradores |
 | GET | `/categories`, `/families?categoria=` | Catálogo |
 | GET | `/products?categoria=&familia=&q=&page=`, `/products/{id}` | Productos activos (12 por página) |
 | GET, DELETE | `/cart` | Ver / vaciar carrito |

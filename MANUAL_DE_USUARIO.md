@@ -85,9 +85,12 @@ Esta sección describe cómo utilizar el panel de administración para gestionar
 
 ### 3.1. Acceso al Panel de Administración
 
-1.  Navega a la dirección de la tienda seguida de `/admin` (por ejemplo `https://tu-dominio.cl/admin`).
-2.  Ingresa tu usuario y contraseña de administrador. Tras 5 intentos fallidos, el acceso se bloquea durante 15 minutos.
-3.  Al iniciar sesión, verás el **Panel de Administración**. El menú lateral da acceso a todas las secciones.
+La tienda no muestra ningún enlace al panel: los administradores entran por el mismo inicio de sesión que los clientes.
+
+1.  Haz clic en **"Iniciar sesión"** en la cabecera de la tienda (o abre directamente la dirección de la tienda seguida de `/admin`).
+2.  En el campo **"Correo electrónico"** escribe tu **usuario de administrador** (por ejemplo `ingrid`) y luego tu contraseña. Tras 5 intentos fallidos, el acceso se bloquea durante 15 minutos.
+3.  Entrarás directo al **Panel de Administración**. El menú lateral da acceso a todas las secciones, y **"Ver tienda"** te lleva de vuelta a la tienda.
+4.  Mientras tengas la sesión de administrador abierta, la cabecera de la tienda muestra el botón **"Panel admin"**.
 
 ### 3.2. Métricas Principales
 
@@ -157,7 +160,7 @@ Al **cancelar** un pedido, el stock de sus productos vuelve al inventario. Un pe
 
 1.  En el menú lateral, entra a **"Administradores"**.
 2.  Verás la lista de administradores y podrás eliminar cuentas (no puedes eliminar tu propia cuenta ni la última que quede).
-3.  Para añadir uno nuevo, haz clic en **"Nuevo administrador"**, completa el usuario y una contraseña segura, y guarda.
+3.  Para añadir uno nuevo, haz clic en **"Nuevo administrador"**, completa el usuario y una contraseña segura, y guarda. El usuario no puede ser un correo (no puede contener `@`), porque se escribe en el mismo campo que el correo de los clientes.
 
 ### 3.8. Generador de Códigos de Barras
 

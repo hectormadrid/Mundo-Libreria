@@ -14,12 +14,18 @@ export function LoginPage() {
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
   const redirect = safeRedirect(params.get('redirect'));
+  // Los administradores entran por este mismo formulario y van al panel.
+  const adminRedirect = redirect.startsWith('/admin') ? redirect : '/admin';
 
+  if (session?.admin && !login.isPending) return <Navigate to={adminRedirect} replace />;
   if (session?.user && !login.isPending) return <Navigate to={redirect} replace />;
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    login.mutate({ correo, password }, { onSuccess: () => navigate(redirect, { replace: true }) });
+    login.mutate(
+      { correo, password },
+      { onSuccess: (s) => navigate(s.admin ? adminRedirect : redirect, { replace: true }) },
+    );
   };
 
   return (
@@ -27,12 +33,16 @@ export function LoginPage() {
       <form onSubmit={submit} className="space-y-5">
         <div>
           <label htmlFor="correo" className="label">Correo electrónico</label>
+          {/* type="text" (no "email") para que también acepte el usuario de un administrador. */}
           <input
             id="correo"
-            type="email"
+            type="text"
+            inputMode="email"
+            autoCapitalize="none"
+            spellCheck={false}
             className="input"
             required
-            autoComplete="email"
+            autoComplete="username"
             placeholder="tu@correo.cl"
             value={correo}
             onChange={(e) => setCorreo(e.target.value)}

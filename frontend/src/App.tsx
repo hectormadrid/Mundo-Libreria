@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Link, Route, Routes } from 'react-router';
+import { BrowserRouter, Link, Navigate, Route, Routes } from 'react-router';
 import { MapPinOff } from 'lucide-react';
 import { StoreLayout } from './components/store/StoreLayout';
 import { RequireAdmin, RequireUser } from './components/guards';
@@ -19,7 +19,6 @@ import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 
 // El panel de administración se descarga solo cuando se visita.
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout').then((m) => ({ default: m.AdminLayout })));
-const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage').then((m) => ({ default: m.AdminLoginPage })));
 const ProductsPage = lazy(() => import('./pages/admin/ProductsPage').then((m) => ({ default: m.ProductsPage })));
 const OrdersAdminPage = lazy(() => import('./pages/admin/OrdersAdminPage').then((m) => ({ default: m.OrdersAdminPage })));
 const UsersAdminPage = lazy(() => import('./pages/admin/UsersAdminPage').then((m) => ({ default: m.UsersAdminPage })));
@@ -61,7 +60,8 @@ export function App() {
           <Route path="recuperar" element={<ForgotPasswordPage />} />
           <Route path="restablecer" element={<ResetPasswordPage />} />
 
-          <Route path="admin/login" element={<AdminLoginPage />} />
+          {/* Enlace antiguo: el acceso al panel es el mismo login de la tienda. */}
+          <Route path="admin/login" element={<Navigate to="/login" replace />} />
           <Route path="admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
             <Route index element={<ProductsPage />} />
             <Route path="pedidos" element={<OrdersAdminPage />} />

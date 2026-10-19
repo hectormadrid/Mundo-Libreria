@@ -26,15 +26,6 @@ export function useLogin() {
   });
 }
 
-export function useAdminLogin() {
-  const apply = useApplySession();
-  return useMutation({
-    mutationFn: (data: { nombre: string; password: string }) =>
-      api<Session>('/admin/auth/login', { method: 'POST', body: data }),
-    onSuccess: apply,
-  });
-}
-
 export function useLogout() {
   const apply = useApplySession();
   return useMutation({

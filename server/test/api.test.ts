@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { Server } from 'node:http';
 import { after, before, describe, test } from 'node:test';
-import { baseUrl, Client, mailLog, PNG, startDatabase, stopDatabase, uploadsDir } from './helpers.js';
+import { baseUrl, Client, mailLog, PNG, startDatabase, stopDatabase, uploadsDir, waitForMail } from './helpers.js';
 
 let server: Server;
 let base: string;
@@ -22,7 +22,7 @@ async function loggedUser(): Promise<Client> {
 
 async function loggedAdmin(): Promise<Client> {
   const c = await new Client(base).start();
-  const res = await c.post('/api/admin/auth/login', { nombre: 'testadmin', password: 'Admin123!' });
+  const res = await c.post('/api/auth/login', { correo: 'testadmin', password: 'Admin123!' });
   assert.equal(res.status, 200, res.text);
   return c;
 }
@@ -99,7 +99,7 @@ describe('registro e inicio de sesión', () => {
     // El RUT se guarda completo (antes VARCHAR(10) cortaba el dígito verificador) y el texto sin codificar.
     const row = await db.one('SELECT rut, nombre FROM clientes WHERE correo = $1', [NEW_USER.correo]);
     assert.deepEqual({ ...row }, { rut: NEW_USER.rut, nombre: NEW_USER.nombre });
-    assert.match(mailLog(), /Bienvenido, Ana O&#039;Higgins &lt;b&gt;/);
+    await waitForMail(/Bienvenido, Ana O&#039;Higgins &lt;b&gt;/);
   });
 
   test('inicia sesión y bloquea tras 5 intentos fallidos', async () => {
@@ -199,7 +199,7 @@ describe('carrito y compra', () => {
 
     const list = await c.get('/api/orders');
     assert.equal(list.body.data[0].productos, 3);
-    assert.match(mailLog(), new RegExp(`Orden #${id}`));
+    await waitForMail(new RegExp(`Orden #${id}\\b`));
   });
 
   test('la tarjeta (simulada) deja el pedido pagado y no se ven pedidos ajenos', async () => {
@@ -242,6 +242,26 @@ describe('recuperar contraseña', () => {
 });
 
 describe('panel de administración', () => {
+  test('el mismo login sirve para clientes y administradores', async () => {
+    const c = await new Client(base).start();
+    const admin = await c.post('/api/auth/login', { correo: 'TestAdmin', password: 'Admin123!' });
+    assert.equal(admin.status, 200);
+    assert.equal(admin.body.data.admin.nombre, 'testadmin');
+    assert.equal(admin.body.data.user, null);
+
+    const cliente = await c.post('/api/auth/login', { correo: NEW_USER.correo, password: NEW_USER.password });
+    assert.equal(cliente.body.data.admin, null, 'entrar como cliente cierra la sesión de admin');
+    assert.equal(cliente.body.data.user.correo, NEW_USER.correo);
+
+    assert.equal((await c.post('/api/auth/login', { correo: 'testadmin', password: 'mala' })).status, 401);
+    // Ya no hay un login separado; sin sesión de admin, todo /api/admin responde 403.
+    assert.equal((await c.post('/api/admin/auth/login', { nombre: 'testadmin', password: 'Admin123!' })).status, 403);
+
+    // Un usuario de administrador no puede parecer un correo (se confundiría con un cliente).
+    const panel = await loggedAdmin();
+    assert.equal((await panel.post('/api/admin/admins', { nombre: 'jefe@tienda.cl', password: 'Jefe1234!' })).status, 400);
+  });
+
   test('acepta contraseñas creadas por PHP y bloquea a los clientes', async () => {
     const admin = await loggedAdmin();
     assert.equal(admin.csrf.length, 64);
@@ -350,7 +370,7 @@ describe('panel de administración', () => {
     assert.equal(created.status, 201);
 
     const nuevo = await new Client(base).start();
-    assert.equal((await nuevo.post('/api/admin/auth/login', { nombre: 'nuevo', password: 'Nuevo123!' })).status, 200);
+    assert.equal((await nuevo.post('/api/auth/login', { correo: 'nuevo', password: 'Nuevo123!' })).status, 200);
     assert.equal((await nuevo.delete(`/api/admin/admins/${created.body.data.id}`)).status, 409, 'no puede eliminarse a sí mismo');
     assert.equal((await admin.delete(`/api/admin/admins/${created.body.data.id}`)).status, 200);
   });

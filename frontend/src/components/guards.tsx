@@ -17,13 +17,16 @@ export function RequireUser({ children }: { children: ReactNode }) {
   return children;
 }
 
-/** Páginas del panel de administración. */
+/** Páginas del panel de administración. Sin sesión de admin, se usa el mismo login de la tienda. */
 export function RequireAdmin({ children }: { children: ReactNode }) {
   const { data: session, isPending, error, refetch } = useSession();
+  const location = useLocation();
 
   if (isPending) return <PageLoader />;
   if (error) return <ErrorState error={error} onRetry={() => void refetch()} />;
-  if (!session.admin) return <Navigate to="/admin/login" replace />;
+  if (!session.admin) {
+    return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />;
+  }
   return children;
 }
 
