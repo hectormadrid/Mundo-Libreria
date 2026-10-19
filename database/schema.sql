@@ -137,6 +137,41 @@ create table public.pedido_items (
   primary key (pedido_id, producto_id)
 );
 create index pedido_items_producto_idx on public.pedido_items (producto_id);
+create index pedidos_creado_idx on public.pedidos (creado_en);
+
+-- Cada cambio de estado de un pedido: quién lo hizo, cuándo y con qué nota.
+create table public.pedido_historial (
+  id integer generated always as identity primary key,
+  pedido_id integer not null references public.pedidos (id) on delete cascade,
+  estado public.estado_pedido not null,
+  nota text check (char_length(nota) <= 500),
+  -- NULL cuando el cambio lo originó el sistema (por ejemplo, al crear el pedido).
+  administrador_id integer references public.administradores (id) on delete set null,
+  creado_en timestamptz not null default now()
+);
+create index pedido_historial_pedido_idx on public.pedido_historial (pedido_id, creado_en);
+create index pedido_historial_admin_idx on public.pedido_historial (administrador_id);
+
+-- ---------------------------------------------------------------- Configuración
+
+-- Datos públicos de la tienda, editables desde el panel (una sola fila).
+create table public.configuracion_tienda (
+  id integer primary key default 1 check (id = 1),
+  telefono text check (char_length(telefono) <= 30),
+  correo text check (char_length(correo) <= 254),
+  direccion text check (char_length(direccion) <= 255),
+  whatsapp text check (char_length(whatsapp) <= 255),
+  instagram text check (char_length(instagram) <= 255),
+  facebook text check (char_length(facebook) <= 255),
+  -- Lista de { "dia": "Lunes - Viernes", "horario": "9:00 - 20:00" }.
+  horarios jsonb not null default '[]'::jsonb check (jsonb_typeof(horarios) = 'array'),
+  -- Instrucciones para pagar por transferencia (banco, cuenta, RUT...).
+  datos_transferencia text check (char_length(datos_transferencia) <= 1000),
+  actualizado_en timestamptz not null default now()
+);
+create trigger configuracion_tienda_actualizado before update on public.configuracion_tienda
+  for each row execute function public.marcar_actualizado();
+insert into public.configuracion_tienda (id) values (1);
 
 -- ---------------------------------------------------------------- Sesiones
 
@@ -159,3 +194,5 @@ alter table public.carrito_items enable row level security;
 alter table public.pedidos enable row level security;
 alter table public.pedido_items enable row level security;
 alter table public.sesiones enable row level security;
+alter table public.pedido_historial enable row level security;
+alter table public.configuracion_tienda enable row level security;

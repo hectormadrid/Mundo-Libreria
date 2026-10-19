@@ -15,3 +15,6 @@ public/static/
 
 # Logs locales (pueden contener correos y enlaces de recuperación)
 logs/
+
+# Caché de compilación de TypeScript
+*.tsbuildinfo

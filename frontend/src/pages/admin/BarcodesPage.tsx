@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import JsBarcode from 'jsbarcode';
 import { Printer } from 'lucide-react';
@@ -10,7 +11,8 @@ import { ErrorState, PageLoader } from '../../components/ui';
 
 export function BarcodesPage() {
   const products = useQuery({ queryKey: ['admin', 'products'], queryFn: () => api<AdminProduct[]>('/admin/products') });
-  const [selectedId, setSelectedId] = useState('');
+  const [params] = useSearchParams();
+  const [selectedId, setSelectedId] = useState(params.get('producto') ?? '');
   const svgRef = useRef<SVGSVGElement>(null);
   const product = products.data?.find((p) => String(p.id) === selectedId);
 

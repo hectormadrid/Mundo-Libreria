@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 
 export interface Column<T> {
@@ -18,6 +18,12 @@ interface DataTableProps<T> {
   searchPlaceholder?: string;
   emptyMessage?: string;
   toolbar?: ReactNode;
+  /** Orden inicial, por el encabezado de una columna ordenable. */
+  initialSort?: { header: string; dir: 1 | -1 };
+  /** Selección de filas (casillas) para acciones en lote. */
+  selection?: { selected: Set<string | number>; onChange: (selected: Set<string | number>) => void };
+  /** Recibe las claves de las filas que quedan tras buscar y ordenar (p. ej. para exportarlas). */
+  onFilteredChange?: (keys: (string | number)[]) => void;
 }
 
 const PAGE_SIZES = [10, 25, 50];
@@ -27,9 +33,23 @@ function normalize(text: string) {
 }
 
 /** Tabla con búsqueda, orden por columna y paginación en el navegador. */
-export function DataTable<T>({ rows, columns, rowKey, searchText, searchPlaceholder = 'Buscar...', emptyMessage = 'No hay registros.', toolbar }: DataTableProps<T>) {
+export function DataTable<T>({
+  rows,
+  columns,
+  rowKey,
+  searchText,
+  searchPlaceholder = 'Buscar...',
+  emptyMessage = 'No hay registros.',
+  toolbar,
+  initialSort,
+  selection,
+  onFilteredChange,
+}: DataTableProps<T>) {
   const [query, setQuery] = useState('');
-  const [sort, setSort] = useState<{ index: number; dir: 1 | -1 } | null>(null);
+  const [sort, setSort] = useState<{ index: number; dir: 1 | -1 } | null>(() => {
+    const index = initialSort ? columns.findIndex((c) => c.header === initialSort.header) : -1;
+    return index >= 0 ? { index, dir: initialSort!.dir } : null;
+  });
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
 
@@ -47,6 +67,29 @@ export function DataTable<T>({ rows, columns, rowKey, searchText, searchPlacehol
     }
     return result;
   }, [rows, query, sort, columns, searchText]);
+
+  const filteredKeys = filtered.map(rowKey);
+  // Avisar solo cuando cambia el conjunto (o su orden), no en cada render.
+  const signature = JSON.stringify(filteredKeys);
+  useEffect(() => {
+    onFilteredChange?.(JSON.parse(signature) as (string | number)[]);
+  }, [signature, onFilteredChange]);
+  const allSelected = selection !== undefined && filteredKeys.length > 0 && filteredKeys.every((k) => selection.selected.has(k));
+  const someSelected = selection !== undefined && filteredKeys.some((k) => selection.selected.has(k));
+  const toggleAll = () => {
+    if (!selection) return;
+    const next = new Set(selection.selected);
+    filteredKeys.forEach((k) => (allSelected ? next.delete(k) : next.add(k)));
+    selection.onChange(next);
+  };
+  const toggleOne = (key: string | number) => {
+    if (!selection) return;
+    const next = new Set(selection.selected);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    selection.onChange(next);
+  };
+  const colCount = columns.length + (selection ? 1 : 0);
 
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const current = Math.min(page, pages);
@@ -80,6 +123,20 @@ export function DataTable<T>({ rows, columns, rowKey, searchText, searchPlacehol
         <table className="min-w-full text-sm">
           <thead className="bg-gray-50 text-left text-xs font-semibold tracking-wide text-gray-600 uppercase">
             <tr>
+              {selection && (
+                <th className="w-10 px-4 py-3">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 accent-lib-blue"
+                    checked={allSelected}
+                    ref={(el) => {
+                      if (el) el.indeterminate = someSelected && !allSelected;
+                    }}
+                    onChange={toggleAll}
+                    aria-label={allSelected ? 'Quitar la selección' : `Seleccionar los ${filtered.length} registros`}
+                  />
+                </th>
+              )}
               {columns.map((col, i) => (
                 <th key={col.header} className={`px-4 py-3 whitespace-nowrap ${col.className ?? ''}`} aria-sort={sort?.index === i ? (sort.dir === 1 ? 'ascending' : 'descending') : undefined}>
                   {col.sortValue ? (
@@ -97,13 +154,24 @@ export function DataTable<T>({ rows, columns, rowKey, searchText, searchPlacehol
           <tbody className="divide-y divide-gray-100">
             {visible.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-4 py-10 text-center text-gray-500">
+                <td colSpan={colCount} className="px-4 py-10 text-center text-gray-500">
                   {query ? 'Ningún registro coincide con la búsqueda.' : emptyMessage}
                 </td>
               </tr>
             ) : (
               visible.map((row) => (
-                <tr key={rowKey(row)} className="hover:bg-blue-50/40">
+                <tr key={rowKey(row)} className={`hover:bg-blue-50/40 ${selection?.selected.has(rowKey(row)) ? 'bg-blue-50/60' : ''}`}>
+                  {selection && (
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 accent-lib-blue"
+                        checked={selection.selected.has(rowKey(row))}
+                        onChange={() => toggleOne(rowKey(row))}
+                        aria-label="Seleccionar fila"
+                      />
+                    </td>
+                  )}
                   {columns.map((col) => (
                     <td key={col.header} className={`px-4 py-3 align-middle ${col.className ?? ''}`}>
                       {col.cell(row)}

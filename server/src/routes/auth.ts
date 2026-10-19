@@ -1,12 +1,11 @@
 import crypto from 'node:crypto';
 import { Router, type Request } from 'express';
 import { exec, one } from '../db.js';
-import { HttpError, rawString, send, str } from '../http.js';
+import { frontendUrl, HttpError, rawString, send, str } from '../http.js';
 import { adminId, csrfToken, hashPassword, loginAdmin, loginUser, regenerateSession, userId, verifyPassword } from '../auth.js';
 import { checkThrottle, clearThrottle, registerFailure } from '../throttle.js';
 import { isEmail, isPhone, isRut, isStrongPassword, PASSWORD_RULE } from '../validation.js';
 import { passwordResetTemplate, sendMail, welcomeTemplate } from '../mail.js';
-import { config } from '../config.js';
 
 export const authRouter = Router();
 
@@ -27,12 +26,6 @@ async function sessionPayload(req: Request) {
   }
 
   return { user, admin, csrfToken: csrfToken(req) };
-}
-
-/** URL pública del frontend: APP_URL o, si no existe, la de la petición. */
-function frontendUrl(req: Request, path: string): string {
-  const base = config.appUrl || `${req.protocol}://${req.get('host')}`;
-  return `${base.replace(/\/+$/, '')}/${path}`;
 }
 
 const sha256 = (value: string) => crypto.createHash('sha256').update(value).digest('hex');

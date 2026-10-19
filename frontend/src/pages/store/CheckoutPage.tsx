@@ -8,6 +8,7 @@ import { formatPrice } from '../../lib/format';
 import { onImageError, productImage } from '../../lib/assets';
 import { alertSuccess } from '../../lib/alerts';
 import { useCart } from '../../hooks/useCart';
+import { useStoreSettings } from '../../hooks/useSettings';
 import { ErrorState, FormError, PageLoader, Spinner } from '../../components/ui';
 
 const METHODS: { id: PaymentMethod; title: string; text: string; icon: typeof CreditCard }[] = [
@@ -29,6 +30,7 @@ export function CheckoutPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { cart, isPending: cartPending } = useCart();
+  const { data: settings } = useStoreSettings();
   const profile = useQuery({ queryKey: ['profile'], queryFn: () => api<Profile>('/profile') });
 
   const [form, setForm] = useState({ nombre: '', correo: '', telefono: '', direccion: '' });
@@ -176,7 +178,16 @@ export function CheckoutPage() {
               </div>
             )}
             {method === 'transferencia' && (
-              <p className="mt-4 text-sm text-gray-600">Tu pedido quedará pendiente hasta que confirmemos la transferencia.</p>
+              <div className="mt-4 space-y-3">
+                {settings?.datosTransferencia && (
+                  <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                    <p className="mb-1 font-semibold">Datos para la transferencia</p>
+                    <p className="whitespace-pre-line">{settings.datosTransferencia}</p>
+                    <p className="mt-2 text-xs">También te los enviaremos en el correo de confirmación.</p>
+                  </div>
+                )}
+                <p className="text-sm text-gray-600">Tu pedido quedará pendiente hasta que confirmemos la transferencia.</p>
+              </div>
             )}
             {method === 'efectivo' && <p className="mt-4 text-sm text-gray-600">Pagas al momento de recibir tu pedido.</p>}
           </section>

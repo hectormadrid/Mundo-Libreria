@@ -54,7 +54,16 @@ export function orderTemplate(
   orderId: number,
   total: number,
   items: { nombre: string; cantidad: number; precio: number }[],
+  /** Si el pago es por transferencia, los datos bancarios configurados en la tienda. */
+  datosTransferencia?: string | null,
 ): string {
+  const transferencia = datosTransferencia
+    ? `
+      <div style='background: #fffbeb; border-left: 4px solid #d69e2e; padding: 15px; margin: 20px 0;'>
+        <p style='margin: 0 0 8px; font-size: 14px; color: #744210;'><b>Datos para la transferencia</b> (total: ${money(total)}, indica el pedido #${orderId}):</p>
+        <p style='margin: 0; font-size: 14px; color: #744210; white-space: pre-line;'>${escape(datosTransferencia)}</p>
+      </div>`
+    : '';
   const rows = items
     .map(
       (item) => `
@@ -91,6 +100,7 @@ export function orderTemplate(
           </tr>
         </tfoot>
       </table>
+      ${transferencia}
       <div style='background: #ebf8ff; border-left: 4px solid #3182ce; padding: 15px; margin: 20px 0;'>
         <p style='margin: 0; font-size: 14px; color: #2a4365;'>
           <b>Información de envío:</b><br>
@@ -98,6 +108,35 @@ export function orderTemplate(
         </p>
       </div>
       <p style='font-size: 14px; color: #718096; text-align: center; margin-top: 30px;'>Si tienes alguna pregunta sobre tu pedido, no dudes en contactarnos.</p>
+    </div>
+    ${footer('Este es un correo automático, por favor no respondas directamente.')}
+  </div>`;
+}
+
+const STATUS_MESSAGES: Record<string, { titulo: string; texto: string; color: string }> = {
+  pendiente: { titulo: 'Pedido pendiente', texto: 'Tu pedido está pendiente de confirmación.', color: '#d69e2e' },
+  pagado: { titulo: '¡Pago confirmado!', texto: 'Recibimos tu pago. Estamos preparando tus productos.', color: '#2f855a' },
+  enviado: { titulo: '¡Tu pedido va en camino!', texto: 'Tu pedido fue despachado y pronto llegará a tu dirección.', color: '#3182ce' },
+  entregado: { titulo: 'Pedido entregado', texto: 'Tu pedido fue entregado. ¡Gracias por comprar en Mundo Librería!', color: '#2f855a' },
+  cancelado: { titulo: 'Pedido cancelado', texto: 'Tu pedido fue cancelado. Si tienes dudas, contáctanos.', color: '#c53030' },
+};
+
+/** Aviso al cliente cuando el administrador cambia el estado de su pedido. */
+export function orderStatusTemplate(nombre: string, orderId: number, estado: string, nota: string | null, orderUrl: string): string {
+  const info = STATUS_MESSAGES[estado] ?? { titulo: 'Actualización de tu pedido', texto: `Nuevo estado: ${estado}.`, color: '#4a5568' };
+  return `
+  <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;'>
+    <div style='background: ${info.color}; padding: 24px; text-align: center; border-radius: 10px 10px 0 0;'>
+      <h1 style='color: white; margin: 0; font-size: 24px;'>${escape(info.titulo)}</h1>
+      <p style='color: white; opacity: 0.9; margin-top: 8px;'>Pedido #${orderId}</p>
+    </div>
+    <div style='padding: 20px; color: #333;'>
+      <p>Hola <b>${escape(nombre)}</b>,</p>
+      <p>${escape(info.texto)}</p>
+      ${nota ? `<p style='background: #f7fafc; border-left: 4px solid #cbd5e0; padding: 12px; white-space: pre-line;'>${escape(nota)}</p>` : ''}
+      <div style='text-align: center; margin: 30px 0;'>
+        <a href='${escape(orderUrl)}' style='background-color: #3182CE; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Ver mi pedido</a>
+      </div>
     </div>
     ${footer('Este es un correo automático, por favor no respondas directamente.')}
   </div>`;

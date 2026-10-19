@@ -5,6 +5,7 @@ import { requireUser } from '../auth.js';
 import { isEmail, isPhone } from '../validation.js';
 import { orderTemplate, sendMail } from '../mail.js';
 import { imageUrl } from '../uploads.js';
+import { getSettings } from './settings.js';
 
 export const accountRouter = Router();
 
@@ -85,7 +86,9 @@ accountRouter.get('/orders/:id', async (req, res) => {
     [idParam(req), requireUser(req)],
   );
   if (!order) throw HttpError.notFound('Pedido no encontrado.');
-  send(res, { ...formatOrder(order), items: await orderItems(order.id) });
+  // Seguimiento para el cliente: solo estados y fechas (sin notas internas ni quién hizo el cambio).
+  const seguimiento = await all('SELECT estado, creado_en AS fecha FROM pedido_historial WHERE pedido_id = $1 ORDER BY creado_en, id', [order.id]);
+  send(res, { ...formatOrder(order), items: await orderItems(order.id), seguimiento });
 });
 
 accountRouter.post('/orders', async (req, res) => {
@@ -141,15 +144,17 @@ accountRouter.post('/orders', async (req, res) => {
       await exec('UPDATE productos SET stock = stock - $1 WHERE id = $2', [item.cantidad, item.id], client);
     }
     await exec('DELETE FROM carrito_items WHERE cliente_id = $1', [uid], client);
+    await exec('INSERT INTO pedido_historial (pedido_id, estado, nota) VALUES ($1, $2, $3)', [orderId, estado, 'Pedido creado por el cliente'], client);
 
     return { orderId, total, items };
   });
 
   // El pedido ya está creado; un fallo del correo no debe revertirlo.
+  const datosTransferencia = metodoPago === 'transferencia' ? (await getSettings()).datosTransferencia : null;
   sendMail(
     correo,
     `Confirmación de Pedido #${orderId} - Mundo Librería`,
-    orderTemplate(nombre, orderId, total, items.map((i) => ({ nombre: i.nombre, cantidad: i.cantidad, precio: i.precio }))),
+    orderTemplate(nombre, orderId, total, items.map((i) => ({ nombre: i.nombre, cantidad: i.cantidad, precio: i.precio })), datosTransferencia),
   ).catch((error) => console.error('Error al enviar email de confirmación:', error));
 
   send(res, { id: orderId }, 201);

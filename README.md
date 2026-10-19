@@ -138,14 +138,19 @@ Las peticiones que modifican datos requieren la cabecera `X-CSRF-Token`, que se 
 | PATCH, DELETE | `/cart/items/{productId}` | Cambiar cantidad / quitar |
 | GET, PUT | `/profile` | Perfil del cliente |
 | GET, POST | `/orders` | Pedidos del cliente / crear pedido desde el carrito |
-| GET | `/orders/{id}` | Detalle de un pedido propio |
-| GET | `/admin/metrics` | Métricas del panel |
-| GET, POST | `/admin/products` | Listar / crear (multipart) |
+| GET | `/orders/{id}` | Detalle de un pedido propio, con su seguimiento (estados y fechas) |
+| GET | `/settings` | Datos públicos de la tienda: contacto, redes, horarios y datos de transferencia |
+| GET | `/admin/dashboard?dias=7\|30\|90\|365` | Indicadores con comparación al período anterior, serie de ventas, ranking de productos, ventas por categoría y alertas |
+| GET | `/admin/counts` | Pendientes para el menú: pagos por confirmar, pedidos por enviar, stock bajo |
+| PUT | `/admin/settings` | Editar la configuración de la tienda |
+| GET, POST | `/admin/products` | Listar (incluye unidades vendidas) / crear (multipart) |
 | POST | `/admin/products/{id}` | Editar (multipart) |
 | PATCH | `/admin/products/{id}/status` | Activar / desactivar |
-| GET | `/admin/orders`, `/admin/orders/{id}` | Pedidos |
-| PATCH | `/admin/orders/{id}/status` | Cambiar estado (cancelar devuelve el stock) |
-| GET, PUT, DELETE | `/admin/users`, `/admin/users/{id}` | Clientes |
+| PATCH | `/admin/products/{id}/stock` | Ajuste rápido de stock `{ stock }` |
+| PATCH | `/admin/products/status` | Activar / desactivar en lote `{ ids, estado }` |
+| GET | `/admin/orders`, `/admin/orders/{id}` | Pedidos (el detalle incluye el historial de cambios) |
+| PATCH | `/admin/orders/{id}/status` | Cambiar estado `{ estado, nota?, notificar? }`: queda en el historial y puede avisar al cliente por correo (cancelar devuelve el stock) |
+| GET, PUT, DELETE | `/admin/users`, `/admin/users/{id}` | Clientes con totales; `GET /admin/users/{id}` es la ficha con sus pedidos |
 | GET, POST, PUT, DELETE | `/admin/categories[/{id}]`, `/admin/families[/{id}]` | Categorías y familias |
 | GET, POST, DELETE | `/admin/admins[/{id}]` | Administradores |
 

@@ -1,4 +1,11 @@
 import type { Request, Response } from 'express';
+import { config } from './config.js';
+
+/** URL pública de la tienda (para enlaces en correos): APP_URL o, si no existe, la de la petición. */
+export function frontendUrl(req: Request, path: string): string {
+  const base = config.appUrl || `${req.protocol}://${req.get('host')}`;
+  return `${base.replace(/\/+$/, '')}/${path}`;
+}
 
 /** Error controlado: se responde al cliente con su código y mensaje. */
 export class HttpError extends Error {

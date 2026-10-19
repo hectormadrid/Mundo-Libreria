@@ -1,11 +1,14 @@
 import crypto from 'node:crypto';
 import { Router, type Request } from 'express';
 import { all, exec, one, transaction, value, type Row } from '../db.js';
-import { float, HttpError, idParam, int, nullableStr, positiveInt, rawString, send, str } from '../http.js';
+import { float, frontendUrl, HttpError, idParam, int, nullableStr, positiveInt, rawString, send, str } from '../http.js';
+import { orderStatusTemplate, sendMail } from '../mail.js';
 import { hashPassword, requireAdmin } from '../auth.js';
 import { isEmail, isPhone, isRut, isStrongPassword, PASSWORD_RULE } from '../validation.js';
 import { deleteProductImage, imageUpload, imageUrl, storeProductImage } from '../uploads.js';
 import { formatOrder, formatProfile, orderItems } from './account.js';
+import { dashboardRouter } from './dashboard.js';
+import { updateSettings } from './settings.js';
 
 export const adminRouter = Router();
 
@@ -15,22 +18,12 @@ adminRouter.use((req, _res, next) => {
   next();
 });
 
-// ---------------------------------------------------------------- Métricas
+// ---------------------------------------------------------------- Dashboard y configuración
 
-adminRouter.get('/metrics', async (_req, res) => {
-  const metrics = await one(`
-    SELECT
-      (SELECT count(*) FROM productos) AS "totalProductos",
-      (SELECT count(*) FROM productos WHERE activo) AS "productosActivos",
-      (SELECT count(*) FROM productos WHERE activo AND stock < 10) AS "stockBajo",
-      (SELECT coalesce(sum(precio * stock), 0) FROM productos WHERE activo) AS "valorInventario",
-      (SELECT count(*) FROM pedidos WHERE estado = 'pendiente') AS "pedidosPendientes",
-      -- Ventas confirmadas del mes en curso (hora de Chile): pagado, enviado o entregado.
-      (SELECT coalesce(sum(total), 0) FROM pedidos
-        WHERE estado IN ('pagado', 'enviado', 'entregado')
-          AND date_trunc('month', creado_en AT TIME ZONE 'America/Santiago')
-            = date_trunc('month', now() AT TIME ZONE 'America/Santiago')) AS "ventasMes"`);
-  send(res, metrics);
+adminRouter.use(dashboardRouter);
+
+adminRouter.put('/settings', async (req, res) => {
+  send(res, await updateSettings(req));
 });
 
 // ---------------------------------------------------------------- Productos
@@ -38,7 +31,9 @@ adminRouter.get('/metrics', async (_req, res) => {
 const PRODUCT_SELECT = `
   SELECT p.id, p.nombre, p.codigo_barras, p.imagen, p.precio, p.descripcion, p.marca, p.color,
          p.stock, p.activo, p.creado_en, p.categoria_id, c.nombre AS categoria,
-         p.familia_id, f.nombre AS familia
+         p.familia_id, f.nombre AS familia,
+         (SELECT coalesce(sum(i.cantidad), 0) FROM pedido_items i JOIN pedidos pe ON pe.id = i.pedido_id
+           WHERE i.producto_id = p.id AND pe.estado <> 'cancelado') AS vendidos
   FROM productos p
   LEFT JOIN categorias c ON p.categoria_id = c.id
   LEFT JOIN familias f ON p.familia_id = f.id`;
@@ -60,6 +55,7 @@ function formatAdminProduct(p: Row) {
     categoria: p.categoria,
     idFamilia: p.familia_id,
     familia: p.familia,
+    vendidos: p.vendidos,
   };
 }
 
@@ -158,6 +154,27 @@ adminRouter.post('/products/:id', imageUpload, async (req, res) => {
   send(res, await findProduct(id));
 });
 
+/** Ajuste rápido de stock desde la tabla (valor absoluto). */
+adminRouter.patch('/products/:id/stock', async (req, res) => {
+  const id = idParam(req);
+  const stock = int(req, 'stock');
+  if (stock === null || stock < 0 || stock > 1_000_000) throw HttpError.badRequest('El stock debe ser un número entero entre 0 y 1.000.000.');
+  if ((await exec('UPDATE productos SET stock = $1 WHERE id = $2', [stock, id])) === 0) throw HttpError.notFound('Producto no encontrado.');
+  send(res, await findProduct(id));
+});
+
+/** Activa o desactiva varios productos a la vez. */
+adminRouter.patch('/products/status', async (req, res) => {
+  const estado = str(req, 'estado').toLowerCase();
+  const ids = (req.body ?? {}).ids;
+  if (!['activo', 'inactivo'].includes(estado)) throw HttpError.badRequest('Estado no válido.');
+  if (!Array.isArray(ids) || !ids.length || ids.length > 500 || !ids.every((id) => Number.isInteger(id) && id > 0)) {
+    throw HttpError.badRequest('Selecciona al menos un producto.');
+  }
+  const actualizados = await exec('UPDATE productos SET activo = $1 WHERE id = ANY($2::int[])', [estado === 'activo', ids]);
+  send(res, { actualizados });
+});
+
 adminRouter.patch('/products/:id/status', async (req, res) => {
   const id = idParam(req);
   const estado = str(req, 'estado').toLowerCase();
@@ -173,13 +190,23 @@ adminRouter.patch('/products/:id/status', async (req, res) => {
 const ORDER_STATES = ['pendiente', 'pagado', 'enviado', 'entregado', 'cancelado'];
 const ADMIN_ORDER_SELECT = `
   SELECT p.id, p.total, p.estado, p.creado_en, p.metodo_pago, p.direccion_envio, p.telefono_contacto,
-         p.nombre_contacto, p.correo_contacto, c.nombre AS cliente, c.correo, c.rut
+         p.nombre_contacto, p.correo_contacto, c.id AS cliente_id, c.nombre AS cliente, c.correo, c.rut,
+         (SELECT coalesce(sum(i.cantidad), 0) FROM pedido_items i WHERE i.pedido_id = p.id) AS productos
   FROM pedidos p JOIN clientes c ON p.cliente_id = c.id`;
 
 adminRouter.get('/orders', async (_req, res) => {
   const rows = await all(`${ADMIN_ORDER_SELECT} ORDER BY p.creado_en DESC, p.id DESC`);
-  send(res, rows.map((r) => ({ ...formatOrder(r), cliente: r.cliente, correo: r.correo })));
+  send(res, rows.map((r) => ({ ...formatOrder(r), cliente: r.cliente, idCliente: r.cliente_id, correo: r.correo })));
 });
+
+async function orderHistory(pedidoId: number) {
+  return all(
+    `SELECT h.id, h.estado, h.nota, h.creado_en AS fecha, a.usuario AS administrador
+     FROM pedido_historial h LEFT JOIN administradores a ON a.id = h.administrador_id
+     WHERE h.pedido_id = $1 ORDER BY h.creado_en, h.id`,
+    [pedidoId],
+  );
+}
 
 adminRouter.get('/orders/:id', async (req, res) => {
   const row = await one(`${ADMIN_ORDER_SELECT} WHERE p.id = $1`, [idParam(req)]);
@@ -187,51 +214,98 @@ adminRouter.get('/orders/:id', async (req, res) => {
   send(res, {
     ...formatOrder(row),
     cliente: row.cliente,
+    idCliente: row.cliente_id,
     correo: row.correo,
     rut: row.rut,
     nombreContacto: row.nombre_contacto,
     correoContacto: row.correo_contacto,
     items: await orderItems(row.id),
+    historial: await orderHistory(row.id),
   });
 });
 
 /**
- * Al cancelar un pedido se devuelve el stock de sus productos.
- * Un pedido cancelado no se reactiva, porque su stock ya volvió al inventario.
+ * Cambia el estado de un pedido y lo registra en su historial, con una nota opcional.
+ * Con `notificar`, avisa al cliente por correo (la nota se incluye en el correo).
+ * Al cancelar se devuelve el stock; un pedido cancelado no se reactiva, porque su stock ya volvió al inventario.
+ * Repetir el estado actual con una nota solo agrega la nota al historial.
  */
 adminRouter.patch('/orders/:id/status', async (req, res) => {
+  const adminId = requireAdmin(req);
   const id = idParam(req);
   const nuevo = str(req, 'estado');
+  const nota = nullableStr(req, 'nota');
+  const notificar = (req.body ?? {}).notificar === true;
   if (!ORDER_STATES.includes(nuevo)) throw HttpError.badRequest('Estado no válido.');
+  if (nota && nota.length > 500) throw HttpError.badRequest('La nota no puede superar los 500 caracteres.');
 
-  await transaction(async (client) => {
-    const actual = await value<string>('SELECT estado FROM pedidos WHERE id = $1 FOR UPDATE', [id], client);
-    if (actual === null) throw HttpError.notFound('Pedido no encontrado.');
-    if (actual === nuevo) return;
-    if (actual === 'cancelado') throw HttpError.conflict('Un pedido cancelado no se puede reactivar.');
-    if (nuevo === 'cancelado') {
-      await exec(
-        `UPDATE productos p SET stock = p.stock + i.cantidad
-         FROM pedido_items i WHERE i.producto_id = p.id AND i.pedido_id = $1`,
-        [id],
-        client,
-      );
+  const cambio = await transaction(async (client) => {
+    const pedido = await one('SELECT estado, nombre_contacto, correo_contacto FROM pedidos WHERE id = $1 FOR UPDATE', [id], client);
+    if (!pedido) throw HttpError.notFound('Pedido no encontrado.');
+    const actual: string = pedido.estado;
+    if (actual === nuevo && !nota) return null;
+    if (actual === 'cancelado' && nuevo !== 'cancelado') throw HttpError.conflict('Un pedido cancelado no se puede reactivar.');
+
+    if (actual !== nuevo) {
+      if (nuevo === 'cancelado') {
+        await exec(
+          `UPDATE productos p SET stock = p.stock + i.cantidad
+           FROM pedido_items i WHERE i.producto_id = p.id AND i.pedido_id = $1`,
+          [id],
+          client,
+        );
+      }
+      await exec('UPDATE pedidos SET estado = $1 WHERE id = $2', [nuevo, id], client);
     }
-    await exec('UPDATE pedidos SET estado = $1 WHERE id = $2', [nuevo, id], client);
+    await exec('INSERT INTO pedido_historial (pedido_id, estado, nota, administrador_id) VALUES ($1, $2, $3, $4)', [id, nuevo, nota, adminId], client);
+    return pedido;
   });
 
-  send(res, { id, estado: nuevo });
+  if (cambio && notificar) {
+    sendMail(
+      cambio.correo_contacto,
+      `Pedido #${id}: ${nuevo} - Mundo Librería`,
+      orderStatusTemplate(cambio.nombre_contacto, id, nuevo, nota, frontendUrl(req, `mis-pedidos/${id}`)),
+    ).catch((error) => console.error('Error al enviar aviso de estado:', error));
+  }
+
+  send(res, { id, estado: nuevo, historial: await orderHistory(id) });
 });
 
 // ---------------------------------------------------------------- Clientes
 
+const CUSTOMER_STATS = `
+  (SELECT count(*) FROM pedidos p WHERE p.cliente_id = c.id) AS pedidos,
+  (SELECT coalesce(sum(p.total), 0) FROM pedidos p WHERE p.cliente_id = c.id AND p.estado IN ('pagado', 'enviado', 'entregado')) AS total_gastado,
+  (SELECT max(p.creado_en) FROM pedidos p WHERE p.cliente_id = c.id) AS ultimo_pedido`;
+
+function formatCustomer(c: Row) {
+  return {
+    ...formatProfile(c),
+    creadoEn: c.creado_en,
+    pedidos: c.pedidos,
+    totalGastado: c.total_gastado,
+    ultimoPedido: c.ultimo_pedido,
+  };
+}
+
 adminRouter.get('/users', async (_req, res) => {
-  const rows = await all(
-    `SELECT c.id, c.rut, c.nombre, c.correo, c.telefono, c.direccion,
-            (SELECT count(*) FROM pedidos p WHERE p.cliente_id = c.id) AS pedidos
-     FROM clientes c ORDER BY c.id DESC`,
+  const rows = await all(`SELECT c.id, c.rut, c.nombre, c.correo, c.telefono, c.direccion, c.creado_en, ${CUSTOMER_STATS} FROM clientes c ORDER BY c.id DESC`);
+  send(res, rows.map(formatCustomer));
+});
+
+/** Ficha del cliente: datos, totales y todos sus pedidos. */
+adminRouter.get('/users/:id', async (req, res) => {
+  const id = idParam(req);
+  const cliente = await one(`SELECT c.id, c.rut, c.nombre, c.correo, c.telefono, c.direccion, c.creado_en, ${CUSTOMER_STATS} FROM clientes c WHERE c.id = $1`, [id]);
+  if (!cliente) throw HttpError.notFound('Usuario no encontrado.');
+  const pedidos = await all(
+    `SELECT p.id, p.total, p.estado, p.creado_en, p.metodo_pago,
+            (SELECT coalesce(sum(i.cantidad), 0) FROM pedido_items i WHERE i.pedido_id = p.id) AS productos
+     FROM pedidos p WHERE p.cliente_id = $1 ORDER BY p.creado_en DESC, p.id DESC`,
+    [id],
   );
-  send(res, rows.map((c) => ({ ...formatProfile(c), pedidos: c.pedidos })));
+  send(res, { ...formatCustomer(cliente), historialPedidos: pedidos.map(formatOrder) });
 });
 
 adminRouter.put('/users/:id', async (req, res) => {

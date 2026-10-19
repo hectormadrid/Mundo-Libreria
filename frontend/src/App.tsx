@@ -19,6 +19,8 @@ import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 
 // El panel de administración se descarga solo cuando se visita.
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout').then((m) => ({ default: m.AdminLayout })));
+const DashboardPage = lazy(() => import('./pages/admin/DashboardPage').then((m) => ({ default: m.DashboardPage })));
+const SettingsPage = lazy(() => import('./pages/admin/SettingsPage').then((m) => ({ default: m.SettingsPage })));
 const ProductsPage = lazy(() => import('./pages/admin/ProductsPage').then((m) => ({ default: m.ProductsPage })));
 const OrdersAdminPage = lazy(() => import('./pages/admin/OrdersAdminPage').then((m) => ({ default: m.OrdersAdminPage })));
 const UsersAdminPage = lazy(() => import('./pages/admin/UsersAdminPage').then((m) => ({ default: m.UsersAdminPage })));
@@ -63,7 +65,9 @@ export function App() {
           {/* Enlace antiguo: el acceso al panel es el mismo login de la tienda. */}
           <Route path="admin/login" element={<Navigate to="/login" replace />} />
           <Route path="admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
-            <Route index element={<ProductsPage />} />
+            <Route index element={<DashboardPage />} />
+            <Route path="productos" element={<ProductsPage />} />
+            <Route path="configuracion" element={<SettingsPage />} />
             <Route path="pedidos" element={<OrdersAdminPage />} />
             <Route path="usuarios" element={<UsersAdminPage />} />
             <Route path="categorias" element={<CategoriesPage />} />

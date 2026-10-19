@@ -102,17 +102,56 @@ export interface OrderItem {
 
 export interface OrderDetail extends Order {
   items: OrderItem[];
+  /** Seguimiento visible para el cliente: estados y fechas. */
+  seguimiento: { estado: OrderStatus; fecha: string }[];
+}
+
+// --- Configuración pública de la tienda ---
+
+export interface Horario {
+  dia: string;
+  horario: string;
+}
+
+export interface StoreSettings {
+  telefono: string | null;
+  correo: string | null;
+  direccion: string | null;
+  whatsapp: string | null;
+  instagram: string | null;
+  facebook: string | null;
+  horarios: Horario[];
+  datosTransferencia: string | null;
 }
 
 // --- Administración ---
 
-export interface Metrics {
-  totalProductos: number;
-  productosActivos: number;
-  stockBajo: number;
-  valorInventario: number;
+export interface AdminCounts {
   pedidosPendientes: number;
-  ventasMes: number;
+  porEnviar: number;
+  stockBajo: number;
+}
+
+export type DashboardPeriod = 7 | 30 | 90 | 365;
+
+export interface Dashboard {
+  periodo: { dias: DashboardPeriod; grano: 'day' | 'week' | 'month' };
+  kpis: {
+    ventas: number;
+    ventasAnterior: number;
+    pedidos: number;
+    pedidosAnterior: number;
+    ticketPromedio: number;
+    ticketPromedioAnterior: number;
+    clientesNuevos: number;
+    clientesNuevosAnterior: number;
+  };
+  serie: { fecha: string; ventas: number; pedidos: number }[];
+  topProductos: { id: number; nombre: string; unidades: number; ingresos: number }[];
+  porCategoria: { categoria: string; ingresos: number }[];
+  atencion: { pagosPorConfirmar: number; montoPorConfirmar: number; porEnviar: number; sinStock: number; stockBajo: number };
+  stockCritico: { id: number; nombre: string; stock: number; imagen: string | null }[];
+  ultimosPedidos: { id: number; total: number; estado: OrderStatus; fecha: string; metodoPago: PaymentMethod | null; cliente: string }[];
 }
 
 export interface AdminProduct {
@@ -131,20 +170,40 @@ export interface AdminProduct {
   categoria: string | null;
   idFamilia: number | null;
   familia: string | null;
+  vendidos: number;
 }
 
 export interface AdminOrder extends Order {
   cliente: string;
+  idCliente: number;
   correo: string;
+}
+
+export interface OrderHistoryEntry {
+  id: number;
+  estado: OrderStatus;
+  nota: string | null;
+  fecha: string;
+  administrador: string | null;
 }
 
 export interface AdminOrderDetail extends AdminOrder {
   rut: string;
+  nombreContacto: string;
+  correoContacto: string;
   items: OrderItem[];
+  historial: OrderHistoryEntry[];
 }
 
 export interface AdminCustomer extends Profile {
+  creadoEn: string;
   pedidos: number;
+  totalGastado: number;
+  ultimoPedido: string | null;
+}
+
+export interface AdminCustomerDetail extends AdminCustomer {
+  historialPedidos: Order[];
 }
 
 export interface AdminCategory {

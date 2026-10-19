@@ -13,6 +13,7 @@ import { catalogRouter } from './routes/catalog.js';
 import { cartRouter } from './routes/cart.js';
 import { accountRouter } from './routes/account.js';
 import { adminRouter } from './routes/admin.js';
+import { settingsRouter } from './routes/settings.js';
 
 const PgStore = connectPgSimple(session);
 
@@ -52,7 +53,7 @@ export function createApp() {
     }),
   );
   api.use(verifyCsrf);
-  api.use(authRouter, catalogRouter, cartRouter, accountRouter);
+  api.use(authRouter, catalogRouter, cartRouter, accountRouter, settingsRouter);
   api.use('/admin', adminRouter);
   api.use((_req, _res, next) => next(HttpError.notFound('Ruta no encontrada.')));
 

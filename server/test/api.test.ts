@@ -272,11 +272,52 @@ describe('panel de administración', () => {
     assert.equal((await admin.get('/api/admin/metrics')).status, 403);
   });
 
-  test('métricas', async () => {
-    const m = (await (await loggedAdmin()).get('/api/admin/metrics')).body.data;
-    assert.equal(m.totalProductos, 16);
-    assert.equal(m.pedidosPendientes, 1);
-    assert.equal(m.ventasMes, 790);
+  test('dashboard: indicadores, gráfico, ranking y alertas', async () => {
+    const admin = await loggedAdmin();
+    assert.equal((await (await loggedUser()).get('/api/admin/dashboard')).status, 403);
+    assert.equal((await admin.get('/api/admin/dashboard?dias=3')).status, 400);
+
+    // Hasta aquí: un pedido por transferencia (pendiente, $5.790) y uno con tarjeta (pagado, $790).
+    const d = (await admin.get('/api/admin/dashboard?dias=30')).body.data;
+    assert.deepEqual(d.kpis, {
+      ventas: 790,
+      ventasAnterior: 0,
+      pedidos: 2,
+      pedidosAnterior: 0,
+      ticketPromedio: 790,
+      ticketPromedioAnterior: 0,
+      clientesNuevos: 2,
+      clientesNuevosAnterior: 0,
+    });
+    assert.equal(d.serie.length, 30, 'un punto por día');
+    assert.deepEqual(d.serie.at(-1), { fecha: d.serie.at(-1).fecha, ventas: 790, pedidos: 2 });
+    assert.deepEqual(d.topProductos, [{ id: 1, nombre: 'Lápiz pasta azul', unidades: 1, ingresos: 790 }]);
+    assert.deepEqual(d.porCategoria, [{ categoria: 'Libreria', ingresos: 790 }]);
+    assert.deepEqual(d.atencion, { pagosPorConfirmar: 1, montoPorConfirmar: 5790, porEnviar: 1, sinStock: 0, stockBajo: 14 });
+    assert.equal(d.stockCritico[0].nombre, 'Calculadora');
+    assert.equal(d.ultimosPedidos.length, 2);
+
+    const anual = (await admin.get('/api/admin/dashboard?dias=365')).body.data;
+    assert.ok(anual.serie.length >= 12 && anual.serie.length <= 13, 'un punto por mes');
+
+    assert.deepEqual((await admin.get('/api/admin/counts')).body.data, { pedidosPendientes: 1, porEnviar: 1, stockBajo: 14 });
+  });
+
+  test('productos: unidades vendidas, stock rápido y cambio en lote', async () => {
+    const admin = await loggedAdmin();
+    const lapiz = (await admin.get('/api/admin/products')).body.data.find((p: { id: number }) => p.id === 1);
+    assert.equal(lapiz.vendidos, 2);
+
+    assert.equal((await admin.patch('/api/admin/products/1/stock', { stock: -1 })).status, 400);
+    assert.equal((await admin.patch('/api/admin/products/999/stock', { stock: 5 })).status, 404);
+    assert.equal((await admin.patch('/api/admin/products/1/stock', { stock: 50 })).body.data.stock, 50);
+
+    assert.equal((await admin.patch('/api/admin/products/status', { ids: [], estado: 'inactivo' })).status, 400);
+    const total = (await new Client(base).get('/api/products')).body.data.total;
+    assert.equal((await admin.patch('/api/admin/products/status', { ids: [4, 5], estado: 'inactivo' })).body.data.actualizados, 2);
+    assert.equal((await new Client(base).get('/api/products')).body.data.total, total - 2);
+    await admin.patch('/api/admin/products/status', { ids: [4, 5], estado: 'activo' });
+    assert.equal((await new Client(base).get('/api/products')).body.data.total, total);
   });
 
   test('crea y edita productos con imagen validada', async () => {
@@ -324,11 +365,40 @@ describe('panel de administración', () => {
     assert.equal(detail.body.data.rut, NEW_USER.rut);
 
     const stockAntes = Number(await db.value('SELECT stock FROM productos WHERE id = 2'));
-    assert.equal((await admin.patch(`/api/admin/orders/${pendiente.id}/status`, { estado: 'enviado' })).status, 200);
+    const enviado = await admin.patch(`/api/admin/orders/${pendiente.id}/status`, {
+      estado: 'enviado',
+      nota: 'Despachado por Starken, seguimiento 123',
+      notificar: true,
+    });
+    assert.equal(enviado.status, 200);
+    // El cliente recibe el aviso con la nota.
+    await waitForMail(new RegExp(`Pedido #${pendiente.id}[\\s\\S]*Despachado por Starken, seguimiento 123`));
+
+    // Repetir el estado con una nota solo agrega la nota; sin nota no hace nada.
+    await admin.patch(`/api/admin/orders/${pendiente.id}/status`, { estado: 'enviado', nota: 'Cliente avisado por WhatsApp' });
+    await admin.patch(`/api/admin/orders/${pendiente.id}/status`, { estado: 'enviado' });
+    assert.equal((await admin.patch(`/api/admin/orders/${pendiente.id}/status`, { estado: 'enviado', nota: 'x'.repeat(501) })).status, 400);
+
     assert.equal((await admin.patch(`/api/admin/orders/${pendiente.id}/status`, { estado: 'cancelado' })).status, 200);
     assert.equal(Number(await db.value('SELECT stock FROM productos WHERE id = 2')), stockAntes + 2);
     assert.equal((await admin.patch(`/api/admin/orders/${pendiente.id}/status`, { estado: 'pagado' })).status, 409);
     assert.equal((await admin.patch(`/api/admin/orders/${pendiente.id}/status`, { estado: 'perdido' })).status, 400);
+
+    const historial = (await admin.get(`/api/admin/orders/${pendiente.id}`)).body.data.historial;
+    assert.deepEqual(
+      historial.map((h: { estado: string; nota: string | null; administrador: string | null }) => [h.estado, h.nota, h.administrador]),
+      [
+        ['pendiente', 'Pedido creado por el cliente', null],
+        ['enviado', 'Despachado por Starken, seguimiento 123', 'testadmin'],
+        ['enviado', 'Cliente avisado por WhatsApp', 'testadmin'],
+        ['cancelado', null, 'testadmin'],
+      ],
+    );
+
+    // El cliente ve el seguimiento (estados y fechas), sin notas internas ni nombres de administradores.
+    const seguimiento = (await (await loggedUser()).get(`/api/orders/${pendiente.id}`)).body.data.seguimiento;
+    assert.deepEqual(seguimiento.map((s: { estado: string }) => s.estado), ['pendiente', 'enviado', 'enviado', 'cancelado']);
+    assert.deepEqual(Object.keys(seguimiento[0]).sort(), ['estado', 'fecha']);
   });
 
   test('clientes: editar y no eliminar a quien tiene pedidos', async () => {
@@ -336,6 +406,14 @@ describe('panel de administración', () => {
     const users = (await admin.get('/api/admin/users')).body.data;
     const ana = users.find((u: { correo: string }) => u.correo === NEW_USER.correo);
     const otro = users.find((u: { correo: string }) => u.correo === 'otro@test.cl');
+
+    // Totales del cliente: solo cuenta lo pagado (el pedido cancelado no suma).
+    assert.equal(ana.pedidos, 2);
+    assert.equal(ana.totalGastado, 790);
+    assert.ok(ana.ultimoPedido && ana.creadoEn);
+    const ficha = (await admin.get(`/api/admin/users/${ana.id}`)).body.data;
+    assert.equal(ficha.historialPedidos.length, 2);
+    assert.equal((await admin.get('/api/admin/users/999')).status, 404);
 
     assert.equal((await admin.put(`/api/admin/users/${ana.id}`, { ...ana, correo: 'otro@test.cl' })).status, 409);
     assert.equal((await admin.put(`/api/admin/users/${ana.id}`, { ...ana, direccion: 'Editada' })).body.data.direccion, 'Editada');
@@ -361,6 +439,41 @@ describe('panel de administración', () => {
     assert.equal((await admin.delete(`/api/admin/families/${fam.body.data.id}`)).status, 200);
     assert.equal((await admin.delete(`/api/admin/categories/${cat.body.data.id}`)).status, 200);
     assert.equal((await admin.delete(`/api/admin/categories/${cat.body.data.id}`)).status, 404);
+  });
+
+  test('configuración de la tienda: pública para leer, solo admin para editar', async () => {
+    const admin = await loggedAdmin();
+    const valida = {
+      telefono: '+56 9 4187 0729',
+      correo: 'contacto@tienda.cl',
+      direccion: "Estancilla 853, Codegua, O'Higgins",
+      whatsapp: 'https://wa.me/56941870729',
+      instagram: '',
+      facebook: 'https://facebook.com/mundolibreria',
+      horarios: [
+        { dia: 'Lunes - Viernes', horario: '9:00 - 20:00' },
+        { dia: 'Sábados', horario: '10:00 - 14:00' },
+      ],
+      datosTransferencia: 'Banco Estado, Cuenta RUT 12.345.678-5, contacto@tienda.cl',
+    };
+
+    assert.equal((await (await loggedUser()).put('/api/admin/settings', valida)).status, 403);
+    assert.equal((await admin.put('/api/admin/settings', { ...valida, whatsapp: 'javascript:alert(1)' })).status, 400);
+    assert.equal((await admin.put('/api/admin/settings', { ...valida, correo: 'no-es-correo' })).status, 400);
+    assert.equal((await admin.put('/api/admin/settings', { ...valida, horarios: [{ dia: 'Lunes', horario: '' }] })).status, 400);
+
+    const guardada = await admin.put('/api/admin/settings', valida);
+    assert.equal(guardada.status, 200, guardada.text);
+    const publica = (await new Client(base).get('/api/settings')).body.data;
+    assert.equal(publica.instagram, null, 'un campo vacío queda en NULL');
+    assert.deepEqual(publica.horarios, valida.horarios);
+
+    // Un pedido por transferencia incluye los datos bancarios en el correo de confirmación.
+    const c = await loggedUser();
+    await c.post('/api/cart/items', { productId: 1, cantidad: 1 });
+    const pedido = await c.post('/api/orders', { nombre: 'Ana', correo: NEW_USER.correo, metodoPago: 'transferencia' });
+    assert.equal(pedido.status, 201);
+    await waitForMail(new RegExp(`Orden #${pedido.body.data.id}[\\s\\S]*Banco Estado, Cuenta RUT`));
   });
 
   test('administradores', async () => {

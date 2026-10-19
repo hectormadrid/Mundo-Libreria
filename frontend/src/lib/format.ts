@@ -6,6 +6,17 @@ export function formatPrice(value: number): string {
   return priceFormatter.format(value);
 }
 
+/** Montos cortos para ejes y etiquetas: $790, $12,5 mil, $1,2 M. */
+export function formatPriceCompact(value: number): string {
+  if (Math.abs(value) >= 1_000_000) return `$${(value / 1_000_000).toLocaleString('es-CL', { maximumFractionDigits: 1 })} M`;
+  if (Math.abs(value) >= 1_000) return `$${(value / 1_000).toLocaleString('es-CL', { maximumFractionDigits: 1 })} mil`;
+  return `$${value.toLocaleString('es-CL')}`;
+}
+
+export function formatNumber(value: number): string {
+  return value.toLocaleString('es-CL');
+}
+
 export function formatDate(value: string, withTime = false): string {
   const date = new Date(value.replace(' ', 'T'));
   if (Number.isNaN(date.getTime())) return value;

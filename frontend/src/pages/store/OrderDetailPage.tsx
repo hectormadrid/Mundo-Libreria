@@ -76,6 +76,23 @@ export function OrderDetailPage() {
           <span className="text-lib-blue">{formatPrice(order.total)}</span>
         </div>
       </div>
+
+      {order.seguimiento.length > 0 && (
+        <section className="card mt-6 p-6" aria-labelledby="seguimiento-titulo">
+          <h2 id="seguimiento-titulo" className="mb-4 text-lg font-bold text-gray-800">
+            Seguimiento
+          </h2>
+          <ol className="relative space-y-4 border-l-2 border-gray-200 pl-5">
+            {order.seguimiento.map((s, i) => (
+              <li key={i} className="relative flex flex-wrap items-center gap-3">
+                <span className="absolute -left-[27px] h-3 w-3 rounded-full border-2 border-white bg-lib-blue ring-2 ring-gray-200" aria-hidden="true" />
+                <StatusBadge status={s.estado} />
+                <span className="text-sm text-gray-500">{formatDate(s.fecha, true)}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
     </div>
   );
 }

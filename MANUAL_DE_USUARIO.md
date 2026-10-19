@@ -92,18 +92,28 @@ La tienda no muestra ningún enlace al panel: los administradores entran por el 
 3.  Entrarás directo al **Panel de Administración**. El menú lateral da acceso a todas las secciones, y **"Ver tienda"** te lleva de vuelta a la tienda.
 4.  Mientras tengas la sesión de administrador abierta, la cabecera de la tienda muestra el botón **"Panel admin"**.
 
-### 3.2. Métricas Principales
+### 3.2. Dashboard
 
-La sección **Productos** muestra arriba las métricas de la tienda:
+Es la primera pantalla del panel. Arriba eliges el período: **7 días, 30 días, 90 días o 12 meses**.
 
-*   **Total catálogo:** El número total de productos en la base de datos.
-*   **Ventas del mes:** Suma de los pedidos pagados, enviados o entregados en el mes actual.
-*   **Pedidos pendientes:** Pedidos que esperan confirmación de pago (con un indicador si hay alguno).
-*   **Stock bajo:** Productos activos con menos de 10 unidades.
+*   **Indicadores:** ventas, pedidos, ticket promedio y clientes nuevos, cada uno con su variación respecto del período anterior (flecha verde si subió, roja si bajó). Las ventas y el ticket promedio cuentan solo pedidos pagados, enviados o entregados.
+*   **Requiere atención:** pagos por confirmar (y el monto en espera), pedidos pagados por enviar, productos agotados y con stock bajo. Cada tarjeta te lleva directo a la lista filtrada.
+*   **Gráfico de ventas:** por día, semana o mes según el período. Pasa el cursor sobre una columna para ver el monto y la cantidad de pedidos; el botón **"Ver tabla"** muestra los mismos datos como tabla.
+*   **Ventas por categoría** y **productos más vendidos** del período.
+*   **Stock crítico** y **últimos pedidos**.
+
+El menú lateral muestra contadores en **Pedidos** (pagos por confirmar + pedidos por enviar) y en **Productos** (stock bajo). Se actualizan solos cada minuto.
+
+Todas las fechas se calculan en hora de Chile.
 
 ### 3.3. Gestión de Productos
 
-La tabla de productos es la herramienta principal para gestionar tu inventario.
+*   **Resumen y filtros:** arriba ves cuántos productos hay en total, visibles, ocultos, con stock bajo y agotados (clic en cada uno para filtrar). También puedes filtrar por categoría, estado y stock, y buscar por nombre, código o marca.
+*   **Ajuste rápido de stock:** haz clic en el número de stock de un producto, escribe la nueva cantidad y presiona **Enter** (o **Esc** para cancelar).
+*   **Unidades vendidas:** la columna **Vendidos** muestra cuántas unidades se han vendido de cada producto (sin contar pedidos cancelados).
+*   **Acciones en lote:** marca varios productos con las casillas y usa la barra que aparece abajo para **mostrarlos**, **ocultarlos** o **exportarlos**.
+*   **Exportar:** el botón **"Exportar"** descarga un archivo CSV (se abre en Excel) con los productos filtrados.
+*   **Etiqueta:** el ícono de código de barras de cada fila abre el generador de etiquetas con ese producto ya elegido.
 
 #### 3.3.1. Agregar un Nuevo Producto
 
@@ -129,8 +139,8 @@ La tabla de productos es la herramienta principal para gestionar tu inventario.
 
 Para no afectar los pedidos históricos, los productos no se borran. En su lugar se marcan como "Inactivos".
 
-1.  En la columna **Estado**, haz clic en la etiqueta **Activo** del producto.
-2.  El producto pasará a **Inactivo** y dejará de verse en la tienda. Haz clic de nuevo para reactivarlo.
+1.  En la columna **Estado**, haz clic en la etiqueta **Visible** del producto.
+2.  El producto pasará a **Oculto** y dejará de verse en la tienda. Haz clic de nuevo para volver a mostrarlo.
 
 ### 3.4. Gestión de Categorías y Familias
 
@@ -139,20 +149,22 @@ Desde el menú lateral del panel de administración, puedes acceder a las seccio
 *   **Gestionar Categorías:** Crear, ver, editar y eliminar las categorías principales de la tienda (ej. `Papelería`).
 *   **Gestionar Familias:** Administrar las subcategorías que pertenecen a una categoría principal (ej. `Lápices` dentro de `Papelería`).
 
-### 3.5. Gestión de Usuarios
+### 3.5. Gestión de Clientes
 
-En la sección "Usuarios", puedes ver una lista de todos los clientes registrados. Desde aquí, puedes:
+En la sección **"Clientes"** ves a todos los clientes registrados, con su cantidad de pedidos, **total pagado**, último pedido y fecha de registro (ordenados por los que más han comprado).
 
-*   Ver y editar la información de un usuario (RUT, nombre, correo, teléfono y dirección).
-*   Eliminar una cuenta de usuario. Los clientes que tienen pedidos no se pueden eliminar, para conservar el historial de ventas.
+*   **Ficha del cliente:** haz clic en su nombre para ver sus datos, sus totales y todos sus pedidos (cada uno enlaza a su detalle).
+*   **Editar** su información (RUT, nombre, correo, teléfono y dirección).
+*   **Eliminar** una cuenta. Los clientes que tienen pedidos no se pueden eliminar, para conservar el historial de ventas.
+*   **Exportar** la lista a CSV.
 
 ### 3.6. Gestión de Pedidos
 
-En la sección "Pedidos", puedes:
-
-*   Ver una lista de todos los pedidos realizados por los clientes.
-*   Consultar los detalles de cada pedido con el botón **Ver** (productos, dirección y teléfono de envío, método de pago).
-*   Actualizar el estado del pedido: *Pendiente*, *Pagado*, *Enviado*, *Entregado* o *Cancelado*.
+*   **Pestañas por estado** (Todos, Pendiente, Pagado, Enviado, Entregado, Cancelado) con la cantidad de pedidos en cada una, y un filtro por fecha (últimos 7, 30 o 90 días).
+*   Haz clic en **"Gestionar"** para abrir la ficha del pedido: datos de contacto y envío, productos, total e **historial** de todos sus cambios (quién lo hizo, cuándo y con qué nota).
+*   **Actualizar el pedido:** elige el nuevo estado (el formulario sugiere el siguiente paso habitual), escribe una nota opcional (por ejemplo el número de seguimiento del despacho) y marca **"Avisar al cliente por correo"** si quieres que reciba un aviso; la nota se incluye en ese correo. También puedes dejar el mismo estado y solo agregar una nota.
+*   El cliente ve el **seguimiento** de su pedido (estados y fechas) en "Mis pedidos".
+*   **Exportar** los pedidos filtrados a CSV.
 
 Al **cancelar** un pedido, el stock de sus productos vuelve al inventario. Un pedido cancelado no se puede reactivar.
 
@@ -165,3 +177,14 @@ Al **cancelar** un pedido, el stock de sus productos vuelve al inventario. Un pe
 ### 3.8. Generador de Códigos de Barras
 
 El sistema genera códigos de barras automáticamente para los productos nuevos. Para imprimir una etiqueta, entra a **"Códigos de barras"** en el menú, elige el producto y haz clic en **"Imprimir etiqueta"**.
+
+### 3.9. Configuración de la Tienda
+
+En **Ajustes → Tienda** editas los datos que ven tus clientes, sin tocar el código:
+
+*   **Contacto:** teléfono, correo y dirección (página de Contacto).
+*   **Horarios de atención:** filas de "días" y "horario" que aparecen en el pie de página (agrega o quita filas).
+*   **Redes sociales:** enlaces de WhatsApp, Instagram y Facebook. Si dejas uno vacío, su ícono no se muestra.
+*   **Datos para transferencia:** banco, cuenta, RUT, etc. Se muestran en el checkout al elegir transferencia y se incluyen en el correo de confirmación del pedido.
+
+Haz clic en **"Guardar cambios"**: se reflejan de inmediato en la tienda.
