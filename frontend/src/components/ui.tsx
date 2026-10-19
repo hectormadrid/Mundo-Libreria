@@ -51,33 +51,27 @@ export function QuantityStepper({
   max,
   onChange,
   disabled,
+  size = 'md',
 }: {
   value: number;
   max: number;
   onChange: (value: number) => void;
   disabled?: boolean;
+  size?: 'md' | 'lg';
 }) {
+  const button =
+    size === 'lg'
+      ? 'flex h-12 w-12 items-center justify-center rounded-full text-slate-700 transition hover:bg-white hover:text-brand-700 hover:shadow disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:shadow-none'
+      : 'flex h-8 w-8 items-center justify-center rounded-full text-slate-600 transition hover:bg-white hover:text-brand-700 hover:shadow disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:shadow-none';
   return (
-    <div className="inline-flex items-center rounded-lg border border-gray-300 bg-white">
-      <button
-        type="button"
-        className="px-2.5 py-1.5 text-gray-600 hover:text-lib-blue disabled:opacity-40"
-        onClick={() => onChange(value - 1)}
-        disabled={disabled || value <= 1}
-        aria-label="Disminuir cantidad"
-      >
+    <div className={`inline-flex items-center rounded-full bg-slate-100 ring-1 ring-slate-200 ${size === 'lg' ? 'p-1' : 'p-0.5'}`}>
+      <button type="button" className={button} onClick={() => onChange(value - 1)} disabled={disabled || value <= 1} aria-label="Disminuir cantidad">
         <Minus className="h-4 w-4" />
       </button>
-      <span className="min-w-8 text-center font-semibold" aria-live="polite">
+      <span className={`text-center font-bold text-slate-900 ${size === 'lg' ? 'min-w-10 text-lg' : 'min-w-8'}`} aria-live="polite">
         {value}
       </span>
-      <button
-        type="button"
-        className="px-2.5 py-1.5 text-gray-600 hover:text-lib-blue disabled:opacity-40"
-        onClick={() => onChange(value + 1)}
-        disabled={disabled || value >= max}
-        aria-label="Aumentar cantidad"
-      >
+      <button type="button" className={button} onClick={() => onChange(value + 1)} disabled={disabled || value >= max} aria-label="Aumentar cantidad">
         <Plus className="h-4 w-4" />
       </button>
     </div>

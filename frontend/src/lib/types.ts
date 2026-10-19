@@ -47,6 +47,8 @@ export interface ProductDetail extends Product {
   idCategoria: number | null;
   familia: string | null;
   idFamilia: number | null;
+  /** Unidades vendidas (pedidos no cancelados). */
+  vendidos: number;
   similares: Product[];
 }
 

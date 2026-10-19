@@ -64,6 +64,14 @@ catalogRouter.get('/products', async (req, res) => {
   const params: unknown[] = [];
   const param = (v: unknown) => `$${params.push(v)}`;
 
+  // Productos puntuales (p. ej. "vistos recientemente"): ?ids=3,7,12 (máximo 24).
+  const ids = queryStr(req, 'ids')
+    .split(',')
+    .map(Number)
+    .filter((n) => Number.isInteger(n) && n > 0)
+    .slice(0, 24);
+  if (ids.length > 0) conditions.push(`p.id = ANY(${param(ids)}::int[])`);
+
   const q = queryStr(req, 'q');
   if (q) {
     const p = param(likePattern(q));
@@ -111,20 +119,24 @@ catalogRouter.get('/products/:id', async (req, res) => {
   );
   if (!product) throw HttpError.notFound('Producto no encontrado.');
 
+  // Primero los de la misma familia, luego el resto de la categoría.
   const similares = await all(
-    `SELECT id, nombre, imagen, precio, descripcion, stock, creado_en
-     FROM productos
-     WHERE activo AND stock > 0 AND id <> $1
-       AND (categoria_id = $2 OR familia_id = $3)
-     ORDER BY random() LIMIT 4`,
+    `SELECT p.id, p.nombre, p.imagen, p.precio, p.descripcion, p.stock, p.marca, p.creado_en, c.nombre AS categoria
+     FROM productos p
+     LEFT JOIN categorias c ON p.categoria_id = c.id
+     WHERE p.activo AND p.stock > 0 AND p.id <> $1
+       AND (p.categoria_id = $2 OR p.familia_id = $3)
+     ORDER BY (p.familia_id IS NOT DISTINCT FROM $3) DESC, random() LIMIT 8`,
     [id, product.categoria_id, product.familia_id],
   );
+  const vendidos = await value<number>(`SELECT ${SOLD} FROM productos p WHERE p.id = $1`, [id]);
 
   send(res, {
     ...formatProduct(product),
     idCategoria: product.categoria_id,
     familia: product.familia,
     idFamilia: product.familia_id,
+    vendidos: Number(vendidos ?? 0),
     similares: similares.map(formatProduct),
   });
 });

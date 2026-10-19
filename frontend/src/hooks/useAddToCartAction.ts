@@ -12,7 +12,8 @@ export function useAddToCartAction() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const add = (productId: number, cantidad = 1) => {
+  /** Con `checkout`, va directo a finalizar la compra en vez de abrir el carrito. */
+  const add = (productId: number, cantidad = 1, options: { checkout?: boolean } = {}) => {
     if (!session?.user) {
       toastError('Inicia sesión para agregar productos al carrito');
       navigate(`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`);
@@ -22,6 +23,7 @@ export function useAddToCartAction() {
       { productId, cantidad },
       {
         onSuccess: () => {
+          if (options.checkout) return navigate('/checkout');
           toastSuccess('Producto añadido al carrito');
           openDrawer();
         },

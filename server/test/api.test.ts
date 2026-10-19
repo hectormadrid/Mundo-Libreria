@@ -167,6 +167,10 @@ describe('catálogo', () => {
     const detail = await c.get('/api/products/1');
     assert.equal(detail.body.data.familia, 'Lápices');
     assert.equal(detail.body.data.precio, 790);
+    assert.equal(detail.body.data.vendidos, 0);
+    assert.ok(Array.isArray(detail.body.data.similares));
+    const ids = (await c.get('/api/products?ids=2,1,3,abc')).body.data.items.map((p: { id: number }) => p.id).sort();
+    assert.deepEqual(ids, [1, 2], 'el producto oculto (3) no aparece');
     assert.equal((await c.get('/api/products/3')).status, 404);
     assert.equal((await c.get('/api/products/abc')).status, 400);
   });

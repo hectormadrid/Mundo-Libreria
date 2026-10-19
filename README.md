@@ -132,7 +132,8 @@ Las peticiones que modifican datos requieren la cabecera `X-CSRF-Token`, que se 
 | POST | `/auth/register`, `/auth/logout` | Registro de clientes / cerrar sesión |
 | POST | `/auth/forgot-password`, `/auth/reset-password`, `/auth/reset-password/validate` | Recuperar contraseña |
 | GET | `/categories`, `/families?categoria=` | Catálogo (cada categoría incluye cuántos productos tiene a la venta) |
-| GET | `/products?categoria=&familia=&q=&precio_min=&precio_max=&orden=&page=&limite=`, `/products/{id}` | Productos activos (12 por página, máximo 24). `orden`: `recientes`, `populares`, `precio_asc`, `precio_desc`, `nombre`. Cada producto indica si es `nuevo` (últimos 30 días) |
+| GET | `/products?categoria=&familia=&q=&ids=&precio_min=&precio_max=&orden=&page=&limite=` | Productos activos con stock (12 por página, máximo 24). `orden`: `recientes`, `populares`, `precio_asc`, `precio_desc`, `nombre`. `ids=3,7,12` pide productos puntuales. Cada producto indica si es `nuevo` (últimos 30 días) |
+| GET | `/products/{id}` | Detalle del producto con unidades vendidas y hasta 8 similares |
 | GET, DELETE | `/cart` | Ver / vaciar carrito |
 | POST | `/cart/items` | Agregar `{ productId, cantidad }` |
 | PATCH, DELETE | `/cart/items/{productId}` | Cambiar cantidad / quitar |
