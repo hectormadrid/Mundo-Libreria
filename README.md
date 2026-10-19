@@ -131,8 +131,8 @@ Las peticiones que modifican datos requieren la cabecera `X-CSRF-Token`, que se 
 | POST | `/auth/login` | Inicio de sesión único: `{ correo, password }`, donde `correo` es el correo de un cliente o el usuario de un administrador |
 | POST | `/auth/register`, `/auth/logout` | Registro de clientes / cerrar sesión |
 | POST | `/auth/forgot-password`, `/auth/reset-password`, `/auth/reset-password/validate` | Recuperar contraseña |
-| GET | `/categories`, `/families?categoria=` | Catálogo |
-| GET | `/products?categoria=&familia=&q=&page=`, `/products/{id}` | Productos activos (12 por página) |
+| GET | `/categories`, `/families?categoria=` | Catálogo (cada categoría incluye cuántos productos tiene a la venta) |
+| GET | `/products?categoria=&familia=&q=&precio_min=&precio_max=&orden=&page=&limite=`, `/products/{id}` | Productos activos (12 por página, máximo 24). `orden`: `recientes`, `populares`, `precio_asc`, `precio_desc`, `nombre`. Cada producto indica si es `nuevo` (últimos 30 días) |
 | GET, DELETE | `/cart` | Ver / vaciar carrito |
 | POST | `/cart/items` | Agregar `{ productId, cantidad }` |
 | PATCH, DELETE | `/cart/items/{productId}` | Cambiar cantidad / quitar |

@@ -5,7 +5,7 @@ import { api } from '../../lib/api';
 import type { AdminProduct, Family } from '../../lib/types';
 import { onImageError, productImage } from '../../lib/assets';
 import { toastSuccess } from '../../lib/alerts';
-import { useCategories } from '../store/CategoryNav';
+import { useCategories } from '../../hooks/useCatalog';
 import { FormError, Modal, Spinner } from '../ui';
 
 const EMPTY = {

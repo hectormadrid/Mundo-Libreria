@@ -6,7 +6,7 @@ import type { AdminFamily } from '../../lib/types';
 import { confirmAction, toastError, toastSuccess } from '../../lib/alerts';
 import { AdminPageHeader } from '../../components/admin/AdminLayout';
 import { DataTable, type Column } from '../../components/admin/DataTable';
-import { useCategories } from '../../components/store/CategoryNav';
+import { useCategories } from '../../hooks/useCatalog';
 import { ErrorState, FormError, Modal, PageLoader, Spinner } from '../../components/ui';
 
 type Editing = AdminFamily | 'new' | null;

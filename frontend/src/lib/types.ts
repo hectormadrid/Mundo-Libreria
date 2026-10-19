@@ -18,6 +18,8 @@ export interface Session {
 export interface Category {
   id: number;
   nombre: string;
+  /** Productos a la venta en la categoría. */
+  productos: number;
 }
 
 export interface Family {
@@ -35,7 +37,11 @@ export interface Product {
   marca: string | null;
   color: string | null;
   categoria: string | null;
+  /** Publicado en los últimos 30 días. */
+  nuevo: boolean;
 }
+
+export type ProductOrder = 'recientes' | 'populares' | 'precio_asc' | 'precio_desc' | 'nombre';
 
 export interface ProductDetail extends Product {
   idCategoria: number | null;

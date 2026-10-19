@@ -8,7 +8,7 @@ import { formatDate, formatNumber, formatPrice } from '../../lib/format';
 import { onImageError, productImage } from '../../lib/assets';
 import { confirmAction, toastError, toastSuccess } from '../../lib/alerts';
 import { csvDate, downloadCsv } from '../../lib/csv';
-import { useCategories } from '../../components/store/CategoryNav';
+import { useCategories } from '../../hooks/useCatalog';
 import { AdminPageHeader } from '../../components/admin/AdminLayout';
 import { DataTable, type Column } from '../../components/admin/DataTable';
 import { ProductFormModal } from '../../components/admin/ProductFormModal';

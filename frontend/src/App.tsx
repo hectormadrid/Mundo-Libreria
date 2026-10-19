@@ -5,6 +5,7 @@ import { StoreLayout } from './components/store/StoreLayout';
 import { RequireAdmin, RequireUser } from './components/guards';
 import { EmptyState, PageLoader } from './components/ui';
 import { HomePage } from './pages/store/HomePage';
+import { CatalogPage } from './pages/store/CatalogPage';
 import { ProductPage } from './pages/store/ProductPage';
 import { ContactPage } from './pages/store/ContactPage';
 import { CartPage } from './pages/store/CartPage';
@@ -47,6 +48,7 @@ export function App() {
         <Routes>
           <Route element={<StoreLayout />}>
             <Route index element={<HomePage />} />
+            <Route path="catalogo" element={<CatalogPage />} />
             <Route path="producto/:id" element={<ProductPage />} />
             <Route path="contacto" element={<ContactPage />} />
             <Route path="carrito" element={<RequireUser><CartPage /></RequireUser>} />

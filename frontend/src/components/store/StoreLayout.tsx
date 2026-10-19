@@ -2,7 +2,6 @@ import { useEffect, type ReactNode } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { CartDrawerProvider } from '../../context/CartDrawerContext';
 import { CartDrawer } from './CartDrawer';
-import { CategoryNav } from './CategoryNav';
 import { Footer } from './Footer';
 import { Header } from './Header';
 
@@ -18,9 +17,8 @@ export function StoreLayout() {
   return (
     <CartDrawerProvider>
       <ScrollToTop />
-      <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-50 via-white to-yellow-50">
+      <div className="flex min-h-screen flex-col bg-white text-slate-800">
         <Header />
-        <CategoryNav />
         <main className="flex-1">
           <Outlet />
         </main>

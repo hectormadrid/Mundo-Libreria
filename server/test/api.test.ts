@@ -146,6 +146,22 @@ describe('catálogo', () => {
     assert.equal((await c.get('/api/categories')).body.data.length, 3);
   });
 
+  test('ordena, filtra por precio y cuenta productos por categoría', async () => {
+    const c = new Client(base);
+    const caros = (await c.get('/api/products?orden=precio_desc&limite=2')).body.data;
+    assert.deepEqual(caros.items.map((p: { nombre: string }) => p.nombre), ['Calculadora', 'Lápiz pasta azul']);
+    assert.equal(caros.pages, 8);
+    assert.equal(caros.items[0].nuevo, true);
+    assert.equal((await c.get('/api/products?precio_min=500&precio_max=1000')).body.data.total, 1);
+    assert.equal((await c.get('/api/products?orden=constructor')).status, 200);
+    assert.equal((await c.get('/api/products?limite=500')).body.data.items.length, 15);
+    const categorias = (await c.get('/api/categories')).body.data;
+    assert.deepEqual(
+      categorias.map((cat: { nombre: string; productos: number }) => [cat.nombre, cat.productos]),
+      [['Libreria', 1], ['Oficina', 1], ['Papeleria', 13]],
+    );
+  });
+
   test('detalle de producto, oculto o inexistente', async () => {
     const c = new Client(base);
     const detail = await c.get('/api/products/1');

@@ -9,6 +9,7 @@ import { onImageError, productImage } from '../../lib/assets';
 import { EmptyState, ErrorState, PageLoader, QuantityStepper, Spinner } from '../../components/ui';
 import { ProductCard } from '../../components/store/ProductCard';
 import { useAddToCartAction } from '../../hooks/useAddToCartAction';
+import { catalogUrl } from '../../hooks/useCatalog';
 
 export function ProductPage() {
   const { id } = useParams();
@@ -33,7 +34,7 @@ export function ProductPage() {
   }
   if (error) return <ErrorState error={error} onRetry={() => void refetch()} />;
 
-  const categoriaLink = product.categoria ? `/?categoria=${encodeURIComponent(product.categoria.toLowerCase())}` : '/';
+  const categoriaLink = product.categoria ? catalogUrl({ categoria: product.categoria }) : '/catalogo';
 
   return (
     <div className="container mx-auto px-4 py-8">
