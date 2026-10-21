@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import { all, exec, one, transaction, type Row } from '../db.js';
-import { HttpError, idParam, nullableStr, send, str } from '../http.js';
-import { requireUser } from '../auth.js';
-import { isEmail, isPhone } from '../validation.js';
+import { HttpError, idParam, nullableStr, rawString, send, str } from '../http.js';
+import { hashPassword, requireUser, verifyPassword } from '../auth.js';
+import { isEmail, isPhone, isStrongPassword, PASSWORD_RULE } from '../validation.js';
+import { checkThrottle, clearThrottle, registerFailure } from '../throttle.js';
 import { orderTemplate, sendMail } from '../mail.js';
 import { imageUrl } from '../uploads.js';
 import { getSettings } from './settings.js';
@@ -23,6 +24,7 @@ export function formatOrder(o: Row) {
     fecha: o.creado_en,
     metodoPago: o.metodo_pago,
     ...('productos' in o ? { productos: o.productos } : {}),
+    ...('imagenes' in o ? { imagenes: ((o.imagenes as string[] | null) ?? []).map((img) => imageUrl(img)) } : {}),
     ...('direccion_envio' in o ? { direccionEnvio: o.direccion_envio, telefonoContacto: o.telefono_contacto } : {}),
   };
 }
@@ -69,10 +71,34 @@ accountRouter.put('/profile', async (req, res) => {
   send(res, await profileOf(uid));
 });
 
+accountRouter.put('/profile/password', async (req, res) => {
+  const uid = requireUser(req);
+  const actual = rawString(req, 'actual');
+  const nueva = rawString(req, 'nueva');
+  if (!isStrongPassword(nueva)) throw HttpError.badRequest(PASSWORD_RULE);
+
+  checkThrottle(req, 'password', String(uid));
+  const hash = (await one('SELECT password_hash FROM clientes WHERE id = $1', [uid]))?.password_hash;
+  if (!hash || !(await verifyPassword(actual, hash))) {
+    registerFailure(req, 'password', String(uid));
+    throw HttpError.badRequest('La contraseña actual no es correcta.');
+  }
+  clearThrottle(req, 'password', String(uid));
+
+  // Cambiar la contraseña invalida cualquier enlace de recuperación pendiente.
+  await exec('UPDATE clientes SET password_hash = $1, reset_token_hash = NULL, reset_token_expira = NULL WHERE id = $2', [await hashPassword(nueva), uid]);
+  send(res, { message: 'Tu contraseña se actualizó correctamente.' });
+});
+
 accountRouter.get('/orders', async (req, res) => {
   const rows = await all(
     `SELECT p.id, p.total, p.estado, p.creado_en, p.metodo_pago,
-            (SELECT coalesce(sum(i.cantidad), 0) FROM pedido_items i WHERE i.pedido_id = p.id) AS productos
+            (SELECT coalesce(sum(i.cantidad), 0) FROM pedido_items i WHERE i.pedido_id = p.id) AS productos,
+            -- Hasta 3 fotos de los productos, para la vista previa del pedido.
+            (SELECT array_agg(t.imagen) FROM (
+               SELECT pr.imagen FROM pedido_items i JOIN productos pr ON pr.id = i.producto_id
+               WHERE i.pedido_id = p.id AND pr.imagen IS NOT NULL ORDER BY i.nombre_producto LIMIT 3
+             ) t) AS imagenes
      FROM pedidos p WHERE p.cliente_id = $1 ORDER BY p.creado_en DESC, p.id DESC`,
     [requireUser(req)],
   );

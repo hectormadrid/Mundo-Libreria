@@ -1,6 +1,10 @@
 import { Router, type Request } from 'express';
 import { one } from '../db.js';
-import { HttpError, send } from '../http.js';
+import { HttpError, nullableStr, send, str } from '../http.js';
+import { config } from '../config.js';
+import { contactTemplate, sendMail } from '../mail.js';
+import { checkThrottle, registerFailure } from '../throttle.js';
+import { isEmail } from '../validation.js';
 
 export const settingsRouter = Router();
 
@@ -37,6 +41,30 @@ export async function getSettings(): Promise<StoreSettings> {
 /** Datos públicos de la tienda: contacto, redes, horarios y datos de transferencia. */
 settingsRouter.get('/settings', async (_req, res) => {
   send(res, await getSettings());
+});
+
+/** Formulario de contacto: envía el mensaje al correo de la tienda (máximo 5 cada 15 minutos por IP). */
+settingsRouter.post('/contact', async (req, res) => {
+  const nombre = str(req, 'nombre');
+  const correo = str(req, 'correo');
+  const telefono = nullableStr(req, 'telefono');
+  const mensaje = str(req, 'mensaje');
+
+  // Campo trampa invisible: los robots lo llenan, las personas no.
+  if (str(req, 'sitio')) return send(res, { message: 'Mensaje enviado.' });
+
+  if (!nombre || nombre.length > 100) throw HttpError.badRequest('Escribe tu nombre (máximo 100 caracteres).');
+  if (!isEmail(correo)) throw HttpError.badRequest('El formato de correo no es válido.');
+  if (telefono && telefono.length > 20) throw HttpError.badRequest('El teléfono no puede superar los 20 caracteres.');
+  if (mensaje.length < 10 || mensaje.length > 2000) throw HttpError.badRequest('El mensaje debe tener entre 10 y 2000 caracteres.');
+
+  const destino = (await getSettings()).correo || config.smtp.user;
+  if (!destino) throw new HttpError(503, 'Por ahora no podemos recibir mensajes. Contáctanos por teléfono o WhatsApp.');
+
+  checkThrottle(req, 'contacto', '');
+  registerFailure(req, 'contacto', '');
+  await sendMail(destino, `Mensaje de ${nombre} - Mundo Librería`, contactTemplate(nombre, correo, telefono, mensaje));
+  send(res, { message: '¡Gracias! Recibimos tu mensaje y te responderemos pronto.' });
 });
 
 const LIMITS: Record<string, number> = { telefono: 30, correo: 254, direccion: 255, whatsapp: 255, instagram: 255, facebook: 255, datosTransferencia: 1000 };

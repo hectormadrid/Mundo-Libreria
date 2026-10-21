@@ -1,11 +1,12 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { CheckCircle, KeyRound, XCircle } from 'lucide-react';
+import { CheckCircle2, KeyRound, XCircle } from 'lucide-react';
 import { api } from '../../lib/api';
 import { isStrongPassword, passwordRule } from '../../lib/format';
 import { FormError, PageLoader, Spinner } from '../../components/ui';
-import { AuthShell, PasswordInput, PasswordStrength } from './AuthShell';
+import { PasswordField, PasswordStrength } from '../../components/store/FormField';
+import { AuthShell, Notice } from './AuthShell';
 
 export function ResetPasswordPage() {
   const [params] = useSearchParams();
@@ -39,43 +40,52 @@ export function ResetPasswordPage() {
     content = <PageLoader label="Verificando enlace..." />;
   } else if (validation.error) {
     content = (
-      <div className="text-center">
-        <XCircle className="mx-auto mb-3 h-12 w-12 text-lib-red" />
-        <p className="mb-6 text-gray-700">{validation.error.message}</p>
-        <Link to="/recuperar" className="btn-primary">
-          Solicitar un nuevo enlace
+      <>
+        <Notice tone="error" icon={<XCircle className="h-6 w-6" />} title="El enlace no sirve">
+          {validation.error.message}
+        </Notice>
+        <Link to="/recuperar" className="btn-brand mt-6 h-14 w-full text-base">
+          Pedir un enlace nuevo
         </Link>
-      </div>
+      </>
     );
   } else if (reset.isSuccess) {
     content = (
-      <div className="text-center">
-        <CheckCircle className="mx-auto mb-3 h-12 w-12 text-green-600" />
-        <p className="mb-6 text-gray-700">{reset.data.message}</p>
-        <Link to="/login" className="btn-primary">
+      <>
+        <Notice tone="success" icon={<CheckCircle2 className="h-6 w-6" />} title="¡Contraseña actualizada!">
+          {reset.data.message}
+        </Notice>
+        <Link to="/login" className="btn-brand mt-6 h-14 w-full text-base">
           Iniciar sesión
         </Link>
-      </div>
+      </>
     );
   } else {
+    const mismatch = confirmar.length > 0 && confirmar !== password;
     content = (
       <form onSubmit={submit} className="space-y-5">
-        <div>
-          <label htmlFor="password" className="label">Nueva contraseña</label>
-          <PasswordInput id="password" value={password} onChange={setPassword} autoComplete="new-password" />
+        <PasswordField id="password" label="Nueva contraseña" value={password} onChange={setPassword} autoComplete="new-password">
           <PasswordStrength password={password} />
-        </div>
-        <div>
-          <label htmlFor="confirmar" className="label">Confirmar contraseña</label>
-          <PasswordInput id="confirmar" value={confirmar} onChange={setConfirmar} autoComplete="new-password" />
-        </div>
+        </PasswordField>
+        <PasswordField
+          id="confirmar"
+          label="Repite la contraseña"
+          value={confirmar}
+          onChange={setConfirmar}
+          autoComplete="new-password"
+          error={mismatch ? 'Las contraseñas no coinciden.' : undefined}
+        />
         <FormError message={formError} />
-        <button type="submit" disabled={reset.isPending} className="btn-primary w-full py-3">
+        <button type="submit" disabled={reset.isPending} className="btn-brand h-14 w-full text-base">
           {reset.isPending ? <Spinner /> : <KeyRound className="h-5 w-5" />} Guardar nueva contraseña
         </button>
       </form>
     );
   }
 
-  return <AuthShell title="Restablecer contraseña">{content}</AuthShell>;
+  return (
+    <AuthShell title="Crea una nueva contraseña" subtitle="Elige una contraseña segura que no uses en otros sitios.">
+      {content}
+    </AuthShell>
+  );
 }

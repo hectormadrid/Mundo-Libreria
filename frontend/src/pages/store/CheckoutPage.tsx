@@ -11,6 +11,7 @@ import { useStoreSettings } from '../../hooks/useSettings';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { ErrorState, FormError, PageLoader, Spinner } from '../../components/ui';
 import { CheckoutSteps, cartItemProblem } from '../../components/store/CartParts';
+import { Field, fieldInput } from '../../components/store/FormField';
 
 const METHODS: { id: PaymentMethod; title: string; text: string; icon: typeof CreditCard }[] = [
   { id: 'transferencia', title: 'Transferencia', text: 'Pagas desde tu banco y confirmamos el pago.', icon: Landmark },
@@ -179,32 +180,6 @@ function StepCard({ title, subtitle, children }: { title: string; subtitle: stri
     </section>
   );
 }
-
-function Field({ id, label, hint, error, icon, children }: { id: string; label: string; hint?: string; error?: string; icon: ReactNode; children: ReactNode }) {
-  return (
-    <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-semibold text-slate-800">
-        {label}
-      </label>
-      <div className="relative">
-        <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-slate-400">{icon}</span>
-        {children}
-      </div>
-      {error ? (
-        <p id={`${id}-error`} className="mt-1.5 text-sm text-cherry-600">
-          {error}
-        </p>
-      ) : (
-        hint && <p className="mt-1.5 text-xs text-slate-500">{hint}</p>
-      )}
-    </div>
-  );
-}
-
-const fieldInput = (hasError: boolean) =>
-  `h-12 w-full rounded-2xl border bg-white pr-4 pl-11 text-slate-900 outline-none transition placeholder:text-slate-400 focus:ring-4 ${
-    hasError ? 'border-cherry-500 focus:ring-cherry-500/15' : 'border-slate-200 focus:border-brand-500 focus:ring-brand-500/15'
-  }`;
 
 function ContactStep({ value, onChange, onNext }: { value: Contact; onChange: (c: Contact) => void; onNext: () => void }) {
   const [errors, setErrors] = useState<Partial<Record<keyof Contact, string>>>({});

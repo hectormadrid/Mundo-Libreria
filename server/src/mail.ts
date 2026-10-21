@@ -159,3 +159,21 @@ export function passwordResetTemplate(link: string): string {
     ${footer('Seguridad ante todo.')}
   </div>`;
 }
+
+export function contactTemplate(nombre: string, correo: string, telefono: string | null, mensaje: string): string {
+  return `
+  <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;'>
+    <div style='background: #1b3fd6; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;'>
+      <h1 style='color: white; margin: 0; font-size: 22px;'>Nuevo mensaje desde la tienda</h1>
+    </div>
+    <div style='padding: 20px; color: #333;'>
+      <p><b>Nombre:</b> ${escape(nombre)}</p>
+      <p><b>Correo:</b> ${escape(correo)}</p>
+      ${telefono ? `<p><b>Teléfono:</b> ${escape(telefono)}</p>` : ''}
+      <p><b>Mensaje:</b></p>
+      <p style='white-space: pre-line; background: #f7f7f9; padding: 15px; border-radius: 8px;'>${escape(mensaje)}</p>
+      <p style='font-size: 13px; color: #777;'>Responde directamente a ${escape(correo)}.</p>
+    </div>
+    ${footer('Mensaje enviado desde el formulario de contacto.')}
+  </div>`;
+}

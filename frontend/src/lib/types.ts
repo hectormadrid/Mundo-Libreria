@@ -95,6 +95,8 @@ export interface Order {
   fecha: string;
   metodoPago: PaymentMethod | null;
   productos?: number;
+  /** Hasta 3 fotos de los productos del pedido (solo en el listado). */
+  imagenes?: (string | null)[];
   direccionEnvio?: string | null;
   telefonoContacto?: string | null;
 }

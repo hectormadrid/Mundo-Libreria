@@ -8,7 +8,7 @@ import { confirmAction, toastError, toastSuccess } from '../../lib/alerts';
 import { useSession } from '../../hooks/useSession';
 import { AdminPageHeader } from '../../components/admin/AdminLayout';
 import { ErrorState, FormError, Modal, PageLoader, Spinner } from '../../components/ui';
-import { PasswordInput, PasswordStrength } from '../auth/AuthShell';
+import { PasswordField, PasswordStrength } from '../../components/store/FormField';
 
 function CreateAdminModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const queryClient = useQueryClient();
@@ -47,11 +47,9 @@ function CreateAdminModal({ open, onClose }: { open: boolean; onClose: () => voi
           <label className="label" htmlFor="a-nombre">Usuario *</label>
           <input id="a-nombre" className="input" required autoComplete="off" value={nombre} onChange={(e) => setNombre(e.target.value)} />
         </div>
-        <div>
-          <label className="label" htmlFor="a-password">Contraseña *</label>
-          <PasswordInput id="a-password" value={password} onChange={setPassword} autoComplete="new-password" />
+        <PasswordField id="a-password" label="Contraseña *" value={password} onChange={setPassword} autoComplete="new-password">
           <PasswordStrength password={password} />
-        </div>
+        </PasswordField>
         <FormError message={formError} />
         <div className="flex justify-end gap-3">
           <button type="button" className="btn-ghost" onClick={close}>

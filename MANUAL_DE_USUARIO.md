@@ -12,70 +12,74 @@ Esta sección está dedicada a los usuarios que visitan la tienda para comprar p
 
 ### 2.1. Registro de una Cuenta Nueva
 
-Para comprar en Mundo Librería, necesitas una cuenta. Sigue estos pasos para registrarte:
+Para comprar en Mundo Librería necesitas una cuenta:
 
-1.  Haz clic en el botón **"Iniciar Sesión"** en la esquina superior derecha de la página de inicio.
-2.  En la página de inicio de sesión, busca y haz clic en el enlace para **registrarse**.
-3.  Completa el formulario de registro con la siguiente información:
-    *   **Nombre Completo:** Tu nombre y apellido.
-    *   **RUT:** Tu Rol Único Tributario.
-    *   **Correo Electrónico:** Una dirección de correo válida.
-    *   **Teléfono:** Tu número de contacto.
-    *   **Contraseña:** Mínimo 8 caracteres, con al menos una mayúscula, una minúscula, un número y un carácter especial.
-4.  Haz clic en el botón **"Crear cuenta"**.
-5.  Si el registro es exitoso, serás redirigido a la página de inicio de sesión.
+1.  Haz clic en **"Mi cuenta"** (arriba a la derecha) y luego en **"Crea tu cuenta gratis"**.
+2.  Completa nombre, RUT, teléfono, correo y contraseña. Bajo la contraseña verás qué requisitos ya cumple: 8 caracteres, mayúscula y minúscula, un número y un símbolo.
+3.  Haz clic en **"Crear cuenta"**. Volverás al inicio de sesión con tu correo ya escrito.
 
 ### 2.2. Iniciar Sesión
 
-Una vez que tengas una cuenta, puedes iniciar sesión:
+1.  Haz clic en **"Mi cuenta"**.
+2.  Ingresa tu **correo** y tu **contraseña** (el ícono del ojo permite verla mientras la escribes).
+3.  Haz clic en **"Ingresar"**. Si venías de una página que pedía sesión (por ejemplo, el carrito), vuelves a ella.
 
-1.  Ve a la página de **"Iniciar Sesión"**.
-2.  Ingresa tu **correo electrónico** y **contraseña**.
-3.  Haz clic en **"Iniciar Sesión"**. Al conectarte, verás un saludo de bienvenida en la cabecera.
+### 2.3. Encontrar Productos
 
-### 2.3. Navegación y Búsqueda de Productos
-
-*   **Navegación por Categorías:** En la barra de navegación, puedes hacer clic en categorías como `Librería`, `Papelería` u `Oficina` para filtrar los productos mostrados. Dentro de una categoría aparecen sus familias (por ejemplo `Lápices`) para filtrar aún más.
-*   **Búsqueda:** Utiliza la barra de búsqueda en la cabecera para encontrar productos por nombre, descripción o marca. Los resultados se actualizan mientras escribes.
-*   **Más productos:** Al final de la lista, el botón **"Cargar más productos"** muestra el resto del catálogo.
+*   **Portada:** muestra las categorías, los **más vendidos** y las **novedades**.
+*   **Buscador:** al escribir aparecen sugerencias con foto y precio; con **Enter** ves todos los resultados.
+*   **Catálogo:** desde la barra de categorías o **"Todo el catálogo"**. Puedes filtrar por categoría, subcategoría y rango de precio, y ordenar por recientes, más vendidos, precio o nombre. En el celular, los filtros se abren con el botón **"Filtros"**.
+*   **Ficha del producto:** fotos con zoom (pasa el cursor o haz clic para ampliar), disponibilidad, descripción, ficha técnica, productos similares y los que viste recientemente. El botón de **compartir** copia el enlace del producto.
 
 ### 2.4. Agregar Productos al Carrito
 
-Cuando encuentres un producto que te guste:
-
-1.  Haz clic en **"Agregar"** en la tarjeta del producto, o abre el producto, elige la cantidad y haz clic en **"Añadir al carrito"**.
-2.  Se abrirá el carrito lateral con tus productos, y el ícono del carrito mostrará cuántos artículos llevas.
+1.  Haz clic en **"Agregar"** en la tarjeta del producto, o abre el producto, elige la cantidad y haz clic en **"Agregar al carrito"**.
+2.  Se abrirá el carrito lateral con el producto destacado como **"Agregado"**.
+3.  En la ficha del producto, **"Comprar ahora"** agrega el producto y te lleva directo a finalizar la compra.
 
 Si no has iniciado sesión, el sistema te pedirá hacerlo y luego te devolverá al producto.
 
-### 2.5. Ver y Gestionar el Carrito de Compras
+### 2.5. Ver y Gestionar el Carrito
 
-1.  Haz clic en el ícono del **carrito** y luego en **"Ver carrito completo"**.
-2.  Aquí puedes cambiar las cantidades con los botones **−** y **+**, eliminar artículos o vaciar el carrito.
+*   En el **carrito lateral** (botón del carrito, que muestra la cantidad y el total) puedes cambiar cantidades con **−** y **+** o quitar productos con el ícono de basurero.
+*   **"Ver carrito completo"** abre la página del carrito, con el resumen y la opción **"Vaciar carrito"**.
+*   Si un producto se agotó o bajó su stock, aparece marcado en rojo y hay que ajustarlo antes de continuar.
 
 ### 2.6. Proceso de Compra (Checkout)
 
-1.  Desde el carrito, haz clic en **"Proceder al pago"**.
-2.  Revisa tus datos de contacto y la dirección de envío (se completan con los datos de tu perfil).
-3.  Elige el método de pago y haz clic en **"Confirmar pedido"**:
-    *   **Transferencia:** el pedido queda *Pendiente* hasta que la tienda confirme el pago.
+La compra se hace en pasos, indicados arriba de la página:
+
+1.  **Tus datos:** nombre, correo, teléfono y dirección de envío (se completan con los datos de tu perfil).
+2.  **Pago:** elige el método:
+    *   **Transferencia:** se muestran los datos bancarios de la tienda; el pedido queda *Pendiente* hasta que se confirme el pago.
     *   **Efectivo:** pagas al recibir; el pedido queda *Pendiente*.
     *   **Tarjeta:** actualmente funciona en modo de prueba (no se realiza ningún cargo real).
-4.  Recibirás un correo con el detalle de tu pedido.
+3.  **Revisa y confirma:** revisa todo (cada parte tiene un botón **"Editar"**) y haz clic en **"Confirmar pedido"**.
 
-### 2.7. Gestionar tu Perfil y tus Pedidos
+Al terminar verás el número de tu pedido y qué sigue según el método de pago, y recibirás un correo con el detalle.
 
-1.  Una vez iniciada la sesión, haz clic en tu nombre en la cabecera para abrir tu **perfil**, donde puedes actualizar tu nombre, teléfono y dirección.
-2.  El ícono de paquete abre **"Mis pedidos"**, con el estado y el detalle de cada compra.
+### 2.7. Mi Cuenta: Pedidos y Perfil
 
-### 2.8. Recuperar tu Contraseña
+Desde el menú de tu nombre (arriba a la derecha) entras a **Mi cuenta**, que muestra cuántos pedidos tienes, cuántos están en curso y el total comprado.
+
+*   **Mis pedidos:** lista con fotos de los productos y el avance de cada pedido. Puedes filtrar por *En curso*, *Entregados* o *Cancelados*.
+*   **Detalle de un pedido:** muestra el seguimiento (Recibido → Pagado → Enviado → Entregado) con sus fechas, los productos y los datos de envío. Si pagaste por transferencia y el pedido sigue pendiente, también ves los datos bancarios. Además puedes:
+    *   **"Comprar de nuevo":** vuelve a agregar al carrito los productos del pedido que sigan disponibles.
+    *   **"¿Dudas con tu pedido?":** abre WhatsApp con el número del pedido ya escrito.
+*   **Mi perfil:** actualiza tu nombre, teléfono y dirección (el RUT y el correo no se pueden cambiar). En **Seguridad** puedes cambiar tu contraseña escribiendo primero la actual.
+
+### 2.8. Contacto
+
+La página **"Contacto"** reúne WhatsApp, teléfono, correo, dirección (con el botón **"Cómo llegar"**), horarios, redes sociales y el mapa. También tiene un formulario **"Envíanos un mensaje"**: el mensaje llega al correo de la tienda configurado en el panel, y la respuesta llega al correo que escribas.
+
+### 2.9. Recuperar tu Contraseña
 
 1.  En la página de inicio de sesión, haz clic en **"¿La olvidaste?"**.
 2.  Ingresa tu correo; recibirás un enlace válido por 1 hora para crear una nueva contraseña.
 
-### 2.9. Cerrar Sesión
+### 2.10. Cerrar Sesión
 
-Para salir de tu cuenta, haz clic en el botón **"Salir"**.
+Abre el menú de tu nombre (arriba a la derecha) y haz clic en **"Cerrar sesión"**. También está disponible en **Mi cuenta**.
 
 ---
 

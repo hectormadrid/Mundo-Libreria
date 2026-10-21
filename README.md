@@ -138,9 +138,11 @@ Las peticiones que modifican datos requieren la cabecera `X-CSRF-Token`, que se 
 | POST | `/cart/items` | Agregar `{ productId, cantidad }` |
 | PATCH, DELETE | `/cart/items/{productId}` | Cambiar cantidad / quitar |
 | GET, PUT | `/profile` | Perfil del cliente |
-| GET, POST | `/orders` | Pedidos del cliente / crear pedido desde el carrito |
+| PUT | `/profile/password` | Cambiar la contraseña `{ actual, nueva }` (verifica la actual; 5 intentos fallidos cada 15 min) |
+| GET, POST | `/orders` | Pedidos del cliente (con hasta 3 fotos de sus productos) / crear pedido desde el carrito |
 | GET | `/orders/{id}` | Detalle de un pedido propio, con su seguimiento (estados y fechas) |
 | GET | `/settings` | Datos públicos de la tienda: contacto, redes, horarios y datos de transferencia |
+| POST | `/contact` | Formulario de contacto `{ nombre, correo, telefono?, mensaje }`: envía el mensaje al correo de la tienda (o a `SMTP_USER`); máximo 5 por IP cada 15 minutos |
 | GET | `/admin/dashboard?dias=7\|30\|90\|365` | Indicadores con comparación al período anterior, serie de ventas, ranking de productos, ventas por categoría y alertas |
 | GET | `/admin/counts` | Pendientes para el menú: pagos por confirmar, pedidos por enviar, stock bajo |
 | PUT | `/admin/settings` | Editar la configuración de la tienda |

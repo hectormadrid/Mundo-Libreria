@@ -219,6 +219,7 @@ describe('carrito y compra', () => {
 
     const list = await c.get('/api/orders');
     assert.equal(list.body.data[0].productos, 3);
+    assert.deepEqual(list.body.data[0].imagenes, [], 'productos sin foto');
     await waitForMail(new RegExp(`Orden #${id}\\b`));
   });
 
@@ -258,6 +259,40 @@ describe('recuperar contraseña', () => {
 
     assert.equal((await c.post('/api/auth/login', { correo: NEW_USER.correo, password: 'Nueva123!' })).status, 200);
     NEW_USER.password = 'Nueva123!';
+  });
+});
+
+describe('mi cuenta y contacto', () => {
+  test('cambia la contraseña verificando la actual', async () => {
+    const c = await loggedUser();
+    assert.equal((await new Client(base).put('/api/profile/password', { actual: 'x', nueva: 'Otra123!' })).status, 403, 'sin sesión ni CSRF');
+    assert.equal((await c.put('/api/profile/password', { actual: 'incorrecta', nueva: 'Otra123!' })).status, 400);
+    assert.equal((await c.put('/api/profile/password', { actual: NEW_USER.password, nueva: 'debil' })).status, 400);
+    assert.equal((await c.put('/api/profile/password', { actual: NEW_USER.password, nueva: 'Otra123!' })).status, 200);
+    NEW_USER.password = 'Otra123!';
+    await loggedUser();
+  });
+
+  test('el formulario de contacto envía un correo a la tienda', async () => {
+    const c = await new Client(base).start();
+    const msg = { nombre: 'Pedro', correo: 'pedro@test.cl', mensaje: '¿Tienen cuadernos <b>college</b>?' };
+    assert.equal((await c.post('/api/contact', { ...msg, correo: 'malo' })).status, 400);
+    assert.equal((await c.post('/api/contact', { ...msg, mensaje: 'corto' })).status, 400);
+    assert.equal((await c.post('/api/contact', msg)).status, 503, 'sin correo de la tienda configurado');
+
+    await db.exec("UPDATE configuracion_tienda SET correo = 'tienda@test.cl'");
+    assert.equal((await c.post('/api/contact', { ...msg, sitio: 'spam.com', nombre: 'Robot' })).status, 200);
+    assert.ok(!mailLog().includes('Mensaje de Robot'), 'el campo trampa no envía nada');
+
+    assert.equal((await c.post('/api/contact', msg)).status, 200);
+    const log = await waitForMail(/Mensaje de Pedro/);
+    assert.match(log, /PARA: tienda@test\.cl/);
+    assert.match(log, /&lt;b&gt;college&lt;\/b&gt;/, 'el mensaje se escapa');
+
+    for (let i = 0; i < 4; i++) await c.post('/api/contact', msg);
+    assert.equal((await c.post('/api/contact', msg)).status, 429);
+    resetThrottle();
+    await db.exec('UPDATE configuracion_tienda SET correo = NULL');
   });
 });
 
