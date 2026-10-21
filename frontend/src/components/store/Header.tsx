@@ -310,7 +310,7 @@ function CartButton() {
   return (
     <button
       type="button"
-      onClick={openDrawer}
+      onClick={() => openDrawer()}
       className="flex items-center gap-2 rounded-full bg-brand-600 py-2 pr-2 pl-3 text-white shadow-lg shadow-brand-600/25 transition hover:bg-brand-700 sm:pr-4"
       aria-label={`Abrir carrito (${cart.count} productos)`}
     >

@@ -2,7 +2,9 @@ import { createContext, useContext, useMemo, useState, type ReactNode } from 're
 
 interface CartDrawerState {
   open: boolean;
-  openDrawer: () => void;
+  /** Producto recién agregado, para destacarlo en el carrito lateral. */
+  lastAdded: number | null;
+  openDrawer: (addedProductId?: number) => void;
   closeDrawer: () => void;
 }
 
@@ -10,7 +12,19 @@ const CartDrawerContext = createContext<CartDrawerState | null>(null);
 
 export function CartDrawerProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const value = useMemo(() => ({ open, openDrawer: () => setOpen(true), closeDrawer: () => setOpen(false) }), [open]);
+  const [lastAdded, setLastAdded] = useState<number | null>(null);
+  const value = useMemo(
+    () => ({
+      open,
+      lastAdded,
+      openDrawer: (addedProductId?: number) => {
+        setLastAdded(addedProductId ?? null);
+        setOpen(true);
+      },
+      closeDrawer: () => setOpen(false),
+    }),
+    [open, lastAdded],
+  );
   return <CartDrawerContext.Provider value={value}>{children}</CartDrawerContext.Provider>;
 }
 

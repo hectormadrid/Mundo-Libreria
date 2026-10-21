@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router';
 import { useCartDrawer } from '../context/CartDrawerContext';
-import { toastError, toastSuccess } from '../lib/alerts';
+import { toastError } from '../lib/alerts';
 import { useAddToCart } from './useCart';
 import { useSession } from './useSession';
 
@@ -24,8 +24,8 @@ export function useAddToCartAction() {
       {
         onSuccess: () => {
           if (options.checkout) return navigate('/checkout');
-          toastSuccess('Producto añadido al carrito');
-          openDrawer();
+          // El carrito lateral destaca el producto: no hace falta otro aviso.
+          openDrawer(productId);
         },
         onError: toastError,
       },
